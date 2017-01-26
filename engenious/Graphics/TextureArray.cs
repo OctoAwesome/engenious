@@ -36,15 +36,15 @@ namespace engenious.Graphics
 
         internal override void SetSampler(SamplerState state)
         {
-            ThreadingHelper.BlockOnUIThread(() =>
-                {
-                    state = state == null ? SamplerState.LinearClamp : state;
-                    GL.TexParameter(TextureTarget.Texture2DArray, TextureParameterName.TextureWrapS, (int)state.AddressU);
-                    GL.TexParameter(TextureTarget.Texture2DArray, TextureParameterName.TextureWrapT, (int)state.AddressV);
+            using (Execute.OnUiThread)
+            {
+                state = state == null ? SamplerState.LinearClamp : state;
+                GL.TexParameter(TextureTarget.Texture2DArray, TextureParameterName.TextureWrapS, (int) state.AddressU);
+                GL.TexParameter(TextureTarget.Texture2DArray, TextureParameterName.TextureWrapT, (int) state.AddressV);
 
-                    GL.TexParameter(TextureTarget.Texture2DArray, TextureParameterName.TextureMinFilter, (int)state.TextureFilter);
-                    GL.TexParameter(TextureTarget.Texture2DArray, TextureParameterName.TextureMagFilter, (int)state.TextureFilter);
-                });
+                GL.TexParameter(TextureTarget.Texture2DArray, TextureParameterName.TextureMinFilter, (int) state.TextureFilter);
+                GL.TexParameter(TextureTarget.Texture2DArray, TextureParameterName.TextureMagFilter, (int) state.TextureFilter);
+            }
         }
 
         internal override void Bind()

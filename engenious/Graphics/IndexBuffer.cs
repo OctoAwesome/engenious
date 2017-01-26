@@ -25,12 +25,16 @@ namespace engenious.Graphics
 			
             this.IndexCount = indexCount;
             this.BufferUsage = usage;
-            ThreadingHelper.BlockOnUIThread(() =>
-                {
-                    ibo = GL.GenBuffer();
-                    GL.BindBuffer(BufferTarget.ElementArrayBuffer, ibo);
-                    GL.BufferData(BufferTarget.ElementArrayBuffer, new IntPtr(indexCount * elementSize), IntPtr.Zero, (OpenTK.Graphics.OpenGL4.BufferUsageHint)BufferUsage);
-                });
+            using (Execute.OnUiThread)
+            {
+                ibo = GL.GenBuffer();
+                GL.BindBuffer(BufferTarget.ElementArrayBuffer, ibo);
+                GL.BufferData(
+                    BufferTarget.ElementArrayBuffer,
+                    new IntPtr(indexCount * elementSize),
+                    IntPtr.Zero,
+                    (OpenTK.Graphics.OpenGL4.BufferUsageHint) BufferUsage);
+            }
             GraphicsDevice.CheckError();
             //buffer = new byte[indexCount * (int)IndexElementSize / 8];
         }
@@ -41,13 +45,17 @@ namespace engenious.Graphics
             this.IndexElementSize = indexElementSize;
             this.IndexCount = indexCount;
             this.BufferUsage = usage;
-            ThreadingHelper.BlockOnUIThread(() =>
-                {
-                    ibo = GL.GenBuffer();
-                    GL.BindBuffer(BufferTarget.ElementArrayBuffer, ibo);
-                    elementSize = (indexElementSize == DrawElementsType.UnsignedByte ? 1 : (indexElementSize == DrawElementsType.UnsignedShort ? 2 : 4));
-                    GL.BufferData(BufferTarget.ElementArrayBuffer, new IntPtr(indexCount * elementSize), IntPtr.Zero, (OpenTK.Graphics.OpenGL4.BufferUsageHint)BufferUsage);
-                });
+            using (Execute.OnUiThread)
+            {
+                ibo = GL.GenBuffer();
+                GL.BindBuffer(BufferTarget.ElementArrayBuffer, ibo);
+                elementSize = (indexElementSize == DrawElementsType.UnsignedByte ? 1 : (indexElementSize == DrawElementsType.UnsignedShort ? 2 : 4));
+                GL.BufferData(
+                    BufferTarget.ElementArrayBuffer,
+                    new IntPtr(indexCount * elementSize),
+                    IntPtr.Zero,
+                    (OpenTK.Graphics.OpenGL4.BufferUsageHint) BufferUsage);
+            }
             GraphicsDevice.CheckError();
             //buffer = new byte[indexCount * (int)IndexElementSize / 8];
         }
@@ -69,11 +77,15 @@ namespace engenious.Graphics
             int elSize = Marshal.SizeOf(typeof(T));
 
             GCHandle buffer = GCHandle.Alloc(data, GCHandleType.Pinned);
-            ThreadingHelper.BlockOnUIThread(() =>
-                {
-                    Bind();
-                    GL.BufferSubData(BufferTarget.ElementArrayBuffer, new IntPtr(offsetInBytes), new IntPtr(elementCount * elSize), buffer.AddrOfPinnedObject() + startIndex * elSize);//TODO:
-                });
+            using (Execute.OnUiThread)
+            {
+                Bind();
+                GL.BufferSubData(
+                    BufferTarget.ElementArrayBuffer,
+                    new IntPtr(offsetInBytes),
+                    new IntPtr(elementCount * elSize),
+                    buffer.AddrOfPinnedObject() + startIndex * elSize); //TODO:
+            }
             buffer.Free();
             GraphicsDevice.CheckError();
             //Buffer.BlockCopy (data, startIndex, buffer, offsetInBytes, elementCount);
@@ -88,12 +100,16 @@ namespace engenious.Graphics
             int elSize = Marshal.SizeOf(typeof(T));
 
             GCHandle buffer = GCHandle.Alloc(data, GCHandleType.Pinned);
-            ThreadingHelper.BlockOnUIThread(() =>
-                {
-                    Bind();
+            using (Execute.OnUiThread)
+            {
+                Bind();
 
-                    GL.BufferSubData(BufferTarget.ElementArrayBuffer, IntPtr.Zero, new IntPtr(elementCount * elSize), buffer.AddrOfPinnedObject() + startIndex * elSize);//TODO:
-                });
+                GL.BufferSubData(
+                    BufferTarget.ElementArrayBuffer,
+                    IntPtr.Zero,
+                    new IntPtr(elementCount * elSize),
+                    buffer.AddrOfPinnedObject() + startIndex * elSize); //TODO:
+            }
             buffer.Free();
             GraphicsDevice.CheckError();
             //GL.BufferData<T> (BufferTarget.ElementArrayBuffer, new IntPtr (elementCount * Marshal.SizeOf(T)), data[startIndex], BufferUsageHint.StaticDraw);//TODO:
@@ -105,13 +121,11 @@ namespace engenious.Graphics
             if (data.Length == 0)
                 return;
 
-
-
-            ThreadingHelper.BlockOnUIThread(() =>
-                {
-                    Bind();
-                    GL.BufferSubData<T>(BufferTarget.ElementArrayBuffer, IntPtr.Zero, new IntPtr(data.Length * Marshal.SizeOf(default(T))), data);//TODO:
-                });
+            using (Execute.OnUiThread)
+            {
+                Bind();
+                GL.BufferSubData<T>(BufferTarget.ElementArrayBuffer, IntPtr.Zero, new IntPtr(data.Length * Marshal.SizeOf(default(T))), data); //TODO:
+            }
             GraphicsDevice.CheckError();
             //Buffer.BlockCopy (data, 0, buffer, 0, data.Length);
         }
@@ -119,19 +133,23 @@ namespace engenious.Graphics
         {
             
             int tempIBO;
-            ThreadingHelper.BlockOnUIThread(() =>
-                {
-                    tempIBO = GL.GenBuffer();
-                    GL.BindBuffer(BufferTarget.ElementArrayBuffer, tempIBO);
-                    GL.BufferData(BufferTarget.ElementArrayBuffer, new IntPtr(indexCount * elementSize), IntPtr.Zero, (OpenTK.Graphics.OpenGL4.BufferUsageHint)BufferUsage);
+            using (Execute.OnUiThread)
+            {
+                tempIBO = GL.GenBuffer();
+                GL.BindBuffer(BufferTarget.ElementArrayBuffer, tempIBO);
+                GL.BufferData(
+                    BufferTarget.ElementArrayBuffer,
+                    new IntPtr(indexCount * elementSize),
+                    IntPtr.Zero,
+                    (OpenTK.Graphics.OpenGL4.BufferUsageHint) BufferUsage);
 
 
-                    GL.DeleteBuffer(ibo);
-                    ibo = tempIBO;
+                GL.DeleteBuffer(ibo);
+                ibo = tempIBO;
 
-                    this.IndexCount = indexCount;
-                });
-                    
+                this.IndexCount = indexCount;
+            }
+
             if (keepData)
             {
                 //TODO:
@@ -149,10 +167,10 @@ namespace engenious.Graphics
 
         public override void Dispose()
         {
-            ThreadingHelper.BlockOnUIThread(() =>
-                {
-                    GL.DeleteBuffer(ibo);
-                });
+            using (Execute.OnUiThread)
+            {
+                GL.DeleteBuffer(ibo);
+            }
             base.Dispose();
         }
     }

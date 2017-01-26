@@ -9,23 +9,23 @@ namespace engenious
         internal int ubo;
         public ConstantBuffer(int size)
         {
-            ThreadingHelper.BlockOnUIThread(() =>
-                {
-                    ubo=GL.GenBuffer();
-                    GL.BindBuffer(BufferTarget.UniformBuffer, ubo);
-                    GL.BufferData(BufferTarget.UniformBuffer,new IntPtr(size),IntPtr.Zero, BufferUsageHint.DynamicDraw);
-                });
+            using (Execute.OnUiThread)
+            {
+                ubo = GL.GenBuffer();
+                GL.BindBuffer(BufferTarget.UniformBuffer, ubo);
+                GL.BufferData(BufferTarget.UniformBuffer, new IntPtr(size), IntPtr.Zero, BufferUsageHint.DynamicDraw);
+            }
         }
         public void Update(IntPtr data,uint size)
         {
-            ThreadingHelper.BlockOnUIThread(() =>
-                {
+            using (Execute.OnUiThread)
+            {
                 GL.BindBuffer(BufferTarget.UniformBuffer, ubo);
-                    IntPtr ptr = GL.MapBuffer(BufferTarget.UniformBuffer,BufferAccess.WriteOnly);
-                    MemoryHelper.CopyBulk(data,ptr,size);
-                    //Buffer.BlockCopy(
+                IntPtr ptr = GL.MapBuffer(BufferTarget.UniformBuffer, BufferAccess.WriteOnly);
+                MemoryHelper.CopyBulk(data, ptr, size);
+                //Buffer.BlockCopy(
                 GL.UnmapBuffer(BufferTarget.UniformBuffer);
-                });
+            }
         }
         public void Update<T>(T data) where T : struct
         {

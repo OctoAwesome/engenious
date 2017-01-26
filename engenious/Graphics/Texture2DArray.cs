@@ -14,13 +14,14 @@ namespace engenious.Graphics
         public Texture2DArray(GraphicsDevice graphicsDevice, int levels, int width, int height, int layers)
             : base(graphicsDevice)
         {
-            ThreadingHelper.BlockOnUIThread(()=>{
+            using (Execute.OnUiThread)
+            {
                 texture = GL.GenTexture();
                 
                 GL.BindTexture(TextureTarget.Texture2DArray, texture);
                 _internalFormat = PixelInternalFormat.Rgba8;//TODO dynamic format
                 GL.TexStorage3D(TextureTarget3d.Texture2DArray, levels, SizedInternalFormat.Rgba8, width, height, Math.Max(layers,1));
-            });
+            }
             Width = width;
             Height = height;
             LayerCount = layers;
@@ -28,7 +29,8 @@ namespace engenious.Graphics
         public Texture2DArray(GraphicsDevice graphicsDevice,int levels,int width,int height,Texture2D[] textures)
             :this(graphicsDevice,levels,width,height,textures.Length)
         {
-            ThreadingHelper.BlockOnUIThread(()=>{
+            using (Execute.OnUiThread)
+            {
                 int layer=0;
 
                 bool createMipMaps=false;
@@ -47,7 +49,7 @@ namespace engenious.Graphics
                     GL.GenerateMipmap(GenerateMipmapTarget.Texture2DArray);
                 }
                 setDefaultTextureParameters();
-            });
+            }
         }
         private void setDefaultTextureParameters()
         {
@@ -73,19 +75,19 @@ namespace engenious.Graphics
 
         internal override void SetSampler(SamplerState state)
         {
-            ThreadingHelper.BlockOnUIThread(() =>
+            using (Execute.OnUiThread)
             {
                 state = state ?? SamplerState.LinearClamp;
                 GL.TexParameter(TextureTarget.Texture2DArray, TextureParameterName.TextureWrapS, (int) state.AddressU);
                 GL.TexParameter(TextureTarget.Texture2DArray, TextureParameterName.TextureWrapT, (int) state.AddressV);
                 GL.TexParameter(TextureTarget.Texture2DArray,TextureParameterName.TextureMagFilter,(int)state.TextureFilter);
                 GL.TexParameter(TextureTarget.Texture2DArray,TextureParameterName.TextureMinFilter,(int)state.TextureFilter);
-            });
+            }
         }
         public void SetData<T>(T[] data,int layer,int level=0)where T : struct
         {
             GCHandle handle = GCHandle.Alloc(data, GCHandleType.Pinned);
-            ThreadingHelper.BlockOnUIThread(() =>
+            using (Execute.OnUiThread)
             {
                 Bind();
                 PixelType pxType = PixelType.UnsignedByte;
@@ -93,7 +95,7 @@ namespace engenious.Graphics
                     pxType = PixelType.Float;
 
                     GL.TexSubImage3D(TextureTarget.Texture2DArray, level, 0, 0,layer, Width, Height,1, OpenTK.Graphics.OpenGL4.PixelFormat.Bgra, pxType, handle.AddrOfPinnedObject());
-            });
+            }
             handle.Free();
         }
     }

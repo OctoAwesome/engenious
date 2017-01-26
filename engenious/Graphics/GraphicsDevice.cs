@@ -63,18 +63,18 @@ namespace engenious.Graphics
         }
         public void Clear(ClearBufferMask mask)
         {
-            ThreadingHelper.BlockOnUIThread(() =>
-                {
-                    GL.Clear((OpenTK.Graphics.OpenGL4.ClearBufferMask)mask);
-                });
+            using (Execute.OnUiThread)
+            {
+                GL.Clear((OpenTK.Graphics.OpenGL4.ClearBufferMask) mask);
+            }
         }
         public void Clear(ClearBufferMask mask, System.Drawing.Color color)
         {
-            ThreadingHelper.BlockOnUIThread(() =>
-                {
-                    GL.Clear((OpenTK.Graphics.OpenGL4.ClearBufferMask)mask);
-                    GL.ClearColor(color);
-                });
+            using (Execute.OnUiThread)
+            {
+                GL.Clear((OpenTK.Graphics.OpenGL4.ClearBufferMask) mask);
+                GL.ClearColor(color);
+            }
         }
 
         internal void CheckError()
@@ -101,11 +101,11 @@ namespace engenious.Graphics
 
         public void Clear(Color color)
         {
-            ThreadingHelper.BlockOnUIThread(() =>
-                {
-                    GL.Clear(OpenTK.Graphics.OpenGL4.ClearBufferMask.ColorBufferBit | OpenTK.Graphics.OpenGL4.ClearBufferMask.DepthBufferBit);
-                    GL.ClearColor(color.R, color.G, color.B, color.A);
-                });
+            using (Execute.OnUiThread)
+            {
+                GL.Clear(OpenTK.Graphics.OpenGL4.ClearBufferMask.ColorBufferBit | OpenTK.Graphics.OpenGL4.ClearBufferMask.DepthBufferBit);
+                GL.ClearColor(color.R, color.G, color.B, color.A);
+            }
             CheckError();
         }
 
@@ -126,12 +126,12 @@ namespace engenious.Graphics
                 if (viewport.Bounds != value.Bounds)
                 {
                     viewport = value;
-                    ThreadingHelper.BlockOnUIThread(() =>
-                        {
-                            //GL.Viewport(viewport.X, game.Window.ClientSize.Height - viewport.Y - viewport.Height, viewport.Width, viewport.Height);
-                            GL.Viewport(viewport.X, viewport.Y, viewport.Width, viewport.Height);
-                            GL.Scissor(scissorRectangle.X, Viewport.Height - scissorRectangle.Bottom, scissorRectangle.Width, scissorRectangle.Height);
-                        });
+                    using (Execute.OnUiThread)
+                    {
+                        //GL.Viewport(viewport.X, game.Window.ClientSize.Height - viewport.Y - viewport.Height, viewport.Width, viewport.Height);
+                        GL.Viewport(viewport.X, viewport.Y, viewport.Width, viewport.Height);
+                        GL.Scissor(scissorRectangle.X, Viewport.Height - scissorRectangle.Bottom, scissorRectangle.Width, scissorRectangle.Height);
+                    }
                 }
             }
         }
@@ -152,28 +152,28 @@ namespace engenious.Graphics
         public void DrawUserPrimitives<T>(PrimitiveType primitiveType, T[] vertexData, int vertexOffset, int primitiveCount, VertexDeclaration vertexDeclaration)  where T : struct
         {
             VertexBuffer old = VertexBuffer;
-            ThreadingHelper.BlockOnUIThread(() =>
+            using (Execute.OnUiThread)
+            {
+                VertexBuffer current;
+                if (!userBuffers.TryGetValue(vertexDeclaration, out current))
                 {
-                    VertexBuffer current;
-                    if (!userBuffers.TryGetValue(vertexDeclaration, out current))
-                    {
-                        current = new VertexBuffer(this, vertexDeclaration, vertexData.Length);
-                        userBuffers.Add(vertexDeclaration, current);
-                    }
-                    else if (current.VertexCount < vertexData.Length)
-                    {
-                        if (current != null && !current.IsDisposed)
-                            current.Dispose();
-                        current = new VertexBuffer(this, vertexDeclaration, vertexData.Length); 
-                        userBuffers[vertexDeclaration] = current;
-                    }
+                    current = new VertexBuffer(this, vertexDeclaration, vertexData.Length);
+                    userBuffers.Add(vertexDeclaration, current);
+                }
+                else if (current.VertexCount < vertexData.Length)
+                {
+                    if (current != null && !current.IsDisposed)
+                        current.Dispose();
+                    current = new VertexBuffer(this, vertexDeclaration, vertexData.Length);
+                    userBuffers[vertexDeclaration] = current;
+                }
 
-                    current.SetData<T>(vertexData);
+                current.SetData<T>(vertexData);
 
-                    this.VertexBuffer = current;
+                this.VertexBuffer = current;
 
-                    DrawPrimitives(primitiveType, vertexOffset, primitiveCount);
-                });
+                DrawPrimitives(primitiveType, vertexOffset, primitiveCount);
+            }
             this.VertexBuffer = old;
             CheckError();
         }
@@ -186,21 +186,25 @@ namespace engenious.Graphics
             if (tp == null)
                 throw new ArgumentException("must be a vertexType");
             VertexBuffer old = VertexBuffer;
-            ThreadingHelper.BlockOnUIThread(() =>
-                {
-                    VertexBuffer current = new VertexBuffer(this, tp.VertexDeclaration, vertexData.Length);
+            using (Execute.OnUiThread)
+            {
+                VertexBuffer current = new VertexBuffer(this, tp.VertexDeclaration, vertexData.Length);
 
-                    this.VertexBuffer = current;
+                this.VertexBuffer = current;
 
-                    VertexBuffer.vao.Bind();
-                    GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
+                VertexBuffer.vao.Bind();
+                GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
 
-                    GL.DrawElements((OpenTK.Graphics.OpenGL4.PrimitiveType)primitiveType, primitiveCount * 3, OpenTK.Graphics.OpenGL4.DrawElementsType.UnsignedShort, indexData);
+                GL.DrawElements(
+                    (OpenTK.Graphics.OpenGL4.PrimitiveType) primitiveType,
+                    primitiveCount * 3,
+                    OpenTK.Graphics.OpenGL4.DrawElementsType.UnsignedShort,
+                    indexData);
 
-                    this.VertexBuffer = old;
+                this.VertexBuffer = old;
 
-                    current.Dispose();
-                });
+                current.Dispose();
+            }
             CheckError();
         }
 
@@ -236,20 +240,20 @@ namespace engenious.Graphics
 
         public void SetRenderTarget(RenderTarget2D target)
         {
-            ThreadingHelper.BlockOnUIThread(() =>
+            using (Execute.OnUiThread)
+            {
+                if (target == null)
                 {
-                    if (target == null)
-                    {
-                        GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
-                        Viewport = new Viewport(game.Window.ClientRectangle);
-                    }
-                    else
-                    {
-                        target.BindFBO();
-                        Viewport = new Viewport(target.Bounds);
-                        ScissorRectangle = target.Bounds;
-                    }
-                });
+                    GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+                    Viewport = new Viewport(game.Window.ClientRectangle);
+                }
+                else
+                {
+                    target.BindFBO();
+                    Viewport = new Viewport(target.Bounds);
+                    ScissorRectangle = target.Bounds;
+                }
+            }
             CheckError();
         }
 
@@ -267,12 +271,18 @@ namespace engenious.Graphics
                 {
                     
                     blendState = value == null ? BlendState.AlphaBlend : value;
-                    ThreadingHelper.BlockOnUIThread(() =>
-                        {
-                            //TODO:apply more?
-                            GL.BlendFuncSeparate((OpenTK.Graphics.OpenGL4.BlendingFactorSrc)blendState.ColorSourceBlend, (OpenTK.Graphics.OpenGL4.BlendingFactorDest)blendState.ColorDestinationBlend, (OpenTK.Graphics.OpenGL4.BlendingFactorSrc)blendState.AlphaSourceBlend, (OpenTK.Graphics.OpenGL4.BlendingFactorDest)blendState.AlphaDestinationBlend);
-                            GL.BlendEquationSeparate((OpenTK.Graphics.OpenGL4.BlendEquationMode)blendState.ColorBlendFunction, (OpenTK.Graphics.OpenGL4.BlendEquationMode)blendState.AlphaBlendFunction);
-                        });
+                    using (Execute.OnUiThread)
+                    {
+                        //TODO:apply more?
+                        GL.BlendFuncSeparate(
+                            (OpenTK.Graphics.OpenGL4.BlendingFactorSrc) blendState.ColorSourceBlend,
+                            (OpenTK.Graphics.OpenGL4.BlendingFactorDest) blendState.ColorDestinationBlend,
+                            (OpenTK.Graphics.OpenGL4.BlendingFactorSrc) blendState.AlphaSourceBlend,
+                            (OpenTK.Graphics.OpenGL4.BlendingFactorDest) blendState.AlphaDestinationBlend);
+                        GL.BlendEquationSeparate(
+                            (OpenTK.Graphics.OpenGL4.BlendEquationMode) blendState.ColorBlendFunction,
+                            (OpenTK.Graphics.OpenGL4.BlendEquationMode) blendState.AlphaBlendFunction);
+                    }
                 }
             }
         }
@@ -288,13 +298,13 @@ namespace engenious.Graphics
                 if (depthStencilState != value)
                 {
                     depthStencilState = value == null ? DepthStencilState.Default : value;
-                    ThreadingHelper.BlockOnUIThread(() =>
-                        {
-                            if (depthStencilState.DepthBufferEnable)
-                                GL.Enable(EnableCap.DepthTest);
-                            else
-                                GL.Disable(EnableCap.DepthTest);
-                        });
+                    using (Execute.OnUiThread)
+                    {
+                        if (depthStencilState.DepthBufferEnable)
+                            GL.Enable(EnableCap.DepthTest);
+                        else
+                            GL.Disable(EnableCap.DepthTest);
+                    }
                     //TODO:apply more
                 }
             }
@@ -312,30 +322,30 @@ namespace engenious.Graphics
                 {
                     rasterizerState = value == null ? RasterizerState.CullClockwise : value;
                     //TODO:apply more
-                    ThreadingHelper.BlockOnUIThread(() =>
+                    using (Execute.OnUiThread)
+                    {
+                        //GL.FrontFace(FrontFaceDirection.
+                        if (rasterizerState.CullMode == CullMode.None)
+                            GL.Disable(EnableCap.CullFace);
+                        else
                         {
-                            //GL.FrontFace(FrontFaceDirection.
-                            if (rasterizerState.CullMode == CullMode.None)
-                                GL.Disable(EnableCap.CullFace);
-                            else
-                            {
-                                GL.Enable(EnableCap.CullFace);
-                                GL.FrontFace((FrontFaceDirection)rasterizerState.CullMode);
-                            }
+                            GL.Enable(EnableCap.CullFace);
+                            GL.FrontFace((FrontFaceDirection) rasterizerState.CullMode);
+                        }
 
 
-                            GL.PolygonMode(MaterialFace.Back, (OpenTK.Graphics.OpenGL4.PolygonMode)rasterizerState.FillMode);
+                        GL.PolygonMode(MaterialFace.Back, (OpenTK.Graphics.OpenGL4.PolygonMode) rasterizerState.FillMode);
 
-                            if (rasterizerState.MultiSampleAntiAlias)
-                                GL.Enable(EnableCap.Multisample);
-                            else
-                                GL.Disable(EnableCap.Multisample);
+                        if (rasterizerState.MultiSampleAntiAlias)
+                            GL.Enable(EnableCap.Multisample);
+                        else
+                            GL.Disable(EnableCap.Multisample);
 
-                            if (rasterizerState.ScissorTestEnable)
-                                GL.Enable(EnableCap.ScissorTest);
-                            else
-                                GL.Disable(EnableCap.ScissorTest);
-                        });
+                        if (rasterizerState.ScissorTestEnable)
+                            GL.Enable(EnableCap.ScissorTest);
+                        else
+                            GL.Disable(EnableCap.ScissorTest);
+                    }
                 }
             }
         }
@@ -358,10 +368,10 @@ namespace engenious.Graphics
                 if (scissorRectangle != value)
                 {
                     scissorRectangle = value;
-                    ThreadingHelper.BlockOnUIThread(() =>
-                        {
-                            GL.Scissor(scissorRectangle.X, Viewport.Height - scissorRectangle.Bottom, scissorRectangle.Width, scissorRectangle.Height);
-                        });
+                    using (Execute.OnUiThread)
+                    {
+                        GL.Scissor(scissorRectangle.X, Viewport.Height - scissorRectangle.Bottom, scissorRectangle.Width, scissorRectangle.Height);
+                    }
                     //GL.Scissor(scissorRectangle.X, scissorRectangle.Y, scissorRectangle.Width, -scissorRectangle.Height);
                 }
                

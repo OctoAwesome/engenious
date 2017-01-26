@@ -47,30 +47,29 @@ void main(void)
             : base(graphicsDevice)
         {
             var technique = new EffectTechnique("Basic");
-            ThreadingHelper.BlockOnUIThread(()=>{
-            Shader[] shaders = new Shader[]
+
+            using (Execute.OnUiThread)
             {
-                new Shader(ShaderType.VertexShader, vertexShader),
-                new Shader(ShaderType.FragmentShader, pixelShader)
-            };
+                Shader[] shaders = new Shader[] {
+                    new Shader(ShaderType.VertexShader, vertexShader),
+                    new Shader(ShaderType.FragmentShader, pixelShader)
+                };
 
-            foreach (Shader shader in shaders)
-                shader.Compile();
-            EffectPass pass = new EffectPass("Basic");
-            pass.AttachShaders(shaders);
-            pass.BindAttribute(VertexElementUsage.Color, "color");
-            pass.BindAttribute(VertexElementUsage.TextureCoordinate, "textureCoordinate");
-            pass.BindAttribute(VertexElementUsage.Position, "position");
-            pass.Link();
+                foreach (Shader shader in shaders)
+                    shader.Compile();
+                EffectPass pass = new EffectPass("Basic");
+                pass.AttachShaders(shaders);
+                pass.BindAttribute(VertexElementUsage.Color, "color");
+                pass.BindAttribute(VertexElementUsage.TextureCoordinate, "textureCoordinate");
+                pass.BindAttribute(VertexElementUsage.Position, "position");
+                pass.Link();
 
+                technique.Passes.Add(pass);
+                Techniques.Add(technique);
+            }
 
-
-            technique.Passes.Add(pass);
-            Techniques.Add(technique);
-            });
             CurrentTechnique = technique;
-
-
+            
             Initialize();
 
             World = View = Projection = Matrix.Identity;

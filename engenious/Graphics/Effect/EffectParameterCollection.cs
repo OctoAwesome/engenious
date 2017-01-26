@@ -13,25 +13,30 @@ namespace engenious.Graphics
 
 		public EffectParameterCollection (EffectTechniqueCollection techniques)
 		{
-            ThreadingHelper.BlockOnUIThread(()=>{
-			parameters = new Dictionary<string, EffectParameter> ();
-			parameterList = new List<EffectParameter> ();
+		    using (Execute.OnUiThread)
+		    {
+		        parameters = new Dictionary<string, EffectParameter>();
+		        parameterList = new List<EffectParameter>();
 
-			foreach (EffectTechnique technique in techniques) {
-				foreach (EffectPass pass in technique.Passes) {
-					pass.CacheParameters ();
+		        foreach (EffectTechnique technique in techniques)
+		        {
+		            foreach (EffectPass pass in technique.Passes)
+		            {
+		                pass.CacheParameters();
 
-					foreach (EffectPassParameter param in pass.Parameters) {
-						EffectParameter current = null;
-						if (!parameters.TryGetValue (param.Name, out current)) {
-							current = new EffectParameter (param.Name);
-							Add (current);
-						}
-						current.Add (param);
-					}
-				}
-			}
-            });
+		                foreach (EffectPassParameter param in pass.Parameters)
+		                {
+		                    EffectParameter current = null;
+		                    if (!parameters.TryGetValue(param.Name, out current))
+		                    {
+		                        current = new EffectParameter(param.Name);
+		                        Add(current);
+		                    }
+		                    current.Add(param);
+		                }
+		            }
+		        }
+		    }
 		}
 
 		internal void Add (EffectParameter parameter)

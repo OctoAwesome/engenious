@@ -26,37 +26,46 @@ namespace engenious.Graphics
         public RenderTarget2D(GraphicsDevice graphicsDevice, int width, int height, PixelInternalFormat surfaceFormat)
             : base(graphicsDevice, width, height,1,surfaceFormat)
         {
-            ThreadingHelper.BlockOnUIThread(() =>
+            using (Execute.OnUiThread)
+            {
+                bool isDepthTarget = ((int) surfaceFormat >= (int) PixelInternalFormat.DepthComponent16 &&
+                                      (int) surfaceFormat <= (int) PixelInternalFormat.DepthComponent32Sgix);
+                if (!isDepthTarget)
                 {
-                    bool isDepthTarget = ((int)surfaceFormat >= (int)PixelInternalFormat.DepthComponent16 && (int)surfaceFormat <= (int)PixelInternalFormat.DepthComponent32Sgix);
-                    if (!isDepthTarget){
-                        GL.GenRenderbuffers(1, out depth);
+                    GL.GenRenderbuffers(1, out depth);
 
-                        GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, depth);
-                        GL.RenderbufferStorage(RenderbufferTarget.Renderbuffer, (RenderbufferStorage)All.DepthComponent32, width, height);
+                    GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, depth);
+                    GL.RenderbufferStorage(RenderbufferTarget.Renderbuffer, (RenderbufferStorage) All.DepthComponent32, width, height);
 
-                    }
+                }
 
-                    fbo = GL.GenFramebuffer();
-                    GL.BindFramebuffer(FramebufferTarget.Framebuffer, fbo);
-                    //GL.RenderbufferStorage(RenderbufferTarget.Renderbuffer, RenderbufferStorage.Rgba8, width, height);
-                    //GL.FramebufferParameter(FramebufferTarget.Framebuffer, FramebufferDefaultParameter.FramebufferDefaultWidth, width);
-                    //GL.FramebufferParameter(FramebufferTarget.Framebuffer, FramebufferDefaultParameter.FramebufferDefaultHeight, height);
-                   
-                    if (isDepthTarget){
-                        GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, TextureTarget.Texture2D, texture, 0);
-                        Bind();
-                        setDefaultTextureParameters();
-                    }else{
-                        GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, texture, 0);
-                    
-                        GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, RenderbufferTarget.Renderbuffer, depth);
-                        GL.DrawBuffers(1, new DrawBuffersEnum[]{ DrawBuffersEnum.ColorAttachment0});
-                    }
-                    ErrorHandling();
+                fbo = GL.GenFramebuffer();
+                GL.BindFramebuffer(FramebufferTarget.Framebuffer, fbo);
+                //GL.RenderbufferStorage(RenderbufferTarget.Renderbuffer, RenderbufferStorage.Rgba8, width, height);
+                //GL.FramebufferParameter(FramebufferTarget.Framebuffer, FramebufferDefaultParameter.FramebufferDefaultWidth, width);
+                //GL.FramebufferParameter(FramebufferTarget.Framebuffer, FramebufferDefaultParameter.FramebufferDefaultHeight, height);
 
-                    GL.BindFramebuffer(FramebufferTarget.Framebuffer,0);
-                });
+                if (isDepthTarget)
+                {
+                    GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, TextureTarget.Texture2D, texture, 0);
+                    Bind();
+                    setDefaultTextureParameters();
+                }
+                else
+                {
+                    GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, texture, 0);
+
+                    GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, RenderbufferTarget.Renderbuffer, depth);
+                    GL.DrawBuffers(
+                        1,
+                        new DrawBuffersEnum[] {
+                            DrawBuffersEnum.ColorAttachment0
+                        });
+                }
+                ErrorHandling();
+
+                GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+            }
         }
         internal void BindFBO()
         {
@@ -95,10 +104,10 @@ namespace engenious.Graphics
 
         public override void Dispose()
         {
-            ThreadingHelper.BlockOnUIThread(() =>
-                {
-                    GL.DeleteFramebuffer(fbo);
-                });
+            using (Execute.OnUiThread)
+            {
+                GL.DeleteFramebuffer(fbo);
+            }
             base.Dispose();
         }
     }

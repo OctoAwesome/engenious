@@ -20,25 +20,27 @@ namespace engenious.Graphics
 
         public Shader(ShaderType type, string source)
         {
-            ThreadingHelper.BlockOnUIThread(()=>{
-            shader = GL.CreateShader((OpenTK.Graphics.OpenGL4.ShaderType)type);
-            GL.ShaderSource(shader, source);
-            });
+            using (Execute.OnUiThread)
+            {
+                shader = GL.CreateShader((OpenTK.Graphics.OpenGL4.ShaderType) type);
+                GL.ShaderSource(shader, source);
+            }
         }
 
         internal void Compile()
         {
-            ThreadingHelper.BlockOnUIThread(()=>{
-            GL.CompileShader(shader);
-
-            int compiled;
-            GL.GetShader(shader, ShaderParameter.CompileStatus, out compiled);
-            if (compiled != 1)
+            using (Execute.OnUiThread)
             {
-                string error = GL.GetShaderInfoLog(shader);
-                throw new Exception(error);
+                GL.CompileShader(shader);
+
+                int compiled;
+                GL.GetShader(shader, ShaderParameter.CompileStatus, out compiled);
+                if (compiled != 1)
+                {
+                    string error = GL.GetShaderInfoLog(shader);
+                    throw new Exception(error);
+                }
             }
-            });
         }
 
         public void Dispose()

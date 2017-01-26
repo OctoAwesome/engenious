@@ -20,7 +20,7 @@ namespace engenious.Graphics
             Width = width;
             Height = height;
             Bounds = new Rectangle(0, 0, width, height);
-            ThreadingHelper.BlockOnUIThread(() =>
+            using (Execute.OnUiThread)
             {
                 texture = GL.GenTexture();
 
@@ -29,15 +29,26 @@ namespace engenious.Graphics
                 bool isDepthTarget = ((int) internalFormat >= (int) PixelInternalFormat.DepthComponent16 &&
                                       (int) internalFormat <= (int) PixelInternalFormat.DepthComponent32Sgix);
                 if (isDepthTarget)
-                    GL.TexImage2D(TextureTarget.Texture2D, 0,
-                        (OpenTK.Graphics.OpenGL4.PixelInternalFormat) internalFormat, width, height, 0,
-                        OpenTK.Graphics.OpenGL4.PixelFormat.DepthComponent, PixelType.Float, IntPtr.Zero);
+                    GL.TexImage2D(
+                        TextureTarget.Texture2D,
+                        0,
+                        (OpenTK.Graphics.OpenGL4.PixelInternalFormat) internalFormat,
+                        width,
+                        height,
+                        0,
+                        OpenTK.Graphics.OpenGL4.PixelFormat.DepthComponent,
+                        PixelType.Float,
+                        IntPtr.Zero);
                 else
-                    GL.TexStorage2D(TextureTarget2d.Texture2D, mipMaps,
-                        (OpenTK.Graphics.OpenGL4.SizedInternalFormat) internalFormat, width, height);
+                    GL.TexStorage2D(
+                        TextureTarget2d.Texture2D,
+                        mipMaps,
+                        (OpenTK.Graphics.OpenGL4.SizedInternalFormat) internalFormat,
+                        width,
+                        height);
 
                 //GL.TexImage2D(TextureTarget.Texture2D, 0, (OpenTK.Graphics.OpenGL4.PixelInternalFormat)internalFormat, width, height, 0, (OpenTK.Graphics.OpenGL4.PixelFormat)Format, PixelType.UnsignedByte, IntPtr.Zero);
-            });
+            }
         }
 
         private void setDefaultTextureParameters()
@@ -68,14 +79,14 @@ namespace engenious.Graphics
 
         internal override void SetSampler(SamplerState state)
         {
-            ThreadingHelper.BlockOnUIThread(() =>
+            using (Execute.OnUiThread)
             {
                 state = state ?? SamplerState.LinearClamp;
                 GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int) state.AddressU);
                 GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int) state.AddressV);
-                GL.TexParameter(TextureTarget.Texture2D,TextureParameterName.TextureMagFilter,(int)state.TextureFilter);
-                GL.TexParameter(TextureTarget.Texture2D,TextureParameterName.TextureMinFilter,(int)state.TextureFilter);
-            });
+                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int) state.TextureFilter);
+                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int) state.TextureFilter);
+            }
         }
 
         public int Width { get; private set; }
@@ -128,7 +139,7 @@ namespace engenious.Graphics
                         return;
                 }
                 GCHandle handle = GCHandle.Alloc(data, GCHandleType.Pinned);
-                ThreadingHelper.BlockOnUIThread(() =>
+                using (Execute.OnUiThread)
                 {
                     Bind();
                     PixelType pxType = PixelType.UnsignedByte;
@@ -148,7 +159,7 @@ namespace engenious.Graphics
                     else
                         GL.TexSubImage2D(TextureTarget.Texture2D, level, 0, 0, width, height, format, pxType,
                             handle.AddrOfPinnedObject());
-                });
+                }
                 handle.Free();
             }
             //GL.TexSubImage2D<T> (TextureTarget.Texture2D, 0, 0, 0, Width, Height, OpenTK.Graphics.OpenGL4.PixelFormat.Bgra, getPixelType (typeof(T)), data);
@@ -172,7 +183,7 @@ namespace engenious.Graphics
 
         public void GetData<T>(T[] data) where T : struct //ValueType
         {
-            ThreadingHelper.BlockOnUIThread(() =>
+            using (Execute.OnUiThread)
             {
                 Bind();
 
@@ -204,14 +215,14 @@ namespace engenious.Graphics
                     GL.GetTexImage(TextureTarget.Texture2D, level, OpenTK.Graphics.OpenGL4.PixelFormat.Bgra,
                         PixelType.UnsignedByte, data);
                 }
-            });
+            }
             //}
         }
 
         public void GetData<T>(int level, Nullable<Rectangle> rect, T[] data, int startIndex, int elementCount)
             where T : struct
         {
-            ThreadingHelper.BlockOnUIThread(() =>
+            using (Execute.OnUiThread)
             {
                 Bind();
                 if (rect.HasValue)
@@ -238,7 +249,7 @@ namespace engenious.Graphics
                     GL.GetTexImage(TextureTarget.Texture2D, level, OpenTK.Graphics.OpenGL4.PixelFormat.Bgra,
                         PixelType.UnsignedByte, data);
                 }
-            });
+            };
         }
 
         public static Texture2D FromStream(GraphicsDevice graphicsDevice, Stream stream)
@@ -255,12 +266,12 @@ namespace engenious.Graphics
             text = new Texture2D(graphicsDevice, bmp.Width, bmp.Height, mipMaps);
             BitmapData bmpData = bmp.LockBits(new System.Drawing.Rectangle(0, 0, text.Width, text.Height),
                 ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-            ThreadingHelper.BlockOnUIThread(() =>
+            using (Execute.OnUiThread)
             {
                 text.Bind();
                 GL.TexSubImage2D(TextureTarget.Texture2D, 0, 0, 0, text.Width, text.Height,
                     OpenTK.Graphics.OpenGL4.PixelFormat.Bgra, PixelType.UnsignedByte, bmpData.Scan0);
-            });
+            }
             bmp.UnlockBits(bmpData);
 
 
@@ -272,12 +283,12 @@ namespace engenious.Graphics
             Bitmap bmp = new Bitmap(text.Width, text.Height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
             BitmapData bmpData = bmp.LockBits(new System.Drawing.Rectangle(0, 0, text.Width, text.Height),
                 ImageLockMode.WriteOnly, bmp.PixelFormat);
-            ThreadingHelper.BlockOnUIThread(() =>
+            using (Execute.OnUiThread)
             {
                 text.Bind();
                 GL.GetTexImage(TextureTarget.Texture2D, 0, OpenTK.Graphics.OpenGL4.PixelFormat.Bgra,
                     PixelType.UnsignedByte, bmpData.Scan0);
-            });
+            };
             //System.Runtime.InteropServices.Marshal.Copy (bmpData.Scan0, data, 0, data.Length);//TODO: performance
             //TODO: convert pixel formats
 
@@ -303,7 +314,8 @@ namespace engenious.Graphics
 
         public override void Dispose()
         {
-            ThreadingHelper.BlockOnUIThread(() => { GL.DeleteTexture(texture); });
+            using (Execute.OnUiThread)
+                GL.DeleteTexture(texture);
 
             base.Dispose();
         }

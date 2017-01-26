@@ -26,12 +26,16 @@ namespace engenious.Graphics
                 throw new ArgumentException("must be a vertexType");
 			
             this.VertexDeclaration = tp.VertexDeclaration;
-            ThreadingHelper.BlockOnUIThread(() =>
-                {
-                    vbo = GL.GenBuffer();
-                    GL.BindBuffer(BufferTarget.ArrayBuffer, vbo);
-                    GL.BufferData(BufferTarget.ArrayBuffer, new IntPtr(vertexCount * VertexDeclaration.VertexStride), IntPtr.Zero, (OpenTK.Graphics.OpenGL4.BufferUsageHint)BufferUsage);
-                });
+            using (Execute.OnUiThread)
+            {
+                vbo = GL.GenBuffer();
+                GL.BindBuffer(BufferTarget.ArrayBuffer, vbo);
+                GL.BufferData(
+                    BufferTarget.ArrayBuffer,
+                    new IntPtr(vertexCount * VertexDeclaration.VertexStride),
+                    IntPtr.Zero,
+                    (OpenTK.Graphics.OpenGL4.BufferUsageHint) BufferUsage);
+            }
             ThreadingHelper.BlockOnUIThread(() =>
                 {
                     vao = new VertexAttributes();
@@ -58,12 +62,12 @@ namespace engenious.Graphics
             : this(graphicsDevice, vertexCount, usage)
         {
             this.VertexDeclaration = vertexDeclaration;
-            ThreadingHelper.BlockOnUIThread(() =>
-                {
-                    vbo = GL.GenBuffer();
-                    GL.BindBuffer(BufferTarget.ArrayBuffer, vbo);
-                    GL.BufferData(BufferTarget.ArrayBuffer, new IntPtr(vertexCount * VertexDeclaration.VertexStride), IntPtr.Zero, (OpenTK.Graphics.OpenGL4.BufferUsageHint)BufferUsage);
-                });
+            using (Execute.OnUiThread)
+            {
+                vbo = GL.GenBuffer();
+                GL.BindBuffer(BufferTarget.ArrayBuffer, vbo);
+                GL.BufferData(BufferTarget.ArrayBuffer, new IntPtr(vertexCount * VertexDeclaration.VertexStride), IntPtr.Zero, (OpenTK.Graphics.OpenGL4.BufferUsageHint)BufferUsage);
+            }
             ThreadingHelper.BlockOnUIThread(() =>
                 {
                     vao = new VertexAttributes();
@@ -81,26 +85,30 @@ namespace engenious.Graphics
         {
             
             int tempVBO=0;
-            ThreadingHelper.BlockOnUIThread(() =>
-                {
-                    GL.BindVertexArray(0);
-                    tempVBO = GL.GenBuffer();
-                    GL.BindBuffer(BufferTarget.ArrayBuffer, tempVBO);
-                    GL.BufferData(BufferTarget.ArrayBuffer, new IntPtr(vertexCount * VertexDeclaration.VertexStride), IntPtr.Zero, (OpenTK.Graphics.OpenGL4.BufferUsageHint)BufferUsage);
-                    GraphicsDevice.CheckError();
-                });
-            
-            ThreadingHelper.BlockOnUIThread(() =>
-                {
-                    this.VertexCount = vertexCount;
-                    GL.DeleteBuffer(vbo);
-                    vbo = tempVBO;
-                    GraphicsDevice.CheckError();
-                });/*
-            ThreadingHelper.BlockOnUIThread(() =>
-                {
+            using (Execute.OnUiThread)
+            {
+                GL.BindVertexArray(0);
+                tempVBO = GL.GenBuffer();
+                GL.BindBuffer(BufferTarget.ArrayBuffer, tempVBO);
+                GL.BufferData(
+                    BufferTarget.ArrayBuffer,
+                    new IntPtr(vertexCount * VertexDeclaration.VertexStride),
+                    IntPtr.Zero,
+                    (OpenTK.Graphics.OpenGL4.BufferUsageHint) BufferUsage);
+                GraphicsDevice.CheckError();
+            }
 
-                }, true);*/
+            using (Execute.OnUiThread)
+            {
+                this.VertexCount = vertexCount;
+                GL.DeleteBuffer(vbo);
+                vbo = tempVBO;
+                GraphicsDevice.CheckError();
+            }
+            //ThreadingHelper.BlockOnUIThread(() =>
+             //   {
+
+               // }, true);*/
             if (keepData)
             {
                 //TODO:
@@ -130,52 +138,61 @@ namespace engenious.Graphics
 
         public void SetData<T>(T[] data) where T:struct
         {
-            ThreadingHelper.BlockOnUIThread(() =>
-                {
-                    GL.BindBuffer(BufferTarget.ArrayBuffer, vbo);
+            using (Execute.OnUiThread)
+            {
+                GL.BindBuffer(BufferTarget.ArrayBuffer, vbo);
 
-                    GCHandle buffer = GCHandle.Alloc(data, GCHandleType.Pinned);
-                    GL.BufferSubData(BufferTarget.ArrayBuffer, IntPtr.Zero, new IntPtr(data.Length * VertexDeclaration.VertexStride), buffer.AddrOfPinnedObject());//TODO use bufferusage
-                    buffer.Free();
-                });
+                GCHandle buffer = GCHandle.Alloc(data, GCHandleType.Pinned);
+                GL.BufferSubData(BufferTarget.ArrayBuffer, IntPtr.Zero, new IntPtr(data.Length * VertexDeclaration.VertexStride), buffer.AddrOfPinnedObject());
+                    //TODO use bufferusage
+                buffer.Free();
+            }
             GraphicsDevice.CheckError();
         }
 
         public void SetData<T>(T[] data, int startIndex, int elementCount) where T : struct
         {
-            ThreadingHelper.BlockOnUIThread(() =>
-                {
-                    GL.BindBuffer(BufferTarget.ArrayBuffer, vbo);
+            using (Execute.OnUiThread)
+            {
+                GL.BindBuffer(BufferTarget.ArrayBuffer, vbo);
 
-                    GCHandle buffer = GCHandle.Alloc(data, GCHandleType.Pinned);
-                    GL.BufferSubData(BufferTarget.ArrayBuffer, IntPtr.Zero, new IntPtr(elementCount * VertexDeclaration.VertexStride), buffer.AddrOfPinnedObject() + startIndex * VertexDeclaration.VertexStride);//TODO use bufferusage
+                GCHandle buffer = GCHandle.Alloc(data, GCHandleType.Pinned);
+                GL.BufferSubData(
+                    BufferTarget.ArrayBuffer,
+                    IntPtr.Zero,
+                    new IntPtr(elementCount * VertexDeclaration.VertexStride),
+                    buffer.AddrOfPinnedObject() + startIndex * VertexDeclaration.VertexStride); //TODO use bufferusage
 
-                    buffer.Free();
-                });
+                buffer.Free();
+            }
             GraphicsDevice.CheckError();
         }
 
         public void SetData<T>(int offsetInBytes, T[] data, int startIndex, int elementCount, int vertexStride) where T : struct
         {
-            ThreadingHelper.BlockOnUIThread(() =>
-                {
-                    //vao.Bind();//TODO: verify
-                    GL.BindBuffer(BufferTarget.ArrayBuffer, vbo);
+            using (Execute.OnUiThread)
+            {
+                //vao.Bind();//TODO: verify
+                GL.BindBuffer(BufferTarget.ArrayBuffer, vbo);
 
-                    GCHandle buffer = GCHandle.Alloc(data, GCHandleType.Pinned);
-                    GL.BufferSubData(BufferTarget.ArrayBuffer, new IntPtr(offsetInBytes), new IntPtr(elementCount * vertexStride), buffer.AddrOfPinnedObject() + startIndex * vertexStride);
+                GCHandle buffer = GCHandle.Alloc(data, GCHandleType.Pinned);
+                GL.BufferSubData(
+                    BufferTarget.ArrayBuffer,
+                    new IntPtr(offsetInBytes),
+                    new IntPtr(elementCount * vertexStride),
+                    buffer.AddrOfPinnedObject() + startIndex * vertexStride);
 
-                    buffer.Free();
-                });
+                buffer.Free();
+            }
             GraphicsDevice.CheckError();
         }
 
         public override void Dispose()
         {
-            ThreadingHelper.BlockOnUIThread(() =>
-                {
+            using (Execute.OnUiThread)
+            {
                     GL.DeleteBuffer(vbo);
-                });
+                }
             vao.Dispose();
             base.Dispose();
         }
