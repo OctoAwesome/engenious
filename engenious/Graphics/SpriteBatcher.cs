@@ -197,7 +197,7 @@ namespace engenious.Graphics
             graphicsDevice.IndexBuffer = indexBuffer;
             graphicsDevice.Textures[0] = texture;
             //graphicsDevice.SamplerStates[0] = samplerState;
-            foreach (EffectPass pass in effect.CurrentTechnique.Passes)
+            foreach (EffectPass pass in effect.CurrentTechnique.Passes.PassesList)
             {
                 pass.Apply();
                 graphicsDevice.DrawIndexedPrimitives(PrimitiveType.Triangles, 0, 0, batchCount * 4, 0, batchCount * 2);

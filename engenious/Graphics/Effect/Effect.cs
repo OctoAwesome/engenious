@@ -31,12 +31,9 @@ namespace engenious.Graphics
 			set;
 		}
 
-
-			
-
 		protected internal virtual void OnApply ()
 		{
-			foreach (EffectPass pass in CurrentTechnique.Passes) {
+			foreach (EffectPass pass in CurrentTechnique.Passes.PassesList) {
 				pass.Apply ();
 			}
 		}

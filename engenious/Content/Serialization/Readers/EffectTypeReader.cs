@@ -49,7 +49,7 @@ namespace engenious.Content.Serialization
                 effect.Techniques.Add(technique);
             }
 
-            effect.CurrentTechnique = effect.Techniques.FirstOrDefault();
+            effect.CurrentTechnique = effect.Techniques.TechniqueList.FirstOrDefault();
             effect.Initialize();
             return effect;
         }

@@ -6,20 +6,20 @@ namespace engenious.Graphics
 {
 	public sealed class EffectPassParameterCollection : IEnumerable<EffectPassParameter>
 	{
-		private List<EffectPassParameter> parameterList;
+		public List<EffectPassParameter> ParameterList;
 		private Dictionary<string,EffectPassParameter> parameters;
 		private EffectPass pass;
 
 		internal EffectPassParameterCollection (EffectPass pass)
 		{
 			this.pass = pass;
-			parameterList = new List<EffectPassParameter> ();
+			ParameterList = new List<EffectPassParameter> ();
 			parameters = new Dictionary<string, EffectPassParameter> ();
 		}
 
 		internal void Add (EffectPassParameter parameter)
 		{
-			parameterList.Add (parameter);
+			ParameterList.Add (parameter);
 			parameters.Add (parameter.Name, parameter);
 		}
 
@@ -36,7 +36,7 @@ namespace engenious.Graphics
 
 		public EffectPassParameter this [int index] { 
 			get {
-				return parameterList [index];
+				return ParameterList [index];
 			} 
 		}
 
@@ -50,16 +50,18 @@ namespace engenious.Graphics
 				return val;
 			} 
 		}
+        
+        [Obsolete("Use member " + nameof(ParameterList))]
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return ParameterList.GetEnumerator();
+        }
 
-		IEnumerator System.Collections.IEnumerable.GetEnumerator ()
-		{
-			return parameterList.GetEnumerator ();
-		}
-
-		public IEnumerator<EffectPassParameter> GetEnumerator ()
-		{
-			return parameterList.GetEnumerator ();
-		}
-	}
+        [Obsolete("Use member " + nameof(ParameterList))]
+        public IEnumerator<EffectPassParameter> GetEnumerator()
+        {
+            return ParameterList.GetEnumerator();
+        }
+    }
 }
 

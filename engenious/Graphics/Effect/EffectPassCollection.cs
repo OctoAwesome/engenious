@@ -4,37 +4,29 @@ using System.Collections;
 
 namespace engenious.Graphics
 {
-	public sealed class EffectPassCollection : IEnumerable<EffectPass>
+	public sealed class EffectPassCollection //: IEnumerable<EffectPass>
 	{
-		private List<EffectPass> passesList;
+		public List<EffectPass> PassesList;
 		private Dictionary<string,EffectPass> passes;
 		public EffectPassCollection ()
 		{
-			passesList = new List<EffectPass> ();
+			PassesList = new List<EffectPass> ();
 			passes = new Dictionary<string, EffectPass> ();
 		}
 		internal void Add(EffectPass pass)
 		{
-			passesList.Add (pass);
+			PassesList.Add (pass);
 			passes.Add (pass.Name, pass);
 		}
 		public EffectPass this [int index] { 
 			get {
-				return passesList[index];
+				return PassesList[index];
 			} 
 		}
 		public EffectPass this [string name] { 
 			get {
 				return passes[name];
 			} 
-		}
-		IEnumerator System.Collections.IEnumerable.GetEnumerator ()
-		{
-			return passesList.GetEnumerator ();
-		}
-		public IEnumerator<EffectPass> GetEnumerator ()
-		{
-			return passesList.GetEnumerator ();
 		}
 	}
 }
