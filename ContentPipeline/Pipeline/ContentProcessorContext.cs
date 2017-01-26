@@ -16,7 +16,7 @@ namespace engenious.Content.Pipeline
             window = new NativeWindow();
 
             ThreadingHelper.Initialize(window.WindowInfo, 3, 1, GraphicsContextFlags.Debug);
-            GraphicsDevice = new GraphicsDevice(null, ThreadingHelper.context);
+            GraphicsDevice = new GraphicsDevice(null, ThreadingHelper.Context);
 
         }
 
