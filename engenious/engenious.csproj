@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -7,6 +7,8 @@
     <OutputType>Library</OutputType>
     <RootNamespace>engenious</RootNamespace>
     <AssemblyName>engenious</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -23,6 +25,7 @@
         <Command type="Execute" command="../../../Downloads/GameJam2017/GameJam2017/NoobFight/bin/Debug/NoobFight.exe" workingdir="/home/julian/Downloads/GameJam2017/GameJam2017/NoobFight/bin/Debug" />
       </CustomCommands>
     </CustomCommands>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>full</DebugType>
@@ -32,6 +35,7 @@
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -199,14 +203,6 @@
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Folder Include="Extensions\" />
-    <Folder Include="Audio\" />
-    <Folder Include="Helper\" />
-    <Folder Include="Math\" />
-    <Folder Include="Graphics\Enums\" />
-    <Folder Include="Input\GamePad\" />
-    <Folder Include="Graphics\Model\" />
-    <Folder Include="Converters\" />
-    <Folder Include="Graphics\Model\Content\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
