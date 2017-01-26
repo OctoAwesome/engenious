@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace engenious
@@ -212,7 +213,19 @@ namespace engenious
             throw new NotImplementedException();
         }
 
-        
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static unsafe void Transform(int count, Vector2* positions, ref Matrix matrix, Vector2* output)
+        {
+            for (int i = 0; i < count; i++, positions++, output++)
+            {
+                *output = new Vector2(
+                    (float)((double)(*positions).X * (double)matrix.M11 + (double)(*positions).Y * (double)matrix.M12) + matrix.M14,
+                    (float)((double)(*positions).X * (double)matrix.M21 + (double)(*positions).Y * (double)matrix.M22) + matrix.M24);
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Transform(Vector2[] positions, ref Matrix matrix, Vector2[] output)
         {
             int index = 0;
