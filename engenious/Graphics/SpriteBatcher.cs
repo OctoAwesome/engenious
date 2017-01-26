@@ -173,6 +173,9 @@ namespace engenious.Graphics
 
         public void Begin(SpriteBatch.SpriteSortMode sortMode)
         {
+            foreach (BatchItem t in _batches)
+                BatchPool.ReleaseBatch(t);
+
             _batches.Clear();
             this.sortMode = sortMode;
         }
