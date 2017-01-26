@@ -8,7 +8,7 @@
     <RootNamespace>ContentTool</RootNamespace>
     <AssemblyName>ContentTool</AssemblyName>
     <StartupObject>ContentTool.Program</StartupObject>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
