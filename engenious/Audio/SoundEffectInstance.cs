@@ -27,8 +27,8 @@ namespace engenious.Audio
                 if (value != isLooped && sid != 0)
                 {
                     AL.Source(sid, ALSourceb.Looping, value);
-                    isLooped = value;
                 }
+                isLooped = value;
             }
         }
 
@@ -38,10 +38,9 @@ namespace engenious.Audio
             {
                 if (volume != value)
                 {
-                    volume = value;
                     AL.Source (sid, ALSourcef.Gain, value);
-                    
                 }
+                volume = value;
             }
             
         }
@@ -52,9 +51,9 @@ namespace engenious.Audio
             {
                 if (pitch != value)
                 {
-                    pitch = value;
                     AL.Source (sid, ALSourcef.Pitch,value);
                 }
+                pitch = value;
             }
         }
 
@@ -64,9 +63,9 @@ namespace engenious.Audio
             {
                 if (pan != value)
                 {
-                    pan = value;
                     AL.Source (sid, ALSource3f.Position,value, 0, 0.1f);
                 }
+                pan = value;
             }
         }
 
