@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using engenious.Audio;
 
 namespace engenious.Pipeline
 {
@@ -51,45 +53,21 @@ namespace engenious.Pipeline
             OLIOPR = 0x1004
         }
 
-        public AudioContent(System.IO.Stream inputStream, bool closeStream = true)
+        public SoundEffect.AudioFormat OutputFormat { get; private set; }
+        public MemoryStream Data { get; private set; }
+        public AudioContent(SoundEffect.AudioFormat outputFormat, System.IO.Stream inputStream, bool closeStream = true)
         {
-            inputStream.Close();
-            return;
-            System.IO.BinaryReader r = new System.IO.BinaryReader(inputStream);
-            if (r.ReadChars(4).ToString() != "RIFF")
-                throw new FormatException("No RIFF Magic header");
-            uint size = r.ReadUInt32() - 12;
-            if (r.ReadChars(4).ToString() != "WAVE")
-                throw new FormatException("No Wave Content");
-            if (r.ReadChars(4).ToString() != "fmt ")
-                throw new FormatException("Missing format part");
-            uint formatLength = r.ReadUInt32();
-            size -= formatLength;
-            Format formatTag = (Format)r.ReadUInt16();
-            ushort channels = r.ReadUInt16();
-            uint samplesPerSec = r.ReadUInt32();
-            uint avgBytesPerSec = r.ReadUInt32();
-            ushort blockAlign = r.ReadUInt16();
-
-            int frameSize = 0;
-            switch (formatTag)
+            OutputFormat = outputFormat;
+            Data = new MemoryStream();
+            byte[] buffer = new byte[1024 * 1024];
+            while (true)
             {
-                case Format.PCM:
-                    ushort bitsPerSample = r.ReadUInt16();
-                    frameSize = channels * ((bitsPerSample + 7) / 8);
+                int read = inputStream.Read(buffer, 0, buffer.Length);
+                if (read == 0)
                     break;
-                default:
-                    throw new FormatException("Format '" + formatTag.ToString() + "' not supported!");
+                Data.Write(buffer,0,read);
             }
-            while (size > 0)
-            {
-                if (r.ReadChars(4).ToString() != "data")
-                    throw new FormatException("Missing format part");
-
-                uint dataLength = r.ReadUInt32();
-                size -= 8+dataLength;
-                
-            }
+            Data.Position = 0;
         }
     }
 }

@@ -50,6 +50,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\SolutionInfo.cs" />
+    <Compile Include="Content\Serialization\Readers\SoundEffectTypeReader.cs" />
     <Compile Include="Graphics\Effect\IEffect.cs" />
     <Compile Include="Graphics\Model\IModelEffect.cs" />
     <Compile Include="Graphics\Effect\ITextureEffect.cs" />

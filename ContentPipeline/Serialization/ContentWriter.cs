@@ -31,12 +31,12 @@ namespace engenious.Content.Serialization
 
         public void Write(Stream stream, int length = -1)
         {
-            System.IO.BufferedStream buffered = new BufferedStream(stream);
-            byte[] buffer = new byte[1024];
+            System.IO.Stream buffered = new BufferedStream(stream);
+            byte[] buffer = new byte[1024*1024];
             int readLen = length == -1 ? (int)buffer.Length : (int)stream.Length;
             int toRead = Math.Min(readLen, buffer.Length);
             int read;
-            while ((read = buffered.Read(buffer, 0, toRead)) >= toRead)
+            while ((read = buffered.Read(buffer, 0, toRead)) > 0)
             {
                 Write(buffer, 0, read);
             }

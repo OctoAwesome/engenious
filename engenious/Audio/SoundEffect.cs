@@ -1,5 +1,7 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
+using System.Runtime.CompilerServices;
 using OpenTK.Audio.OpenAL;
 
 namespace engenious.Audio
@@ -19,15 +21,112 @@ namespace engenious.Audio
         internal int Buffer;
         public SoundEffect(string fileName)
         {
+            using (FileStream fs = new FileStream(fileName, FileMode.Open, FileAccess.Read))
+            {
+                LoadStream(fs);
+            }
+        }
+
+        public enum AudioFormat
+        {
+            Ogg,
+            Wav,
+        }
+
+        public SoundEffect(Stream stream, AudioFormat format)
+        {
+            LoadStream(stream,format);
+        }
+        public SoundEffect(Stream stream)
+        {
+            LoadStream(stream);
+        }
+
+        private void LoadStream(Stream stream)
+        {
+            LoadStream(stream,ReadAudioFormat(stream));
+        }
+
+        private void LoadStream(Stream stream, AudioFormat format)
+        {
             //TODO: dynamic sound - buffer encapsulated
             AL.GenBuffers(1, out Buffer);
-            using (FileStream fs = new FileStream(fileName, FileMode.Open, FileAccess.Read))
-            using (BinaryReader reader = new BinaryReader(fs))
+            switch (format)
             {
-                ALFormat format;
-                int size, frequency;
-                var buffer = LoadWave(reader, out format, out size, out frequency);
-                AL.BufferData(Buffer,format,buffer,size,frequency);
+                case AudioFormat.Wav:
+                    using (BinaryReader reader = new BinaryReader(stream))
+                    {
+                        ALFormat alFormat;
+                        int size, frequency;
+                        var buffer = LoadWave(reader, out alFormat, out size, out frequency);
+                        AL.BufferData(Buffer, alFormat, buffer, size, frequency);
+                    }
+                    break;
+                case AudioFormat.Ogg:
+                    using (OggStream ogg = new OggStream(stream))
+                    {
+                        int bitsPerSample = 16;
+                        ALFormat alFormat = GetSoundFormat(ogg.Reader.Channels, bitsPerSample);
+                        int frequency = ogg.Reader.SampleRate;
+                        int samples = (int)(((long)ogg.Reader.TotalTime.TotalMilliseconds * ogg.Reader.SampleRate * ogg.Reader.Channels)/1000);
+
+                        var conversionBuffer = new float[samples];
+                        var buffer = new byte[samples*bitsPerSample/8];
+
+                        ogg.Reader.ReadSamples(conversionBuffer, 0, samples);
+                        unsafe
+                        {
+                            fixed (byte* ptr = buffer)
+                            {
+                                byte* ptr2 = ptr;
+                                for (int i = 0; i < samples; i++,ptr2+=(bitsPerSample/8))
+                                {
+                                    ConvertShit(conversionBuffer[i],ptr2);
+                                }
+                            }
+                        }
+                        AL.BufferData(Buffer,alFormat,buffer,(buffer.Length - buffer.Length % 4),frequency);
+                    }
+                    break;
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private unsafe void ConvertShit(float val,byte* ptr)
+        {
+            val += 1;
+            val = (val * ushort.MaxValue / 2) + short.MinValue;
+
+            short tmp = (short) val;
+            *ptr++ = (byte)(tmp & 0xFF);
+            *ptr = (byte) (tmp >> 8);
+        }
+        private static AudioFormat ReadAudioFormat(Stream stream)
+        {
+            if (stream.CanSeek)
+            {
+                byte[] magic = new byte[4];
+                stream.Read(magic, 0, magic.Length);
+
+                AudioFormat format;
+                if (magic[0] == 'R' && magic[1] == 'I' && magic[2] == 'F' && magic[3] == 'F')
+                {
+                    format = AudioFormat.Wav;
+                }
+                else if (magic[0] == 'O' && magic[1] == 'g' && magic[2] == 'g' && magic[3] == 'S')
+                {
+                    format = AudioFormat.Ogg;
+                }
+                else
+                {
+                    throw new NotSupportedException("Fileformat not supported!");
+                }
+                stream.Seek(-4, SeekOrigin.Current);
+                return format;
+            }
+            else
+            {
+                throw new ArgumentException("Can't determine audio format of unseekable stream");
             }
         }
         private static ALFormat GetSoundFormat(int channels, int bits)
@@ -106,7 +205,10 @@ namespace engenious.Audio
             frequency = sample_rate;
             format = GetSoundFormat(num_channels, bits_per_sample);
             audioData = reader.ReadBytes((int) reader.BaseStream.Length);
-            size = data_chunk_size;
+            if (data_chunk_size == -1)
+                size = audioData.Length;
+            else
+                size = data_chunk_size;
 
             return audioData;
         }

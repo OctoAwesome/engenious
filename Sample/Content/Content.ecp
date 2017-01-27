@@ -22,6 +22,15 @@
     <ContentFile>
       <Name>simple.glsl</Name>
       <Processor>EffectProcessor</Processor>
+      <Importer>Effect Importer</Importer>
+    </ContentFile>
+    <ContentFile>
+      <Name>blub.ogg</Name>
+      <Processor>AudioProcessor</Processor>
+      <Importer />
+      <Settings>
+        <OutputFormat>0</OutputFormat>
+      </Settings>
     </ContentFile>
   </Contents>
 </Content>

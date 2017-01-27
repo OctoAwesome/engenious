@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading;
 using engenious.Graphics;
 using engenious;
 using engenious.Audio;
@@ -32,7 +33,7 @@ namespace Sample
         public override void LoadContent()
         {
             base.LoadContent();
-            testSoundEffect = new SoundEffect("test.wav");
+            testSoundEffect = Content.Load<SoundEffect>("blub");
             testSound = testSoundEffect.CreateInstance();
             testSound2 = testSoundEffect.CreateInstance();
             testSound.Play();

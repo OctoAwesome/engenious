@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace engenious.Graphics
 {
-    public class ModelContent
+    public class ModelContent : IDisposable
     {
         public ModelContent()
         {
@@ -18,6 +18,9 @@ namespace engenious.Graphics
 
         internal List<AnimationContent> Animations{ get; set; }
 
+        public void Dispose()
+        {
+        }
     }
 }
 

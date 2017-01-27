@@ -3,7 +3,7 @@ using NVorbis;
 
 namespace engenious.Audio
 {
-    internal class OggStream
+    internal class OggStream : IDisposable
     {
         internal VorbisReader Reader { get; private set; }
         public OggStream(System.IO.Stream stream,bool closeStreamOnDispose=false)
@@ -13,7 +13,11 @@ namespace engenious.Audio
         public OggStream(string filename)
         {
             Reader = new VorbisReader(filename);
-            
+        }
+
+        public void Dispose()
+        {
+            Reader.Dispose();
         }
     }
 }

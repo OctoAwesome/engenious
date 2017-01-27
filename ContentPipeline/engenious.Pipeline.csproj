@@ -63,6 +63,7 @@
     <Compile Include="Serialization\ContentTypeWriterAttribute.cs" />
     <Compile Include="Serialization\IContentTypeWriter.cs" />
     <Compile Include="Serialization\SerializationManager.cs" />
+    <Compile Include="Serialization\Writer\AudioContentTypeWriter.cs" />
     <Compile Include="Serialization\Writer\SpriteFontTypeWriter.cs" />
     <Compile Include="Pipeline\Processor\FontProcessor.cs" />
     <Compile Include="Pipeline\ContentImporterContext.cs" />
@@ -92,7 +93,7 @@
     <Compile Include="Pipeline\Importers\EgoImporter.cs" />
     <Compile Include="Pipeline\Importers\WaveImporter.cs" />
     <Compile Include="Pipeline\Processor\AudioContent.cs" />
-    <Compile Include="ffmpeg.cs" />
+    <Compile Include="FFmpeg.cs" />
     <Compile Include="Pipeline\Processor\FFmpegContent.cs" />
     <Compile Include="Pipeline\Processor\AudioProcessor.cs" />
     <Compile Include="Pipeline\Importers\SpriteFontImporter.cs" />

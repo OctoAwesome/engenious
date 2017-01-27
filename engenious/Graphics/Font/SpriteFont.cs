@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace engenious.Graphics
 {
-    public sealed class SpriteFont
+    public sealed class SpriteFont : IDisposable
     {
         internal Dictionary<int,int> kernings;
         internal Dictionary<char,FontCharacter> characterMap;
@@ -78,6 +78,11 @@ namespace engenious.Graphics
                 }
             }
             return new Vector2(width, LineSpacing);//TODO height?
+        }
+
+        public void Dispose()
+        {
+            texture?.Dispose();
         }
     }
 }

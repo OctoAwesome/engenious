@@ -67,7 +67,28 @@ namespace engenious.Content
 
         public string RootDirectory{ get; set; }
 
-        public T Load<T>(string assetName)
+        public void Unload(string assetName)
+        {
+            object asset;
+            if (assets.TryGetValue(assetName, out asset))
+            {
+                var disp = asset as IDisposable;
+                disp?.Dispose();
+            }
+        }
+        public void Unload<T>(string assetName) where T : IDisposable
+        {
+            object asset;
+            if (assets.TryGetValue(assetName, out asset))
+            {
+                if (asset is T)
+                {
+                    var disp = (T) asset;
+                    disp.Dispose();
+                }
+            }
+        }
+        public T Load<T>(string assetName) where T : IDisposable
         {
             object asset;
             bool containsName =false;

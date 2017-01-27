@@ -47,6 +47,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="targets\engenious.0.0.1.14\build\engenious.targets" Condition="Exists('targets\engenious.0.0.1.14\build\engenious.targets')" />
   <ItemGroup>
     <ProjectReference Include="..\engenious\engenious.csproj">
       <Project>{E1FF7BDB-D631-4D4D-B5A1-988778AD15B6}</Project>
