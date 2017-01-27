@@ -104,7 +104,7 @@ namespace engenious
             };
             window.RenderFrame += delegate(object sender, FrameEventArgs e)
             {
-                ThreadingHelper.RunUIThread();
+                ThreadingHelper.RunUiThread();
                 GraphicsDevice.Clear(Color.CornflowerBlue);
                 Draw(gameTime);
 

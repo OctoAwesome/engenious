@@ -87,17 +87,16 @@ namespace engenious
 
     internal static class ThreadingHelper
     {
-        private static GLSynchronizationContext sync;
+        private static readonly GLSynchronizationContext Sync;
         internal static int UiThreadId;
-        private static System.Threading.Thread uiThread;
         internal static IGraphicsContext Context;
         internal static OpenTK.Platform.IWindowInfo WindowInfo;
 
         static ThreadingHelper()
         {
-            uiThread = System.Threading.Thread.CurrentThread;
+            var uiThread = System.Threading.Thread.CurrentThread;
             UiThreadId = uiThread.ManagedThreadId;
-            System.Threading.SynchronizationContext.SetSynchronizationContext(sync = new GLSynchronizationContext());
+            System.Threading.SynchronizationContext.SetSynchronizationContext(Sync = new GLSynchronizationContext());
             //System.Threading.Thread.CurrentThread.Syn
         }
 
@@ -110,22 +109,22 @@ namespace engenious
             ThreadingHelper.WindowInfo = windowInfo;
         }
 
-        public static void RunUIThread()
+        public static void RunUiThread()
         {
-            sync.RunOnCurrentThread();
+            Sync.RunOnCurrentThread();
         }
 
-        public static bool IsOnUIThread()
+        public static bool IsOnUiThread()
         {
             return UiThreadId == System.Threading.Thread.CurrentThread.ManagedThreadId;
         }
 
         internal static void OnUiThread(SendOrPostCallback callback, object obj)
         {
-            if (IsOnUIThread())
+            if (IsOnUiThread())
                 callback(obj);
             else
-                sync.Post(callback,obj);
+                Sync.Post(callback,obj);
         }
     }
 }
