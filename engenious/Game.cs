@@ -26,42 +26,48 @@ namespace engenious
         private Audio.AudioDevice audio;
         private void ConstructContext()
         {
-            OpenTK.Graphics.GraphicsContextFlags flags = OpenTK.Graphics.GraphicsContextFlags.Default;
-            int major = 1;
-            int minor = 0;
             OpenTK.Platform.IWindowInfo windowInfo = Window.window.WindowInfo;
-            if (System.Environment.OSVersion.Platform == PlatformID.Win32NT ||
-                        System.Environment.OSVersion.Platform == PlatformID.Win32S ||
-                        System.Environment.OSVersion.Platform == PlatformID.Win32Windows ||
-                        System.Environment.OSVersion.Platform == PlatformID.WinCE)
-            {
-                major=4;
-                minor = 4;
-            }
-            if (this.Context == null || this.Context.IsDisposed)
-            {
+            if (Window.window.Context == null)
+            {//TODO: really - what was that even for?
+                OpenTK.Graphics.GraphicsContextFlags flags = OpenTK.Graphics.GraphicsContextFlags.Default;
+                int major = 1;
+                int minor = 0;
 
-                OpenTK.Graphics.ColorFormat colorFormat = new OpenTK.Graphics.ColorFormat(8, 8, 8, 8);
-                int depth = 24;//TODO: wth?
-                int stencil = 8;
-                int samples = 4;
-
-                OpenTK.Graphics.GraphicsMode mode = new OpenTK.Graphics.GraphicsMode(colorFormat, depth, stencil, samples);
-                try
+                if (System.Environment.OSVersion.Platform == PlatformID.Win32NT ||
+                    System.Environment.OSVersion.Platform == PlatformID.Win32S ||
+                    System.Environment.OSVersion.Platform == PlatformID.Win32Windows ||
+                    System.Environment.OSVersion.Platform == PlatformID.WinCE)
                 {
-                    this.Context = new OpenTK.Graphics.GraphicsContext(mode, windowInfo, major, minor, flags);
-                    //this.Context = Window.Context;
+                    major = 4;
+                    minor = 4;
                 }
-                catch (Exception ex)
+                if (this.Context == null || this.Context.IsDisposed)
                 {
-                    mode = OpenTK.Graphics.GraphicsMode.Default;
-                    major = 1;
-                    minor = 0;
-                    flags = OpenTK.Graphics.GraphicsContextFlags.Default;
-                    this.Context = new OpenTK.Graphics.GraphicsContext(mode, windowInfo, major, minor, flags);
+
+                    OpenTK.Graphics.ColorFormat colorFormat = new OpenTK.Graphics.ColorFormat(8, 8, 8, 8);
+                    int depth = 24; //TODO: wth?
+                    int stencil = 8;
+                    int samples = 4;
+
+                    OpenTK.Graphics.GraphicsMode mode =
+                        new OpenTK.Graphics.GraphicsMode(colorFormat, depth, stencil, samples);
+                    try
+                    {
+                        this.Context = new OpenTK.Graphics.GraphicsContext(mode, windowInfo, major, minor, flags);
+                        //this.Context = Window.Context;
+                    }
+                    catch (Exception ex)
+                    {
+                        mode = OpenTK.Graphics.GraphicsMode.Default;
+                        major = 1;
+                        minor = 0;
+                        flags = OpenTK.Graphics.GraphicsContextFlags.Default;
+                        this.Context = new OpenTK.Graphics.GraphicsContext(mode, windowInfo, major, minor, flags);
+                    }
                 }
             }
-
+            else
+                this.Context = Window.window.Context;
             this.Context.MakeCurrent(windowInfo);
             (this.Context as OpenTK.Graphics.IGraphicsContextInternal).LoadAll();
             ThreadingHelper.Initialize(windowInfo, major, minor, contextFlags);
