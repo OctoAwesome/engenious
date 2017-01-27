@@ -25,7 +25,7 @@ namespace engenious.Graphics
 			
             this.IndexCount = indexCount;
             this.BufferUsage = usage;
-            using (Execute.OnUiThread)
+            using (Execute.OnUiContext)
             {
                 ibo = GL.GenBuffer();
                 GL.BindBuffer(BufferTarget.ElementArrayBuffer, ibo);
@@ -45,7 +45,7 @@ namespace engenious.Graphics
             this.IndexElementSize = indexElementSize;
             this.IndexCount = indexCount;
             this.BufferUsage = usage;
-            using (Execute.OnUiThread)
+            using (Execute.OnUiContext)
             {
                 ibo = GL.GenBuffer();
                 GL.BindBuffer(BufferTarget.ElementArrayBuffer, ibo);
@@ -77,7 +77,7 @@ namespace engenious.Graphics
             int elSize = Marshal.SizeOf(typeof(T));
 
             GCHandle buffer = GCHandle.Alloc(data, GCHandleType.Pinned);
-            using (Execute.OnUiThread)
+            using (Execute.OnUiContext)
             {
                 Bind();
                 GL.BufferSubData(
@@ -100,7 +100,7 @@ namespace engenious.Graphics
             int elSize = Marshal.SizeOf(typeof(T));
 
             GCHandle buffer = GCHandle.Alloc(data, GCHandleType.Pinned);
-            using (Execute.OnUiThread)
+            using (Execute.OnUiContext)
             {
                 Bind();
 
@@ -121,7 +121,7 @@ namespace engenious.Graphics
             if (data.Length == 0)
                 return;
 
-            using (Execute.OnUiThread)
+            using (Execute.OnUiContext)
             {
                 Bind();
                 GL.BufferSubData<T>(BufferTarget.ElementArrayBuffer, IntPtr.Zero, new IntPtr(data.Length * Marshal.SizeOf(default(T))), data); //TODO:
@@ -133,7 +133,7 @@ namespace engenious.Graphics
         {
             
             int tempIBO;
-            using (Execute.OnUiThread)
+            using (Execute.OnUiContext)
             {
                 tempIBO = GL.GenBuffer();
                 GL.BindBuffer(BufferTarget.ElementArrayBuffer, tempIBO);
@@ -167,7 +167,7 @@ namespace engenious.Graphics
 
         public override void Dispose()
         {
-            using (Execute.OnUiThread)
+            using (Execute.OnUiContext)
             {
                 GL.DeleteBuffer(ibo);
             }

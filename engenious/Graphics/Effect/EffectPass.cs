@@ -11,7 +11,7 @@ namespace engenious.Graphics
         internal EffectPass(string name)//TODO: content loading
         {
             this.Name = name;
-            using (Execute.OnUiThread)
+            using (Execute.OnUiContext)
             {
                 program = GL.CreateProgram();
             }
@@ -20,7 +20,7 @@ namespace engenious.Graphics
 
         internal void BindAttribute(VertexElementUsage usage, string name)
         {
-            using (Execute.OnUiThread)
+            using (Execute.OnUiContext)
             {
                 GL.BindAttribLocation(program, (int) usage, name);
             }
@@ -29,7 +29,7 @@ namespace engenious.Graphics
         internal void CacheParameters()
         {
             int total = -1;
-            using (Execute.OnUiThread)
+            using (Execute.OnUiContext)
             {
                 GL.GetProgram(program, GetProgramParameterName.ActiveUniforms, out total);
                 for (int i = 0; i < total; ++i)
@@ -65,7 +65,7 @@ namespace engenious.Graphics
 
         internal void AttachShaders(IEnumerable<Shader> shaders)
         {
-            using (Execute.OnUiThread)
+            using (Execute.OnUiContext)
             {
                 foreach (Shader shader in shaders)
                 {
@@ -76,7 +76,7 @@ namespace engenious.Graphics
 
         internal void AttachShader(Shader shader)
         {
-            using (Execute.OnUiThread)
+            using (Execute.OnUiContext)
             {
                 GL.AttachShader(program, shader.shader);
             }
@@ -86,7 +86,7 @@ namespace engenious.Graphics
         {
             if (attached == null)
                 throw new Exception("Already linked");
-            using (Execute.OnUiThread)
+            using (Execute.OnUiContext)
             {
                 GL.LinkProgram(program);
                 int linked;
@@ -105,7 +105,7 @@ namespace engenious.Graphics
             }
             attached.Clear();
             attached = null;
-            using (Execute.OnUiThread)
+            using (Execute.OnUiContext)
             {
                 Parameters = new EffectPassParameterCollection(this);
             }
@@ -121,7 +121,7 @@ namespace engenious.Graphics
 
         public void Apply()
         {
-            using (Execute.OnUiThread)
+            using (Execute.OnUiContext)
             {
                 GL.UseProgram(program);
             }
@@ -130,7 +130,7 @@ namespace engenious.Graphics
 
         public void Compute(int x,int y=1,int z=1)
         {
-            using (Execute.OnUiThread)
+            using (Execute.OnUiContext)
             {
                 GL.UseProgram(program);
                 GL.DispatchCompute(x, y, z);
@@ -139,7 +139,7 @@ namespace engenious.Graphics
 
         public void WaitForImageCompletion()
         {
-            using (Execute.OnUiThread)
+            using (Execute.OnUiContext)
             {
                 GL.MemoryBarrier(MemoryBarrierFlags.ShaderImageAccessBarrierBit);
             }
@@ -147,7 +147,7 @@ namespace engenious.Graphics
 
         public void Dispose()
         {
-            using (Execute.OnUiThread)
+            using (Execute.OnUiContext)
             {
                 GL.DeleteProgram(program);
             }

@@ -63,13 +63,15 @@ namespace engenious.Graphics
 
         public bool IsDisposed{ get; private set; }
 
+        private static void DeleteVertexArray(object that)
+        {
+            VertexAttributes va = (VertexAttributes) that;
+            GL.DeleteVertexArray(va.vao);
+        }
         public void Dispose()
         {
             if (!IsDisposed)
-                ThreadingHelper.BlockOnUIThread(() =>
-                    {
-                        GL.DeleteVertexArray(vao);
-                    }, true);
+                ThreadingHelper.OnUiThread(DeleteVertexArray,this);
             IsDisposed = true;
         }
     }

@@ -63,14 +63,14 @@ namespace engenious.Graphics
         }
         public void Clear(ClearBufferMask mask)
         {
-            using (Execute.OnUiThread)
+            using (Execute.OnUiContext)
             {
                 GL.Clear((OpenTK.Graphics.OpenGL4.ClearBufferMask) mask);
             }
         }
         public void Clear(ClearBufferMask mask, System.Drawing.Color color)
         {
-            using (Execute.OnUiThread)
+            using (Execute.OnUiContext)
             {
                 GL.Clear((OpenTK.Graphics.OpenGL4.ClearBufferMask) mask);
                 GL.ClearColor(color);
@@ -82,7 +82,7 @@ namespace engenious.Graphics
             //return;
             #if DEBUG
             return;//TODO:
-            var frame = new System.Diagnostics.StackTrace(true).GetFrame(1);
+            /*var frame = new System.Diagnostics.StackTrace(true).GetFrame(1);
             ErrorCode code = ErrorCode.InvalidValue;
             ThreadingHelper.BlockOnUIThread(() =>
                 {
@@ -95,13 +95,13 @@ namespace engenious.Graphics
                         string method = frame.GetMethod().Name;
                         Debug.WriteLine("[GL] " + filename + ":" + method + " - " + line.ToString() + ":" + code.ToString());
                     }
-                }, true);
+                }, true);*/
             #endif
         }
 
         public void Clear(Color color)
         {
-            using (Execute.OnUiThread)
+            using (Execute.OnUiContext)
             {
                 GL.Clear(OpenTK.Graphics.OpenGL4.ClearBufferMask.ColorBufferBit | OpenTK.Graphics.OpenGL4.ClearBufferMask.DepthBufferBit);
                 GL.ClearColor(color.R, color.G, color.B, color.A);
@@ -126,7 +126,7 @@ namespace engenious.Graphics
                 if (viewport.Bounds != value.Bounds)
                 {
                     viewport = value;
-                    using (Execute.OnUiThread)
+                    using (Execute.OnUiContext)
                     {
                         //GL.Viewport(viewport.X, game.Window.ClientSize.Height - viewport.Y - viewport.Height, viewport.Width, viewport.Height);
                         GL.Viewport(viewport.X, viewport.Y, viewport.Width, viewport.Height);
@@ -152,7 +152,7 @@ namespace engenious.Graphics
         public void DrawUserPrimitives<T>(PrimitiveType primitiveType, T[] vertexData, int vertexOffset, int primitiveCount, VertexDeclaration vertexDeclaration)  where T : struct
         {
             VertexBuffer old = VertexBuffer;
-            using (Execute.OnUiThread)
+            using (Execute.OnUiContext)
             {
                 VertexBuffer current;
                 if (!userBuffers.TryGetValue(vertexDeclaration, out current))
@@ -186,7 +186,7 @@ namespace engenious.Graphics
             if (tp == null)
                 throw new ArgumentException("must be a vertexType");
             VertexBuffer old = VertexBuffer;
-            using (Execute.OnUiThread)
+            using (Execute.OnUiContext)
             {
                 VertexBuffer current = new VertexBuffer(this, tp.VertexDeclaration, vertexData.Length);
 
@@ -240,7 +240,7 @@ namespace engenious.Graphics
 
         public void SetRenderTarget(RenderTarget2D target)
         {
-            using (Execute.OnUiThread)
+            using (Execute.OnUiContext)
             {
                 if (target == null)
                 {
@@ -271,7 +271,7 @@ namespace engenious.Graphics
                 {
                     
                     blendState = value == null ? BlendState.AlphaBlend : value;
-                    using (Execute.OnUiThread)
+                    using (Execute.OnUiContext)
                     {
                         //TODO:apply more?
                         GL.BlendFuncSeparate(
@@ -298,7 +298,7 @@ namespace engenious.Graphics
                 if (depthStencilState != value)
                 {
                     depthStencilState = value == null ? DepthStencilState.Default : value;
-                    using (Execute.OnUiThread)
+                    using (Execute.OnUiContext)
                     {
                         if (depthStencilState.DepthBufferEnable)
                             GL.Enable(EnableCap.DepthTest);
@@ -322,7 +322,7 @@ namespace engenious.Graphics
                 {
                     rasterizerState = value == null ? RasterizerState.CullClockwise : value;
                     //TODO:apply more
-                    using (Execute.OnUiThread)
+                    using (Execute.OnUiContext)
                     {
                         //GL.FrontFace(FrontFaceDirection.
                         if (rasterizerState.CullMode == CullMode.None)
@@ -368,7 +368,7 @@ namespace engenious.Graphics
                 if (scissorRectangle != value)
                 {
                     scissorRectangle = value;
-                    using (Execute.OnUiThread)
+                    using (Execute.OnUiContext)
                     {
                         GL.Scissor(scissorRectangle.X, Viewport.Height - scissorRectangle.Bottom, scissorRectangle.Width, scissorRectangle.Height);
                     }

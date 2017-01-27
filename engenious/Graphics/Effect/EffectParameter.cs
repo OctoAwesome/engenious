@@ -23,7 +23,7 @@ namespace engenious.Graphics
 
         public void SetValue(bool value)
         {
-            using (Execute.OnUiThread)
+            using (Execute.OnUiContext)
             {
                 foreach (var param in parameters)
                 {
@@ -35,7 +35,7 @@ namespace engenious.Graphics
 
         public void SetValue(bool[] values)
         {
-            using (Execute.OnUiThread)
+            using (Execute.OnUiContext)
             {
                 foreach (var param in parameters)
                 {
@@ -47,7 +47,7 @@ namespace engenious.Graphics
 
         public void SetValue(int value)
         {
-            using (Execute.OnUiThread)
+            using (Execute.OnUiContext)
             {
                 foreach (var param in parameters)
                 {
@@ -59,7 +59,7 @@ namespace engenious.Graphics
 
         public void SetValue(int[] values)
         {
-            using (Execute.OnUiThread)
+            using (Execute.OnUiContext)
             {
                 foreach (var param in parameters)
                 {
@@ -71,7 +71,7 @@ namespace engenious.Graphics
 
         public void SetValue(uint value)
         {
-            using (Execute.OnUiThread)
+            using (Execute.OnUiContext)
             {
                 foreach (var param in parameters)
                 {
@@ -83,7 +83,7 @@ namespace engenious.Graphics
 
         public void SetValue(uint[] values)
         {
-            using (Execute.OnUiThread)
+            using (Execute.OnUiContext)
             {
                 foreach (var param in parameters)
                 {
@@ -95,7 +95,7 @@ namespace engenious.Graphics
 
         public void SetValue(float value)
         {
-            using (Execute.OnUiThread)
+            using (Execute.OnUiContext)
             {
                 foreach (var param in parameters)
                 {
@@ -107,7 +107,7 @@ namespace engenious.Graphics
 
         public void SetValue(float[] values)
         {
-            using (Execute.OnUiThread)
+            using (Execute.OnUiContext)
             {
                 foreach (var param in parameters)
                 {
@@ -119,7 +119,7 @@ namespace engenious.Graphics
 
         public void SetValue(string value)
         {
-            using (Execute.OnUiThread)
+            using (Execute.OnUiContext)
             {
                 foreach (var param in parameters)
                 {
@@ -131,7 +131,7 @@ namespace engenious.Graphics
 
         public void SetValue(Texture value)
         {
-            using (Execute.OnUiThread)
+            using (Execute.OnUiContext)
             {
                 foreach (var param in parameters)
                 {
@@ -143,7 +143,7 @@ namespace engenious.Graphics
 
         public void SetValue(Vector2 value)
         {
-            using (Execute.OnUiThread)
+            using (Execute.OnUiContext)
             {
                 foreach (var param in parameters)
                 {
@@ -155,7 +155,7 @@ namespace engenious.Graphics
 
         public void SetValue(Vector2[] values)
         {
-            using (Execute.OnUiThread)
+            using (Execute.OnUiContext)
             {
                 foreach (var param in parameters)
                 {
@@ -167,7 +167,7 @@ namespace engenious.Graphics
 
         public void SetValue(Vector3 value)
         {
-            using (Execute.OnUiThread)
+            using (Execute.OnUiContext)
             {
                 foreach (var param in parameters)
                 {
@@ -179,7 +179,7 @@ namespace engenious.Graphics
 
         public void SetValue(Vector3[] values)
         {
-            using (Execute.OnUiThread)
+            using (Execute.OnUiContext)
             {
                 foreach (var param in parameters)
                 {
@@ -191,7 +191,7 @@ namespace engenious.Graphics
 
         public void SetValue(Vector4 value)
         {
-            using (Execute.OnUiThread)
+            using (Execute.OnUiContext)
             {
                 foreach (var param in parameters)
                 {
@@ -203,7 +203,7 @@ namespace engenious.Graphics
 
         public void SetValue(Vector4[] values)
         {
-            using (Execute.OnUiThread)
+            using (Execute.OnUiContext)
             {
                 foreach (var param in parameters)
                 {
@@ -215,7 +215,7 @@ namespace engenious.Graphics
 
         public void SetValue(Matrix value)
         {
-            using (Execute.OnUiThread)
+            using (Execute.OnUiContext)
             {
                 foreach (var param in parameters)
                 {
@@ -227,7 +227,7 @@ namespace engenious.Graphics
 
         public void SetValue(Matrix[] values)
         {
-            using (Execute.OnUiThread)
+            using (Execute.OnUiContext)
             {
                 foreach (var param in parameters)
                 {
@@ -239,7 +239,7 @@ namespace engenious.Graphics
 
         public void SetValue(Quaternion value)
         {
-            using (Execute.OnUiThread)
+            using (Execute.OnUiContext)
             {
                 foreach (var param in parameters)
                 {
@@ -251,7 +251,7 @@ namespace engenious.Graphics
 
         public void SetValue(Quaternion[] values)
         {
-            using (Execute.OnUiThread)
+            using (Execute.OnUiContext)
             {
                 foreach (var param in parameters)
                 {
@@ -263,7 +263,7 @@ namespace engenious.Graphics
 
         public void SetValue(ConstantBuffer value)
         {
-            using (Execute.OnUiThread)
+            using (Execute.OnUiContext)
             {
                 foreach (var param in parameters)
                 {

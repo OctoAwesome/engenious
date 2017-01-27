@@ -26,7 +26,7 @@ namespace engenious.Graphics
 		private EffectPassParameter CacheParameter (string name)
 		{
             EffectPassParameter param=null;
-		    using (Execute.OnUiThread)
+		    using (Execute.OnUiContext)
 		    {
 		        int location = pass.GetUniformLocation(name);
 		        param = new EffectPassParameter(pass, name, location);

@@ -33,42 +33,42 @@ namespace engenious.Content.Pipeline
             MipMaps = new List<TextureContentMipMap>();
             bool hwCompressedInput = inputFormat == TextureContentFormat.DXT1 || inputFormat == TextureContentFormat.DXT3 || inputFormat == TextureContentFormat.DXT5;
             bool hwCompressedOutput = outputFormat == TextureContentFormat.DXT1 || outputFormat == TextureContentFormat.DXT3 || outputFormat == TextureContentFormat.DXT5;
-            ThreadingHelper.BlockOnUIThread(() =>
+            using(Execute.OnUiContext)
+            {
+                texture = GL.GenTexture();
+
+                GL.BindTexture(TextureTarget.Texture2D, texture);
+                bool doGenerate = generateMipMaps && mipMapCount > 1;
+
+                setDefaultTextureParameters();
+                //GL.TexStorage2D(TextureTarget2d.Texture2D,(GenerateMipMaps ? 1 : MipMapCount),SizedInternalFormat.Rgba8,width,height);
+                //GL.TexSubImage2D(TextureTarget.Texture2D,0,0,0,width,height,
+                if (doGenerate)
                 {
-                    texture = GL.GenTexture();
-
-                    GL.BindTexture(TextureTarget.Texture2D, texture);
-                    bool doGenerate = generateMipMaps && mipMapCount > 1;
-
-                    setDefaultTextureParameters();
-                    //GL.TexStorage2D(TextureTarget2d.Texture2D,(GenerateMipMaps ? 1 : MipMapCount),SizedInternalFormat.Rgba8,width,height);
-                    //GL.TexSubImage2D(TextureTarget.Texture2D,0,0,0,width,height,
-                    if (doGenerate)
-                    {
-                        if (graphicsDevice.majorVersion < 3 &&
-                            ((graphicsDevice.majorVersion == 1 && graphicsDevice.minorVersion >= 4) ||
-                             graphicsDevice.majorVersion > 1))
-                            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.GenerateMipmap, 1);
-                        else if (graphicsDevice.majorVersion < 3)
-                            throw new NotSupportedException("Can't generate MipMaps on this Hardware");
-                    }
-                    GL.TexImage2D(TextureTarget.Texture2D, 0, (hwCompressedOutput ? (OpenTK.Graphics.OpenGL4.PixelInternalFormat)outputFormat : OpenTK.Graphics.OpenGL4.PixelInternalFormat.Rgba), width, height, 0, (hwCompressedInput ? (OpenTK.Graphics.OpenGL4.PixelFormat)inputFormat : OpenTK.Graphics.OpenGL4.PixelFormat.Bgra), PixelType.UnsignedByte, inputData);
-                    if (doGenerate)
-                    {
-                        //TOODO non power of 2 Textures?
-                        GL.TexParameter(TextureTarget.Texture2D,TextureParameterName.TextureMaxLevel,mipMapCount);
-                        GL.Hint(HintTarget.GenerateMipmapHint,HintMode.Nicest);
-                        if (graphicsDevice.majorVersion >= 3)
-                            GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
-                    }
-                });
+                    if (graphicsDevice.majorVersion < 3 &&
+                        ((graphicsDevice.majorVersion == 1 && graphicsDevice.minorVersion >= 4) ||
+                         graphicsDevice.majorVersion > 1))
+                        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.GenerateMipmap, 1);
+                    else if (graphicsDevice.majorVersion < 3)
+                        throw new NotSupportedException("Can't generate MipMaps on this Hardware");
+                }
+                GL.TexImage2D(TextureTarget.Texture2D, 0, (hwCompressedOutput ? (OpenTK.Graphics.OpenGL4.PixelInternalFormat)outputFormat : OpenTK.Graphics.OpenGL4.PixelInternalFormat.Rgba), width, height, 0, (hwCompressedInput ? (OpenTK.Graphics.OpenGL4.PixelFormat)inputFormat : OpenTK.Graphics.OpenGL4.PixelFormat.Bgra), PixelType.UnsignedByte, inputData);
+                if (doGenerate)
+                {
+                    //TOODO non power of 2 Textures?
+                    GL.TexParameter(TextureTarget.Texture2D,TextureParameterName.TextureMaxLevel,mipMapCount);
+                    GL.Hint(HintTarget.GenerateMipmapHint,HintMode.Nicest);
+                    if (graphicsDevice.majorVersion >= 3)
+                        GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
+                }
+            }
 
             PreprocessMipMaps();
 
-            ThreadingHelper.BlockOnUIThread(() =>
-                {
-                    GL.DeleteTexture(texture);
-                });
+            using(Execute.OnUiContext)
+            {
+                GL.DeleteTexture(texture);
+            }
         }
 
         private void setDefaultTextureParameters()
@@ -91,13 +91,13 @@ namespace engenious.Content.Pipeline
                 {
                     int dataSize=0;
                     byte[] data=null;
-                    ThreadingHelper.BlockOnUIThread(() =>
-                        {
-                            GL.BindTexture(TextureTarget.Texture2D,texture);
-                            GL.GetTexLevelParameter(TextureTarget.Texture2D,i,GetTextureParameter.TextureCompressedImageSize,out dataSize);
-                            data = new byte[dataSize];
-                            GL.GetCompressedTexImage(TextureTarget.Texture2D,i,data);
-                        });
+                    using(Execute.OnUiContext)
+                    {
+                        GL.BindTexture(TextureTarget.Texture2D,texture);
+                        GL.GetTexLevelParameter(TextureTarget.Texture2D,i,GetTextureParameter.TextureCompressedImageSize,out dataSize);
+                        data = new byte[dataSize];
+                        GL.GetCompressedTexImage(TextureTarget.Texture2D,i,data);
+                    }
                     MipMaps.Add(new TextureContentMipMap(width, height, Format, data));
                 }
                 else
@@ -106,11 +106,11 @@ namespace engenious.Content.Pipeline
 
                     var bmpData = bmp.LockBits(new System.Drawing.Rectangle(0,0,width,height),System.Drawing.Imaging.ImageLockMode.WriteOnly,System.Drawing.Imaging.PixelFormat.Format32bppArgb);
 
-                    ThreadingHelper.BlockOnUIThread(() =>
-                        {
-                            GL.BindTexture(TextureTarget.Texture2D,texture);
-                            GL.GetTexImage(TextureTarget.Texture2D,i,OpenTK.Graphics.OpenGL4.PixelFormat.Bgra,PixelType.UnsignedByte,bmpData.Scan0);
-                        });
+                    using(Execute.OnUiContext)
+                    {
+                        GL.BindTexture(TextureTarget.Texture2D,texture);
+                        GL.GetTexImage(TextureTarget.Texture2D,i,OpenTK.Graphics.OpenGL4.PixelFormat.Bgra,PixelType.UnsignedByte,bmpData.Scan0);
+                    }
 
                     bmp.UnlockBits(bmpData);
 

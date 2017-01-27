@@ -13,7 +13,7 @@ namespace engenious.Graphics
 
 		public EffectParameterCollection (EffectTechniqueCollection techniques)
 		{
-		    using (Execute.OnUiThread)
+		    using (Execute.OnUiContext)
 		    {
 		        parameters = new Dictionary<string, EffectParameter>();
 		        ParameterList = new List<EffectParameter>();

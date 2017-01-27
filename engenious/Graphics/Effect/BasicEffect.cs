@@ -48,7 +48,7 @@ void main(void)
         {
             var technique = new EffectTechnique("Basic");
 
-            using (Execute.OnUiThread)
+            using (Execute.OnUiContext)
             {
                 Shader[] shaders = new Shader[] {
                     new Shader(ShaderType.VertexShader, vertexShader),

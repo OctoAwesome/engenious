@@ -20,7 +20,7 @@ namespace engenious.Graphics
             Width = width;
             Height = height;
             Bounds = new Rectangle(0, 0, width, height);
-            using (Execute.OnUiThread)
+            using (Execute.OnUiContext)
             {
                 texture = GL.GenTexture();
 
@@ -79,7 +79,7 @@ namespace engenious.Graphics
 
         internal override void SetSampler(SamplerState state)
         {
-            using (Execute.OnUiThread)
+            using (Execute.OnUiContext)
             {
                 state = state ?? SamplerState.LinearClamp;
                 GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int) state.AddressU);
@@ -139,7 +139,7 @@ namespace engenious.Graphics
                         return;
                 }
                 GCHandle handle = GCHandle.Alloc(data, GCHandleType.Pinned);
-                using (Execute.OnUiThread)
+                using (Execute.OnUiContext)
                 {
                     Bind();
                     PixelType pxType = PixelType.UnsignedByte;
@@ -183,7 +183,7 @@ namespace engenious.Graphics
 
         public void GetData<T>(T[] data) where T : struct //ValueType
         {
-            using (Execute.OnUiThread)
+            using (Execute.OnUiContext)
             {
                 Bind();
 
@@ -222,7 +222,7 @@ namespace engenious.Graphics
         public void GetData<T>(int level, Nullable<Rectangle> rect, T[] data, int startIndex, int elementCount)
             where T : struct
         {
-            using (Execute.OnUiThread)
+            using (Execute.OnUiContext)
             {
                 Bind();
                 if (rect.HasValue)
@@ -266,7 +266,7 @@ namespace engenious.Graphics
             text = new Texture2D(graphicsDevice, bmp.Width, bmp.Height, mipMaps);
             BitmapData bmpData = bmp.LockBits(new System.Drawing.Rectangle(0, 0, text.Width, text.Height),
                 ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-            using (Execute.OnUiThread)
+            using (Execute.OnUiContext)
             {
                 text.Bind();
                 GL.TexSubImage2D(TextureTarget.Texture2D, 0, 0, 0, text.Width, text.Height,
@@ -283,7 +283,7 @@ namespace engenious.Graphics
             Bitmap bmp = new Bitmap(text.Width, text.Height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
             BitmapData bmpData = bmp.LockBits(new System.Drawing.Rectangle(0, 0, text.Width, text.Height),
                 ImageLockMode.WriteOnly, bmp.PixelFormat);
-            using (Execute.OnUiThread)
+            using (Execute.OnUiContext)
             {
                 text.Bind();
                 GL.GetTexImage(TextureTarget.Texture2D, 0, OpenTK.Graphics.OpenGL4.PixelFormat.Bgra,
@@ -314,7 +314,7 @@ namespace engenious.Graphics
 
         public override void Dispose()
         {
-            using (Execute.OnUiThread)
+            using (Execute.OnUiContext)
                 GL.DeleteTexture(texture);
 
             base.Dispose();

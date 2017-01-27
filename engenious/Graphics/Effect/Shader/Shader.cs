@@ -20,7 +20,7 @@ namespace engenious.Graphics
 
         public Shader(ShaderType type, string source)
         {
-            using (Execute.OnUiThread)
+            using (Execute.OnUiContext)
             {
                 shader = GL.CreateShader((OpenTK.Graphics.OpenGL4.ShaderType) type);
                 GL.ShaderSource(shader, source);
@@ -29,7 +29,7 @@ namespace engenious.Graphics
 
         internal void Compile()
         {
-            using (Execute.OnUiThread)
+            using (Execute.OnUiContext)
             {
                 GL.CompileShader(shader);
 

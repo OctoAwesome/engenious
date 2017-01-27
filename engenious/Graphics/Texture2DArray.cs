@@ -14,7 +14,7 @@ namespace engenious.Graphics
         public Texture2DArray(GraphicsDevice graphicsDevice, int levels, int width, int height, int layers)
             : base(graphicsDevice)
         {
-            using (Execute.OnUiThread)
+            using (Execute.OnUiContext)
             {
                 texture = GL.GenTexture();
                 
@@ -29,7 +29,7 @@ namespace engenious.Graphics
         public Texture2DArray(GraphicsDevice graphicsDevice,int levels,int width,int height,Texture2D[] textures)
             :this(graphicsDevice,levels,width,height,textures.Length)
         {
-            using (Execute.OnUiThread)
+            using (Execute.OnUiContext)
             {
                 int layer=0;
 
@@ -75,7 +75,7 @@ namespace engenious.Graphics
 
         internal override void SetSampler(SamplerState state)
         {
-            using (Execute.OnUiThread)
+            using (Execute.OnUiContext)
             {
                 state = state ?? SamplerState.LinearClamp;
                 GL.TexParameter(TextureTarget.Texture2DArray, TextureParameterName.TextureWrapS, (int) state.AddressU);
@@ -87,7 +87,7 @@ namespace engenious.Graphics
         public void SetData<T>(T[] data,int layer,int level=0)where T : struct
         {
             GCHandle handle = GCHandle.Alloc(data, GCHandleType.Pinned);
-            using (Execute.OnUiThread)
+            using (Execute.OnUiContext)
             {
                 Bind();
                 PixelType pxType = PixelType.UnsignedByte;

@@ -9,7 +9,7 @@ namespace engenious
         internal int ubo;
         public ConstantBuffer(int size)
         {
-            using (Execute.OnUiThread)
+            using (Execute.OnUiContext)
             {
                 ubo = GL.GenBuffer();
                 GL.BindBuffer(BufferTarget.UniformBuffer, ubo);
@@ -18,7 +18,7 @@ namespace engenious
         }
         public void Update(IntPtr data,uint size)
         {
-            using (Execute.OnUiThread)
+            using (Execute.OnUiContext)
             {
                 GL.BindBuffer(BufferTarget.UniformBuffer, ubo);
                 IntPtr ptr = GL.MapBuffer(BufferTarget.UniformBuffer, BufferAccess.WriteOnly);

@@ -48,7 +48,7 @@ namespace engenious
             }
         }
 
-        public static UiExecutor OnUiThread
+        public static UiExecutor OnUiContext
         {
             get
             {
@@ -56,7 +56,8 @@ namespace engenious
 
                 if(FreeList.Count > 0)
                     lock (FreeListLock)
-                        ex = FreeList.Pop();
+                        if(FreeList.Count > 0)
+                            ex = FreeList.Pop();
 
                 ex = ex ?? new UiExecutor();
 
@@ -119,50 +120,12 @@ namespace engenious
             return UiThreadId == System.Threading.Thread.CurrentThread.ManagedThreadId;
         }
 
-        internal static void BlockOnUIThread(Action action, bool needsUI = false, object additional = null)
+        internal static void OnUiThread(SendOrPostCallback callback, object obj)
         {
-            /*if (action == null)
-                throw new ArgumentNullException("action");*/
-
-            // If we are already on the UI thread, just call the action and be done with it
             if (IsOnUIThread())
-            {
-                action();
-                return;
-            }
-
-            lock (Context)
-            {
-               
-                if (needsUI)
-                {
-                    sync.Post(new System.Threading.SendOrPostCallback(delegate(object state)
-                            {
-                                action();
-                            }), null);
-                    return;
-                }
-                try
-                {
-                    Context.MakeCurrent(WindowInfo);
-                }
-                catch (Exception ex)
-                {
-                }
-
-                action();
-
-                GL.Flush();
-
-                try
-                {
-                    Context.MakeCurrent(null);
-                }
-                catch (Exception ex)
-                {
-                }
-            }
-
+                callback(obj);
+            else
+                sync.Post(callback,obj);
         }
     }
 }

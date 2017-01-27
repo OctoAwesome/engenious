@@ -36,7 +36,7 @@ namespace engenious.Graphics
 
         internal override void SetSampler(SamplerState state)
         {
-            using (Execute.OnUiThread)
+            using (Execute.OnUiContext)
             {
                 state = state == null ? SamplerState.LinearClamp : state;
                 GL.TexParameter(TextureTarget.Texture2DArray, TextureParameterName.TextureWrapS, (int) state.AddressU);
