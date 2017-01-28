@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading;
 using ContentTool.Items;
 using engenious.Content.Pipeline;
+using System.ComponentModel;
 
 namespace ContentTool.Builder
 {
@@ -28,6 +29,8 @@ namespace ContentTool.Builder
         private BuildCache cache;
 
         private ContentProject project;
+
+        public SynchronizationContext UiContext;
         public ContentProject Project {
             get{return project;}
             private set{
@@ -60,6 +63,7 @@ namespace ContentTool.Builder
 
         public ContentBuilder(ContentProject project)
         {
+            UiContext = SynchronizationContext.Current;
             Project = project;
             builtFiles = new Dictionary<string, ContentFile>();
         }
@@ -203,6 +207,7 @@ namespace ContentTool.Builder
             if (Project == null)
                 return;
 
+            IsBuilding = true;
             currentBuild = BuildStep.Build;
             BuildStatusChanged?.BeginInvoke(this, BuildStep.Build, null, null);
 
@@ -210,6 +215,8 @@ namespace ContentTool.Builder
                 buildingThread = new System.Threading.Thread(new System.Threading.ThreadStart(BuildThread));
             else
                 buildingThread = new System.Threading.Thread(new ThreadStart(()=>BuildThread(item)));
+            
+            buildingThread.SetApartmentState(ApartmentState.STA);
             buildingThread.Start();
         }
 
@@ -284,7 +291,7 @@ namespace ContentTool.Builder
             CreateFolderIfNeeded(outputDir);
             PipelineHelper.PreBuilt(Project);
             using (engenious.Content.Pipeline.ContentImporterContext importerContext = new engenious.Content.Pipeline.ContentImporterContext())
-            using (engenious.Content.Pipeline.ContentProcessorContext processorContext = new engenious.Content.Pipeline.ContentProcessorContext())
+            using (engenious.Content.Pipeline.ContentProcessorContext processorContext = new engenious.Content.Pipeline.ContentProcessorContext(UiContext))
             {
                 importerContext.BuildMessage += RaiseBuildMessage;
                 processorContext.BuildMessage += RaiseBuildMessage;

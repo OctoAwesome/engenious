@@ -17,28 +17,35 @@ namespace engenious.Pipeline
 
         public override AudioContent Process(FFmpegContent input, string filename, ContentProcessorContext context)
         {
-            FFmpeg ff = new FFmpeg();
-            string args="";
-            switch (settings.OutputFormat)
+            try
             {
-                case SoundEffect.AudioFormat.Ogg:
-                    args = "-acodec libvorbis -ab 128k -ar 44100 -f ogg";
-                    break;
-                case SoundEffect.AudioFormat.Wav:
-                    args = "-acodec pcm_s16le -ar 44100 -f wav";
-                    break;
-            }
-            var process = ff.RunCommand("-i "+filename+ " " + args + " -nostdin pipe:1 -hide_banner -loglevel error");
-            var outputStream = process.StandardOutput.BaseStream as FileStream;
+                FFmpeg ff = new FFmpeg(context.SyncContext);
+                string args = "";
+                switch (settings.OutputFormat)
+                {
+                    case SoundEffect.AudioFormat.Ogg:
+                        args = "-acodec libvorbis -ab 128k -ar 44100 -f ogg";
+                        break;
+                    case SoundEffect.AudioFormat.Wav:
+                        args = "-acodec pcm_s16le -ar 44100 -f wav";
+                        break;
+                }
+                var process = ff.RunCommand($"-i \"{filename}\" {args} -nostdin pipe:1 -hide_banner -loglevel error");
+                var outputStream = process.StandardOutput.BaseStream as FileStream;
 
-            var output = new AudioContent(settings.OutputFormat,outputStream);
-            process.WaitForExit();
-            var err=process.StandardError.ReadToEnd();//TODO: error handling
-            if (!string.IsNullOrEmpty(err))
+                var output = new AudioContent(settings.OutputFormat, outputStream);
+                process.WaitForExit();
+                var err = process.StandardError.ReadToEnd();//TODO: error handling
+                if (!string.IsNullOrEmpty(err))
+                {
+                    context.RaiseBuildMessage(filename, "ffmpeg: " + err, BuildMessageEventArgs.BuildMessageType.Error);
+                }
+                return output;
+            }catch (Win32Exception ex)
             {
-                throw new Exception(err);
+                context.RaiseBuildMessage(filename, "ffmpeg: " + ex.Message, BuildMessageEventArgs.BuildMessageType.Error);
+                return null;
             }
-            return output;
         }
 
         #endregion

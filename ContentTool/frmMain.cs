@@ -257,7 +257,7 @@ namespace ContentTool
             var absPath = Path.Combine(Path.GetDirectoryName(CurrentProject.File), file.getPath());
             var importValue = file.Importer.Import(absPath, new ContentImporterContext());
             var processValue = file.Processor.Process(importValue, absPath,
-                new ContentProcessorContext());
+                new ContentProcessorContext(builder.UiContext));
             editorWrap.Open(importValue, processValue);
             panel_editor.Controls.Add(editorWrap.Editor.MainControl);
         }

@@ -3,14 +3,16 @@ using System.ComponentModel;
 using System.Threading.Tasks;
 using System.IO;
 using System.Windows.Forms;
+using System.Threading;
 
 namespace engenious.Pipeline
 {
     public class FFmpeg
     {
         private string _ffmpegExe;
-        public FFmpeg()
-            :this(LocateFFmpegExe())
+        private SynchronizationContext _syncContext;
+        public FFmpeg(SynchronizationContext syncContext)
+            : this(syncContext,LocateFFmpegExe())
         {
 
         }
@@ -22,18 +24,19 @@ namespace engenious.Pipeline
                 completePath = File.ReadAllText(".ffmpeg");
                 if (System.IO.File.Exists(completePath))
                     return completePath;
-            }catch{}
+            }
+            catch { }
 
             string path = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
-            string ext="",searchPath="";
+            string ext = "", searchPath = "";
             var platform = PlatformHelper.RunningPlatform();
-            switch(platform)
+            switch (platform)
             {
                 case Platform.Windows:
-                    ext=".exe";
+                    ext = ".exe";
                     break;
             }
-            completePath=System.IO.Path.Combine(path,"ffmpeg"+ext);
+            completePath = System.IO.Path.Combine(path, "ffmpeg" + ext);
             if (System.IO.File.Exists(completePath))
                 return completePath;
             switch (platform)
@@ -51,14 +54,15 @@ namespace engenious.Pipeline
             }
             return "ffmpeg" + ext;
         }
-        public FFmpeg(string exePath)
+        public FFmpeg(SynchronizationContext syncContext,string exePath)
         {
+            _syncContext = syncContext;
             _ffmpegExe = exePath;
         }
-        public System.Diagnostics.Process RunCommand(string arguments,bool throwAll=false)
+        public System.Diagnostics.Process RunCommand(string arguments, bool throwAll = false)
         {
             System.Diagnostics.Process p = new System.Diagnostics.Process();
-            p.StartInfo = new System.Diagnostics.ProcessStartInfo(_ffmpegExe,arguments);
+            p.StartInfo = new System.Diagnostics.ProcessStartInfo(_ffmpegExe, arguments);
             p.StartInfo.UseShellExecute = false;
             p.StartInfo.CreateNoWindow = true;
             p.StartInfo.RedirectStandardOutput = true;
@@ -76,19 +80,23 @@ namespace engenious.Pipeline
             {
                 if (throwAll || ex.NativeErrorCode != 2) //File not found
                     throw ex;
-
-                using (var ofd = new OpenFileDialog())
+                _syncContext.Send(new SendOrPostCallback((o) =>
                 {
-                    ofd.Title = "FFmpeg";
-                    ofd.FileName = _ffmpegExe;
-                    ofd.Filter = "Executable files|" + (PlatformHelper.RunningPlatform() == Platform.Windows ? "*.ext" : "*.*");
-                    if (ofd.ShowDialog() == DialogResult.OK)
+                    using (var ofd = new OpenFileDialog())
                     {
-                        _ffmpegExe = ofd.FileName;
-                        File.WriteAllText(".ffmpeg",_ffmpegExe);
-                        return RunCommand(arguments,true);
+                        ofd.Title = "FFmpeg";
+                        ofd.FileName = _ffmpegExe;
+                        ofd.Filter = "Executable files|" + (PlatformHelper.RunningPlatform() == Platform.Windows ? "*.exe" : "*.*");
+                        if (ofd.ShowDialog() == DialogResult.OK)
+                        {
+                            _ffmpegExe = ofd.FileName;
+                            File.WriteAllText(".ffmpeg", _ffmpegExe);
+                            
+                        }
                     }
-                }
+                }),null);
+                if (File.Exists(_ffmpegExe))
+                    return RunCommand(arguments, true);
                 throw ex;
 
             }

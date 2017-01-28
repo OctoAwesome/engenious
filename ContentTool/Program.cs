@@ -8,6 +8,8 @@ using OpenTK;
 using OpenTK.Graphics;
 using ContentTool.Builder;
 using ContentTool.Items;
+using System.Threading;
+using System.ComponentModel;
 
 namespace ContentTool
 {
@@ -41,6 +43,8 @@ namespace ContentTool
 
             if (Arguments.Hidden)
             {
+                var context = new engenious.GLSynchronizationContext();
+                SynchronizationContext.SetSynchronizationContext(context);
                 ContentBuilder builder = new ContentBuilder(ContentProject.Load(Arguments.ContentProject));
                 if (Arguments.Configuration.HasValue)
                     builder.Project.Configuration = Arguments.Configuration.Value;
@@ -95,11 +99,12 @@ namespace ContentTool
                     else
                         Console.WriteLine(message);
                 };
-
                 builder.Build();
-
+                while (builder.IsBuilding)
+                {
+                    context.RunOnCurrentThread();
+                }
                 builder.Join();
-
                 if (builder.FailedBuilds != 0)
                     return -1;
             }
