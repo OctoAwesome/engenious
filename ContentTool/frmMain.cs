@@ -673,7 +673,7 @@ namespace ContentTool
         {
             if (string.IsNullOrEmpty(CurrentProject.File))
             {
-                SaveMenuItem_Click(saveMenuItem, new EventArgs());
+                SaveMenuItem_Click(saveMenuItem, EventArgs.Empty);
             }
             return File.Exists(CurrentProject.File);
         }

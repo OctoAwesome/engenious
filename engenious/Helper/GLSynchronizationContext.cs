@@ -29,15 +29,15 @@ namespace engenious
             }
             else
             {
-                var waitHandle = new ManualResetEvent(false);
-                _queue.Add(new KeyValuePair<SendOrPostCallback, CallbackState>(d, new CallbackState(state, waitHandle)));
+                var waitHandle = new ManualResetEvent(false);//TODO: memory pooling
+                _queue.Add(new KeyValuePair<SendOrPostCallback, CallbackState>(d, new CallbackState(state, waitHandle)));//TODO: memory pooling
                 waitHandle.WaitOne();
                 waitHandle.Dispose();
             }
         }
         public override void Post(SendOrPostCallback d, object state)
         {
-            _queue.Add(new KeyValuePair<SendOrPostCallback, CallbackState>(d, new CallbackState(state,null)));
+            _queue.Add(new KeyValuePair<SendOrPostCallback, CallbackState>(d, new CallbackState(state,null)));//TODO: memory pooling
         }
 
         public void RunOnCurrentThread()

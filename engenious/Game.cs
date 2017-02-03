@@ -94,7 +94,7 @@ namespace engenious
             window.FocusedChanged += Window_FocusedChanged;
             window.Closing += delegate
             {
-                Exiting?.Invoke(this, new EventArgs());
+                Exiting?.Invoke(this, EventArgs.Empty);
             };
 
             var gameTime = new GameTime(new TimeSpan(), new TimeSpan());
@@ -130,7 +130,7 @@ namespace engenious
             };
             window.Closing += delegate
             {
-                OnExiting(this, new EventArgs());
+                OnExiting(this, EventArgs.Empty);
             };
             window.KeyPress += delegate(object sender, KeyPressEventArgs e)
             {
