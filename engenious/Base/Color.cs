@@ -1,21 +1,18 @@
-﻿using System;
-using OpenTK;
-
-namespace engenious
+﻿namespace engenious
 {
     [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 1)]
     public struct Color
     {
-        Vector4 color;
+        private Vector4 _color;
 
         public Color(byte r, byte g, byte b, byte a = 255)
         {
-            color = new Vector4(r / 255f, g / 255f, b / 255f, a / 255f);
+            _color = new Vector4(r / 255f, g / 255f, b / 255f, a / 255f);
         }
 
         public Color(float r, float g, float b, float a = 1.0f)
         {
-            color = new Vector4(r, g, b, a);
+            _color = new Vector4(r, g, b, a);
         }
 
         public Color(Color color, float a)
@@ -28,13 +25,13 @@ namespace engenious
         {
         }
 
-        public float R{ get { return color.X; } }
+        public float R => _color.X;
 
-        public float G{ get { return color.Y; } }
+        public float G => _color.Y;
 
-        public float B{ get { return color.Z; } }
+        public float B => _color.Z;
 
-        public float A{ get { return color.W; } }
+        public float A => _color.W;
 
         public override int GetHashCode()
         {
@@ -83,7 +80,7 @@ namespace engenious
 
         public Vector4 ToVector4()
         {
-            return color;
+            return _color;
         }
 
         #region Colors
@@ -227,7 +224,7 @@ namespace engenious
             Turquoise = new Color(System.Drawing.Color.Turquoise);
             Violet = new Color(System.Drawing.Color.Violet);
             Wheat = new Color(System.Drawing.Color.Wheat);
-            White = new Color(1.0f, 1.0f, 1.0f, 1.0f);
+            White = new Color(1.0f, 1.0f, 1.0f);
             WhiteSmoke = new Color(System.Drawing.Color.WhiteSmoke);
             Yellow = new Color(System.Drawing.Color.Yellow);
             YellowGreen = new Color(System.Drawing.Color.YellowGreen);

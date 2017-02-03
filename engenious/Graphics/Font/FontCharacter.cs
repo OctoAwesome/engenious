@@ -1,25 +1,21 @@
-﻿using System;
-using System.Drawing;
-using OpenTK;
-
-namespace engenious.Graphics
+﻿namespace engenious.Graphics
 {
 	public class FontCharacter
 	{
-		public FontCharacter (char character, Rectangle textureSize, Rectangle textureRegionPX, Vector2 offset, float advance)
+		public FontCharacter (char character, Rectangle textureSize, Rectangle textureRegionPx, Vector2 offset, float advance)
 		{
-			this.Character = character;
-			this.TextureRegion = new RectangleF ((float)textureRegionPX.X / textureSize.Width, (float)textureRegionPX.Y / textureSize.Height, (float)textureRegionPX.Width / textureSize.Width, (float)textureRegionPX.Height / textureSize.Height);
-			this.Offset = offset;
-			this.Advance = advance;
+			Character = character;
+			TextureRegion = new RectangleF ((float)textureRegionPx.X / textureSize.Width, (float)textureRegionPx.Y / textureSize.Height, (float)textureRegionPx.Width / textureSize.Width, (float)textureRegionPx.Height / textureSize.Height);
+			Offset = offset;
+			Advance = advance;
 		}
 
 		public FontCharacter (char character, RectangleF textureRegion, Vector2 offset, float advance)
 		{
-			this.Character = character;
-			this.TextureRegion = textureRegion;
-			this.Offset = offset;
-			this.Advance = advance;
+			Character = character;
+			TextureRegion = textureRegion;
+			Offset = offset;
+			Advance = advance;
 		}
 
 		public char Character{ get; private set; }

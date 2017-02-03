@@ -1,10 +1,12 @@
 ﻿using System;
+using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 
 namespace engenious
 {
     [StructLayout(LayoutKind.Explicit, Pack = 1)]
-    [System.ComponentModel.TypeConverter(typeof(MatrixConverter))]
+    [TypeConverter(typeof(MatrixConverter))]
     public struct Matrix :IEquatable<Matrix>
     {
         [FieldOffset(0)]
@@ -229,27 +231,29 @@ namespace engenious
 
         #endregion
 
-        public unsafe static bool operator==(Matrix value1, Matrix value2)
+        public static unsafe bool operator==(Matrix value1, Matrix value2)
         {
             for (int i = 0; i < 16; i++)
             {
+                // ReSharper disable once CompareOfFloatsByEqualityOperator
                 if (value1.items[i] != value2.items[i])
                     return false;
             }
             return true;
         }
 
-        public unsafe static bool operator!=(Matrix value1, Matrix value2)
+        public static unsafe bool operator!=(Matrix value1, Matrix value2)
         {
             for (int i = 0; i < 16; i++)
             {
+                // ReSharper disable once CompareOfFloatsByEqualityOperator
                 if (value1.items[i] != value2.items[i])
                     return true;
             }
             return false;
         }
 
-        public unsafe static Matrix operator+(Matrix value1, Matrix value2)
+        public static unsafe Matrix operator+(Matrix value1, Matrix value2)
         {
             for (int i = 0; i < 16; i++)
             {
@@ -258,7 +262,7 @@ namespace engenious
             return value1;
         }
 
-        public unsafe static Matrix operator-(Matrix value1, Matrix value2)
+        public static unsafe Matrix operator-(Matrix value1, Matrix value2)
         {
             for (int i = 0; i < 16; i++)
             {
@@ -267,7 +271,7 @@ namespace engenious
             return value1;
         }
 
-        public unsafe static Matrix operator*(float scalar, Matrix value)
+        public static unsafe Matrix operator*(float scalar, Matrix value)
         {
             for (int i = 0; i < 16; i++)
             {
@@ -281,7 +285,7 @@ namespace engenious
             return scalar * value;
         }
 
-        public unsafe static Matrix operator*(Matrix value1, Matrix value2)
+        public static unsafe Matrix operator*(Matrix value1, Matrix value2)
         {
             Matrix multiply = new Matrix();
             for (int i = 0; i < 4; i++)
@@ -346,7 +350,8 @@ namespace engenious
             return result;
         }
 
-        public unsafe static void CreatePerspectiveOffCenter(float left, float right, float bottom, float top, float near, float far, out Matrix result)
+        [SuppressMessage("ReSharper", "CompareOfFloatsByEqualityOperator")]
+        public static unsafe void CreatePerspectiveOffCenter(float left, float right, float bottom, float top, float near, float far, out Matrix result)
         {
             if (left  == right)
                 throw new ArgumentOutOfRangeException($"{nameof(left)} or {nameof(right)}");
@@ -354,7 +359,7 @@ namespace engenious
                 throw new ArgumentOutOfRangeException($"{nameof(bottom)} or {nameof(top)}");
             if (near == far)
                 throw new ArgumentOutOfRangeException($"{nameof(near)} or {nameof(far)}");
-            Matrix m = Matrix.Identity;
+            Matrix m = Identity;
             m.items[0] = 2.0f * near / (right - left);
             m.items[5] = 2.0f * near / (top - bottom);
             m.items[8] = (right + left) / (right - left);
@@ -368,9 +373,9 @@ namespace engenious
             result = m;
         }
 
-        public unsafe static Matrix CreateOrthographic(float width, float height, float near, float far)
+        public static unsafe Matrix CreateOrthographic(float width, float height, float near, float far)
         {
-            Matrix res = Matrix.Identity;
+            Matrix res = Identity;
             res.items[0] = 2f / width;
             res.items[5] = -2f / height;
             res.items[10] = 1f / (near - far);
@@ -384,7 +389,7 @@ namespace engenious
         {
 
 
-            Matrix res = Matrix.Identity;
+            Matrix res = Identity;
             res.items[0] = 2.0f / (right - left);
             res.items[5] = 2.0f / (top - bottom);
             res.items[10] = -2.0f / (far - near);
@@ -482,9 +487,9 @@ namespace engenious
             return CreateTranslation(translation.X, translation.Y, translation.Z);
         }
 
-        public unsafe static Matrix CreateTranslation(float x, float y, float z)
+        public static Matrix CreateTranslation(float x, float y, float z)
         {
-            Matrix res = Matrix.Identity;
+            Matrix res = Identity;
             res.M41 = x;
             res.M42 = y;
             res.M43 = z;
@@ -495,7 +500,7 @@ namespace engenious
 
         public static Matrix CreateRotationX(float rot)
         {
-            Matrix ret = Matrix.Identity;
+            Matrix ret = Identity;
             ret.M22 = ret.M33 = (float)Math.Cos(rot);
             ret.M32 = (float)Math.Sin(rot);
             ret.M23 = -ret.M32;//TODO: transpose?
@@ -504,7 +509,7 @@ namespace engenious
 
         public static Matrix CreateRotationY(float rot)
         {
-            Matrix ret = Matrix.Identity;
+            Matrix ret = Identity;
             ret.M11 = ret.M33 = (float)Math.Cos(rot);
             ret.M13 = (float)Math.Sin(rot);
             ret.M31 = -ret.M13;//TODO: transpose?
@@ -513,7 +518,7 @@ namespace engenious
 
         public static Matrix CreateRotationZ(float rot)
         {
-            Matrix ret = Matrix.Identity;
+            Matrix ret = Identity;
             ret.M11 = ret.M22 = (float)Math.Cos(rot);
             ret.M12 = (float)Math.Sin(rot);
             ret.M21 = -ret.M12;//TODO: transpose?

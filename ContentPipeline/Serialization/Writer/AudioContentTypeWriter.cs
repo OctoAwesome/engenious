@@ -1,5 +1,4 @@
-﻿using System;
-using engenious.Pipeline;
+﻿using engenious.Pipeline;
 
 namespace engenious.Content.Serialization
 {

@@ -54,7 +54,7 @@ namespace engenious
         }
 
         public static readonly Vector4 One = new Vector4(1, 1, 1, 1);
-        public static readonly Vector4 Zero = new Vector4();
+        public static readonly Vector4 Zero;
 
         public static readonly Vector4 UnitX = new Vector4(1, 0, 0, 0);
         public static readonly Vector4 UnitY = new Vector4(0, 1, 0, 0);
@@ -63,7 +63,7 @@ namespace engenious
 
         public override string ToString()
         {
-            return string.Format("{{{0}, {1}, {2}, {3}}}", X, Y, Z, W);
+            return $"{{{X}, {Y}, {Z}, {W}}}";
         }
     }
 }

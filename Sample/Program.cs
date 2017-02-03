@@ -2,12 +2,12 @@
 
 namespace Sample
 {
-	class MainClass
+    public class MainClass
 	{
         [STAThread()]
 		public static void Main (string[] args)
 		{
-			using(TestGame test = new TestGame ())
+			using(var test = new TestGame ())
 				test.Run ();
 		}
 	}

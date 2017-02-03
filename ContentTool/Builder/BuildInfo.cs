@@ -1,17 +1,17 @@
 ﻿using System;
-using System.IO;
 using System.Collections.Generic;
+using System.IO;
 
 namespace  ContentTool.Builder
 {
-    [Serializable()]
+    [Serializable]
     public class BuildInfo
     {
         public BuildInfo(string importPath,string input,string output=null)
             :this()
         {
-            this.InputFile = input;
-            this.OutputFile = output;
+            InputFile = input;
+            OutputFile = output;
             string inputFile = Path.Combine(importPath,InputFile);
             InputTime=new FileInfo(inputFile).LastWriteTimeUtc;
         }
@@ -33,8 +33,8 @@ namespace  ContentTool.Builder
                 OutputTime=new FileInfo(outputFile).LastWriteTimeUtc;
         }
         
-        public string InputFile{get;private set;}
-        public string OutputFile{get;private set;}
+        public string InputFile{get; }
+        public string OutputFile{get; }
         public DateTime InputTime{get;private set;}
         public DateTime OutputTime{get;private set;}
 

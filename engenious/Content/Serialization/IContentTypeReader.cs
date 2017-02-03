@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace engenious.Content.Serialization
+﻿namespace engenious.Content.Serialization
 {
 	public interface IContentTypeReader
 	{

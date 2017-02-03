@@ -7,29 +7,29 @@ using System.Xml;
 
 namespace ContentTool.Items
 {
-    [Serializable()]
+    [Serializable]
     public class ContentFolder : ContentItem
     {
         public ContentFolder(ContentFolder parent = null)
             :base(parent)
         {
-            this.Contents = new ContentItemCollection();
-            this.Contents.CollectionChanged += Contents_CollectionChanged;
-            this.Contents.PropertyChanged += Contents_PropertyChanged;
+            Contents = new ContentItemCollection();
+            Contents.CollectionChanged += Contents_CollectionChanged;
+            Contents.PropertyChanged += Contents_PropertyChanged;
         }
 
         public ContentFolder(string name, ContentFolder parent = null)
             :this(parent)
         {
-            this.Name = name;
+            Name = name;
         }
 
-        void Contents_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        private void Contents_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             InvokePropertyChange(sender, e);
         }
 
-        void Contents_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        private void Contents_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             InvokeCollectionChange(sender, e);
         }
@@ -54,8 +54,7 @@ namespace ContentTool.Items
                 {
                     if (c is ContentFolder && trailingPath != null)
                         return ((ContentFolder)c).GetElement(trailingPath);
-                    else
-                        return c;
+                    return c;
                 }
             }
             return null;

@@ -9,11 +9,11 @@ namespace engenious.Input
             
         }
 
-        public unsafe static GamePadState GetState(int index = 0)
+        public static unsafe GamePadState GetState(int index = 0)
         {
-            OpenTK.Input.GamePadState state = OpenTK.Input.GamePad.GetState(index);
+            var state = OpenTK.Input.GamePad.GetState(index);
 
-            GamePadState actual = *(GamePadState*)&state;
+            var actual = *(GamePadState*)&state;
             //TODO:actual.ThumbSticks.Left = new Vector2(Math.M
             return actual;
         }

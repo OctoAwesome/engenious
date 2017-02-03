@@ -1,22 +1,17 @@
-﻿using System;
+﻿using System.Collections.Generic;
 using engenious.Graphics;
-using System.Linq;
 
 namespace engenious.Content.Serialization
 {
-    [ContentTypeReaderAttribute(typeof(Model))]
+    [ContentTypeReader(typeof(Model))]
     public class ModelTypeReader:ContentTypeReader<Model>
     {
-        public ModelTypeReader()
-        {
-        }
-
         private Node ReadTree(Model model, ContentReader reader)
         {
             int index = reader.ReadInt32();
             var node = model.Nodes[index];
             int childCount = reader.ReadInt32();
-            node.Children = new System.Collections.Generic.List<Node>();
+            node.Children = new List<Node>();
             for (int i = 0; i < childCount; i++)
                 node.Children.Add(ReadTree(model, reader));
 
@@ -25,7 +20,7 @@ namespace engenious.Content.Serialization
 
         public override Model Read(ContentManager manager, ContentReader reader)
         {
-            Model model = new Model(manager.graphicsDevice);
+            Model model = new Model(manager.GraphicsDevice);
             int meshCount = reader.ReadInt32();
             model.Meshes = new Mesh[meshCount];
             for (int meshIndex = 0; meshIndex < meshCount; meshIndex++)
@@ -61,14 +56,14 @@ namespace engenious.Content.Serialization
                 model.Meshes[meshIndex] = m;
             }
             int nodeCount = reader.ReadInt32();
-            model.Nodes = new System.Collections.Generic.List<Node>();
+            model.Nodes = new List<Node>();
             for (int nodeIndex = 0; nodeIndex < nodeCount; nodeIndex++)
             {
                 Node node = new Node();
                 node.Name = reader.ReadString();
                 node.Transformation = reader.ReadMatrix();
                 int nodeMeshCount = reader.ReadInt32();
-                node.Meshes = new System.Collections.Generic.List<Mesh>();
+                node.Meshes = new List<Mesh>();
                 for (int meshIndex = 0; meshIndex < nodeMeshCount; meshIndex++)
                 {
                     node.Meshes.Add(model.Meshes[reader.ReadInt32()]);
@@ -83,12 +78,12 @@ namespace engenious.Content.Serialization
                 var anim = new Animation();
                 anim.MaxTime = reader.ReadSingle();
                 int channelCount = reader.ReadInt32();
-                anim.Channels = new System.Collections.Generic.List<AnimationNode>();
+                anim.Channels = new List<AnimationNode>();
                 for (int channel = 0; channel < channelCount; channel++)
                 {
                     AnimationNode node = new AnimationNode();
                     node.Node = model.Nodes[reader.ReadInt32()];
-                    node.Frames = new System.Collections.Generic.List<AnimationFrame>();
+                    node.Frames = new List<AnimationFrame>();
                     int frameCount = reader.ReadInt32();
                     for (int i = 0; i < frameCount; i++)
                     {
@@ -107,10 +102,10 @@ namespace engenious.Content.Serialization
                 {
                     if (!ch.Node.Name.Contains("$"))
                         continue;
-                    var firstFrame = ch.Frames.FirstOrDefault();
+                    //var firstFrame = ch.Frames.FirstOrDefault();
                     for (int j=1;j<ch.Frames.Count;j++)
                     {
-                        firstFrame = ch.Frames[j-1];
+                        //var firstFrame = ch.Frames[j-1];
                         var f = ch.Frames[j];
                         f.Transform = new AnimationTransform("",f.Transform.Location,f.Transform.Scale,f.Transform.Rotation);
                     }

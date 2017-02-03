@@ -1,11 +1,12 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace engenious
 {
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    [System.ComponentModel.TypeConverter(typeof(Vector2Converter))]
+    [TypeConverter(typeof(Vector2Converter))]
     public struct Vector2 : IEquatable<Vector2>
     {
         public float X{get;set;}
@@ -18,8 +19,8 @@ namespace engenious
 
         public Vector2(float x, float y)
         {
-            this.X = x;
-            this.Y = y;
+            X = x;
+            Y = y;
         }
 
         public float Dot(Vector2 value2)
@@ -31,22 +32,11 @@ namespace engenious
         {
             return new Vector2(X, -Y);
         }
-        [System.ComponentModel.Browsable(false)]
-        public float Length
-        {
-            get
-            {
-                return (float)Math.Sqrt(X * X + Y * Y);
-            }
-        }
-        [System.ComponentModel.Browsable(false)]
-        public float LengthSquared
-        {
-            get
-            {
-                return X * X + Y * Y;
-            }
-        }
+        [Browsable(false)]
+        public float Length => (float)Math.Sqrt(X * X + Y * Y);
+
+        [Browsable(false)]
+        public float LengthSquared => X * X + Y * Y;
 
         public void Normalize()
         {
@@ -220,8 +210,8 @@ namespace engenious
             for (int i = 0; i < count; i++, positions++, output++)
             {
                 *output = new Vector2(
-                    (float)((double)(*positions).X * (double)matrix.M11 + (double)(*positions).Y * (double)matrix.M12) + matrix.M14,
-                    (float)((double)(*positions).X * (double)matrix.M21 + (double)(*positions).Y * (double)matrix.M22) + matrix.M24);
+                    (float)((*positions).X * (double)matrix.M11 + (*positions).Y * (double)matrix.M12) + matrix.M14,
+                    (float)((*positions).X * (double)matrix.M21 + (*positions).Y * (double)matrix.M22) + matrix.M24);
             }
         }
 
@@ -238,7 +228,7 @@ namespace engenious
         public static readonly Vector2 UnitX = new Vector2(1, 0);
         public static readonly Vector2 UnitY = new Vector2(0, 1);
         public static readonly Vector2 One = new Vector2(1, 1);
-        public static readonly Vector2 Zero = new Vector2();
+        public static readonly Vector2 Zero;
     }
 }
 

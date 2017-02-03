@@ -9,16 +9,16 @@ namespace engenious.Input
             if (!WrappingHelper.ValidateStructs<OpenTK.Input.KeyboardState,KeyboardState>())
                 throw new Exception("test");
         }
-        public unsafe static KeyboardState GetState()
+        public static unsafe KeyboardState GetState()
         {
-            OpenTK.Input.KeyboardState state = OpenTK.Input.Keyboard.GetState();
+            var state = OpenTK.Input.Keyboard.GetState();
             return *(KeyboardState*)(&state);
 
 
         }
-        public unsafe static KeyboardState GetState(int index)
+        public static unsafe KeyboardState GetState(int index)
         {
-            OpenTK.Input.KeyboardState state = OpenTK.Input.Keyboard.GetState(index);
+            var state = OpenTK.Input.Keyboard.GetState(index);
             return *(KeyboardState*)(&state);
 
 

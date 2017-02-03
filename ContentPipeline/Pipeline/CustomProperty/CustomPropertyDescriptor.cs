@@ -5,12 +5,12 @@ namespace engenious.Pipeline
 {
     public class CustomPropertyDescriptor : PropertyDescriptor
     {
-        private object component;
-        private PropertyDescriptor property;
+        private readonly object _component;
+        private readonly PropertyDescriptor _property;
         public CustomPropertyDescriptor(PropertyDescriptor property,object component,Attribute [] attrs) :base(property.Name, attrs)
         {
-            this.component = component;
-            this.property = property;
+            _component = component;
+            _property = property;
         }
 
         #region PropertyDescriptor specific
@@ -20,58 +20,38 @@ namespace engenious.Pipeline
             return false;
         }
 
-        public override Type ComponentType
-        {
-            get{
-                return property.ComponentType;
-            }
-        }
+        public override Type ComponentType => _property.ComponentType;
 
         public override object GetValue(object component)
         {
-            return property.GetValue(this.component);
+            return _property.GetValue(_component);
         }
 
-        public override string Description
-        {
-            get { return property.Description; }
-        }
+        public override string Description => _property.Description;
 
-        public override string Category
-        {
-            get { return property.Category; }
-        }
+        public override string Category => _property.Category;
 
-        public override string DisplayName
-        {
-            get { return property.DisplayName; }
-        }
+        public override string DisplayName => _property.DisplayName;
 
-        public override bool IsReadOnly
-        {
-            get { return property.IsReadOnly; }
-        }
+        public override bool IsReadOnly => _property.IsReadOnly;
 
         public override void ResetValue(object component)
         {
             //Have to implement
-            property.ResetValue(this.component);
+            _property.ResetValue(_component);
         }
 
         public override bool ShouldSerializeValue(object component)
         {
-            return property.ShouldSerializeValue(this.component);
+            return _property.ShouldSerializeValue(_component);
         }
 
         public override void SetValue(object component, object value)
         {
-            property.SetValue(this.component,value);
+            _property.SetValue(_component,value);
         }
 
-        public override Type PropertyType
-        {
-            get { return property.PropertyType; }
-        }
+        public override Type PropertyType => _property.PropertyType;
 
         #endregion
     }

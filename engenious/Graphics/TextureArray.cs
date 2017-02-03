@@ -1,28 +1,27 @@
-﻿using System;
-using OpenTK.Graphics.OpenGL4;
+﻿using OpenTK.Graphics.OpenGL4;
 
 namespace engenious.Graphics
 {
     public class TextureArray : Texture
     {
         protected static int MaxTextureArrays;
-        private PixelInternalFormat _internalFormat;
+        private readonly PixelInternalFormat _internalFormat;
         static TextureArray()
         {
             MaxTextureArrays = GL.GetInteger(GetPName.MaxArrayTextureLayers);
         }
 
-        internal int texture;
+        internal int Texture;
         public TextureArray(GraphicsDevice graphicsDevice,int layerCount=1,int levelCount=1,PixelInternalFormat format=PixelInternalFormat.Rgba8)
             :base(graphicsDevice,levelCount,format)
         {
             _internalFormat = format;
             LayerCount = layerCount;
-            texture=GL.GenTexture();
-            GL.BindTexture(TextureTarget.Texture2DArray,texture);
-            setDefaultTextureParameters();
+            Texture=GL.GenTexture();
+            GL.BindTexture(TextureTarget.Texture2DArray,Texture);
+            SetDefaultTextureParameters();
         }
-        private void setDefaultTextureParameters()
+        private static void SetDefaultTextureParameters()
         {
             
             GL.TexParameter(TextureTarget.Texture2DArray, TextureParameterName.TextureMinFilter, (int)All.Linear);
@@ -49,12 +48,12 @@ namespace engenious.Graphics
 
         internal override void Bind()
         {
-            GL.BindTexture(TextureTarget.Texture2DArray,texture);
+            GL.BindTexture(TextureTarget.Texture2DArray,Texture);
         }
         public override void BindComputation(int unit = 0)
         {
-            GL.BindImageTexture(unit, texture, 0, false, 0, TextureAccess.WriteOnly,
-                (OpenTK.Graphics.OpenGL4.SizedInternalFormat) _internalFormat);
+            GL.BindImageTexture(unit, Texture, 0, false, 0, TextureAccess.WriteOnly,
+                (SizedInternalFormat) _internalFormat);
         }
         #endregion
     }

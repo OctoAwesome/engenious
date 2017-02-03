@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using ContentTool.Dialog;
 using ContentTool.Items;
@@ -22,7 +18,7 @@ namespace ContentTool.Commands
             if (addFolderForm.ShowDialog() == DialogResult.OK)
             {
                 var name = addFolderForm.FileName;
-                var itemPath = Path.Combine(Path.GetDirectoryName(currentFile), selectedItem.getPath());
+                var itemPath = Path.Combine(Path.GetDirectoryName(currentFile), selectedItem.GetPath());
                 var folderPath = Path.Combine(itemPath, name);
 
                 //Check if directory already exists
@@ -38,7 +34,7 @@ namespace ContentTool.Commands
                     Directory.CreateDirectory(folderPath);
                     curFolder.AddSubFolder(folderPath, folderPath);
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     MessageBox.Show("An Error occured during the operation.", "Error", MessageBoxButtons.OK,
                         MessageBoxIcon.Error);

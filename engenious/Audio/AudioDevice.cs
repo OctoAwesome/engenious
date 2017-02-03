@@ -1,24 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using OpenTK.Audio;
-using OpenTK.Audio.OpenAL;
+﻿using OpenTK.Audio;
 
 namespace engenious.Audio
 {
     public class AudioDevice : AudioResource
     {
-        internal AudioContext context;
+        internal AudioContext Context;
 
         public AudioDevice()
         {
-            context = new AudioContext();
-            context.MakeCurrent();
+            Context = new AudioContext();
+            Context.MakeCurrent();
         }
 
         public override void Dispose()
         {
-            context.Dispose();
+            Context.Dispose();
             base.Dispose();
         }
     }

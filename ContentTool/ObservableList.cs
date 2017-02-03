@@ -1,27 +1,28 @@
-﻿using System;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 
-namespace System.Collections.Generic
+namespace ContentTool
 {
     
     public class ObservableList<T> :  INotifyCollectionChanged, IList<T>, INotifyPropertyChanged
     {
-        private List<T> list;
+        private readonly List<T> _list;
 
         public ObservableList()
         {
-            list = new List<T>();
+            _list = new List<T>();
         }
 
         public ObservableList(int capacity)
         {
-            list = new List<T>(capacity);
+            _list = new List<T>(capacity);
         }
 
         public ObservableList(IEnumerable<T> collection)
         {
-            list = new List<T>(collection);
+            _list = new List<T>(collection);
         }
 
 
@@ -70,12 +71,12 @@ namespace System.Collections.Generic
             item.CollectionChanged -= Item_CollectionChanged;
         }
 
-        void Item_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        private void Item_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             CollectionChanged?.Invoke(sender, e);
         }
 
-        void Item_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        private void Item_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             PropertyChanged?.Invoke(sender, e);
         }
@@ -84,22 +85,22 @@ namespace System.Collections.Generic
 
         public int IndexOf(T item)
         {
-            return list.IndexOf(item);
+            return _list.IndexOf(item);
         }
 
 
 
         public void Insert(int index, T item)
         {
-            list.Insert(index, item);
+            _list.Insert(index, item);
             AddChangedEvents(item);
             CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item));
         }
 
         public void RemoveAt(int index)
         {
-            T old = list[index];
-            list.RemoveAt(index);
+            T old = _list[index];
+            _list.RemoveAt(index);
             AddChangedEvents(old);
             CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, old));
         }
@@ -108,12 +109,12 @@ namespace System.Collections.Generic
         {
             get
             {
-                return list[index];
+                return _list[index];
             }
             set
             {
-                T old = list[index];
-                list[index] = value;
+                T old = _list[index];
+                _list[index] = value;
                 RemoveChangedEvents(old);
                 AddChangedEvents(value);
                 CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, value, old));
@@ -126,51 +127,39 @@ namespace System.Collections.Generic
 
         public void Add(T item)
         {
-            list.Add(item);
+            _list.Add(item);
             AddChangedEvents(item);
             CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item));
         }
 
         public void Clear()
         {
-            list.Clear();
+            _list.Clear();
             CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
 
         }
 
         public bool Contains(T item)
         {
-            return list.Contains(item);
+            return _list.Contains(item);
         }
 
         public void CopyTo(T[] array, int arrayIndex)
         {
-            list.CopyTo(array, arrayIndex);
+            _list.CopyTo(array, arrayIndex);
         }
 
         public bool Remove(T item)
         {
-            bool removed = list.Remove(item);
+            bool removed = _list.Remove(item);
             AddChangedEvents(item);
             CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, item));
             return removed;
         }
 
-        public int Count
-        {
-            get
-            {
-                return list.Count;
-            }
-        }
+        public int Count => _list.Count;
 
-        public bool IsReadOnly
-        {
-            get
-            {
-                return false;
-            }
-        }
+        public bool IsReadOnly => false;
 
         #endregion
 
@@ -178,7 +167,7 @@ namespace System.Collections.Generic
 
         public IEnumerator<T> GetEnumerator()
         {
-            return list.GetEnumerator();
+            return _list.GetEnumerator();
         }
 
         #endregion
@@ -187,7 +176,7 @@ namespace System.Collections.Generic
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return list.GetEnumerator();
+            return _list.GetEnumerator();
         }
 
         #endregion

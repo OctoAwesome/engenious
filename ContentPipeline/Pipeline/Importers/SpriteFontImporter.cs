@@ -1,18 +1,16 @@
 ﻿using System;
-using engenious.Content.Pipeline;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
+using System.Text;
 using System.Xml;
+using engenious.Content.Pipeline;
 
 namespace engenious.Pipeline
 {
-    [ContentImporterAttribute(".spritefont", DisplayName = "SpriteFontImporter", DefaultProcessor = "SpriteFontProcessor")]
+    [ContentImporter(".spritefont", DisplayName = "SpriteFontImporter", DefaultProcessor = "SpriteFontProcessor")]
     public class SpriteFontImporter : ContentImporter<SpriteFontContent>
     {
-        public SpriteFontImporter()
-        {
-        }
-
         #region implemented abstract members of ContentImporter
 
         public override SpriteFontContent Import(string filename, ContentImporterContext context)
@@ -66,13 +64,13 @@ namespace engenious.Pipeline
                         DefaultCharacter = element.InnerText.ToCharArray().FirstOrDefault();
                         break;
                     case "CharacterRegions":
-                        parseCharacterRegion(element);
+                        ParseCharacterRegion(element);
                         break;
                 }
             }
         }
 
-        private void parseCharacterRegion(XmlElement rootNode)
+        private void ParseCharacterRegion(XmlElement rootNode)
         {
             foreach (XmlElement region in rootNode.ChildNodes.OfType<XmlElement>())
             {
@@ -101,27 +99,27 @@ namespace engenious.Pipeline
 
 
 
-        private System.Drawing.FontStyle parseStyle(string styles)
+        private FontStyle parseStyle(string styles)
         {
-            System.Drawing.FontStyle fontStyle = System.Drawing.FontStyle.Regular;
-            foreach(var style in styles.Split(new char[]{' '},StringSplitOptions.RemoveEmptyEntries))
+            FontStyle fontStyle = FontStyle.Regular;
+            foreach(var style in styles.Split(new[]{' '},StringSplitOptions.RemoveEmptyEntries))
             {
                 switch (style)
                 {
                     case "Regular":
-                        fontStyle |= System.Drawing.FontStyle.Regular;
+                        fontStyle |= FontStyle.Regular;
                         break;
                     case "Bold":
-                        fontStyle |= System.Drawing.FontStyle.Bold;
+                        fontStyle |= FontStyle.Bold;
                         break;
                     case "Italic":
-                        fontStyle |= System.Drawing.FontStyle.Italic;
+                        fontStyle |= FontStyle.Italic;
                         break;
                     case "Underline":
-                        fontStyle |= System.Drawing.FontStyle.Underline;
+                        fontStyle |= FontStyle.Underline;
                         break;
                     case "Strikeout":
-                        fontStyle |= System.Drawing.FontStyle.Strikeout;
+                        fontStyle |= FontStyle.Strikeout;
                         break;
                 }
             }
@@ -139,7 +137,7 @@ namespace engenious.Pipeline
 
         public bool UseKerning{ get; private set; }
 
-        public System.Drawing.FontStyle Style{ get; private set; }
+        public FontStyle Style{ get; private set; }
 
         public char? DefaultCharacter{ get; private set; }
 
@@ -150,24 +148,24 @@ namespace engenious.Pipeline
 
     public class CharacterRegion
     {
-        private static int parseAddress(string characterAddress)
+        private static int ParseAddress(string characterAddress)
         {
             if (characterAddress.StartsWith("0x"))
                 return Convert.ToInt32(characterAddress.Substring(2),16);
             return int.Parse(characterAddress);
         }
 
-        private char toChar(int characterAddress)
+        private static char ToChar(int characterAddress)
         {
-            char[] value = System.Text.Encoding.Unicode.GetChars(BitConverter.GetBytes(characterAddress));
+            char[] value = Encoding.Unicode.GetChars(BitConverter.GetBytes(characterAddress));
 
             return value[0];
         }
 
-        private char defaultChar;
+        private char _defaultChar;
 
         public CharacterRegion(string start, string end, char defaultChar)
-            : this(parseAddress(start), parseAddress(end), defaultChar)
+            : this(ParseAddress(start), ParseAddress(end), defaultChar)
         {
             
         }
@@ -176,21 +174,20 @@ namespace engenious.Pipeline
         {
             Start = start;
             End = end;
-            this.defaultChar = defaultChar;
+            _defaultChar = defaultChar;
         }
 
         public IEnumerable<char> GetChararcters()
         {
             for (int i = Start; i <= End; i++)
             {
-                yield return toChar(i);
+                yield return ToChar(i);
             }
-            yield break;
         }
 
-        public int Start{ get; private set; }
+        public int Start{ get; }
 
-        public int End{ get; private set; }
+        public int End{ get; }
     }
 }
 

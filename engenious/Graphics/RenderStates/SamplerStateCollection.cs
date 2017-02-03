@@ -1,28 +1,27 @@
-﻿using System;
-using engenious.Graphics;
+﻿using engenious.Graphics;
 using OpenTK.Graphics.OpenGL4;
 
 namespace engenious
 {
     public class SamplerStateCollection : GraphicsResource
     {
-        private SamplerState[] samplerStates;
+        private readonly SamplerState[] _samplerStates;
 
         internal SamplerStateCollection(GraphicsDevice graphicsDevice)
             : base(graphicsDevice)
         {
             int maxTextures = GL.GetInteger(GetPName.MaxTextureImageUnits);
-            samplerStates = new SamplerState[maxTextures];
+            _samplerStates = new SamplerState[maxTextures];
         }
 
         public SamplerState this [int index]
         {
-            get { return samplerStates[index]; }
+            get { return _samplerStates[index]; }
             set
             {
-                if (samplerStates[index] != value)
+                if (_samplerStates[index] != value)
                 {
-                    samplerStates[index] = value == null ? SamplerState.LinearClamp : value;
+                    _samplerStates[index] = value ?? SamplerState.LinearClamp;
                     GL.ActiveTexture(TextureUnit.Texture0 + index);
                     if (GraphicsDevice.Textures[index] != null)
                         GraphicsDevice.Textures[index].SetSampler(value);

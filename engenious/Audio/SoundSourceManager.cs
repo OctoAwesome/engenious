@@ -7,43 +7,36 @@ namespace engenious.Audio
 {
     public class SoundSourceManager
     {
-        private static SoundSourceManager instance;
-        public static SoundSourceManager Instance{
-            get{
-                if (instance == null)
-                    instance = new SoundSourceManager();
-                return instance;
-            }
-        }
+        private static SoundSourceManager _instance;
+        public static SoundSourceManager Instance => _instance ?? (_instance = new SoundSourceManager());
 
 
+        private const int MaxSources=256;
 
-        private const int MAX_SOURCES=256;
-
-        private int[] sources;
-        private List<int> inUse;
-        private List<int> available;
-        private List<int> playing;
+        private readonly int[] _sources;
+        private readonly List<int> _inUse;
+        private readonly List<int> _available;
+        private readonly List<int> _playing;
         public SoundSourceManager()
         {
-            sources = AL.GenSources(MAX_SOURCES);
+            _sources = AL.GenSources(MaxSources);
 
-            inUse = new List<int>();
-            playing = new List<int>();
-            available = new List<int>(sources);
+            _inUse = new List<int>();
+            _playing = new List<int>();
+            _available = new List<int>(_sources);
         }
 
         public int Dequeue()
         {
-            int source = available.Last();
-            available.RemoveAt(available.Count-1);
-            inUse.Add(source);
+            int source = _available.Last();
+            _available.RemoveAt(_available.Count-1);
+            _inUse.Add(source);
             return source;
         }
         public void Enqueue(int source)
         {
-            inUse.Remove(source);
-            available.Add(source);
+            _inUse.Remove(source);
+            _available.Add(source);
         }
         public void Enqueue(int[] sources)
         {
@@ -55,17 +48,17 @@ namespace engenious.Audio
 
         public void Update()
         {
-            lock(playing){
-                for (int i=playing.Count-1;i>=0;i--)
+            lock(_playing){
+                for (int i=_playing.Count-1;i>=0;i--)
                 {
-                    int sid = playing[i];
+                    int sid = _playing[i];
                     if (AL.GetSourceState(sid) == ALSourceState.Stopped)
                     {
-                        playing.RemoveAt(sid);
+                        _playing.RemoveAt(sid);
                         AL.Source(sid, ALSourcei.Buffer, 0);
 
-                        inUse.Remove(sid);
-                        available.Add(sid);
+                        _inUse.Remove(sid);
+                        _available.Add(sid);
                     }
                 }
             }
@@ -73,20 +66,20 @@ namespace engenious.Audio
 
         public void PlaySound(SoundEffectInstance inst)
         {
-            lock (playing)
+            lock (_playing)
             {
-                playing.Add(inst.sid);
+                _playing.Add(inst.Sid);
             }
-            AL.SourcePlay(inst.sid);
+            AL.SourcePlay(inst.Sid);
             inst.State = SoundState.Playing;
         }
         public void FreeSource(SoundEffectInstance inst)
         {
-            lock (playing) {
-                playing.Remove(inst.sid);
+            lock (_playing) {
+                _playing.Remove(inst.Sid);
             }
-            Enqueue(inst.sid);
-            inst.sid = 0;
+            Enqueue(inst.Sid);
+            inst.Sid = 0;
             inst.State = SoundState.Stopped;
         }
     }

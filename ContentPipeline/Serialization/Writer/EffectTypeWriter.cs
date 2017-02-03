@@ -1,16 +1,11 @@
-﻿using System;
+﻿using System.IO;
 using engenious.Content.Pipeline;
-using engenious.Graphics;
 
 namespace engenious.Content.Serialization
 {
-    [ContentTypeWriterAttribute()]
+    [ContentTypeWriter]
     public class EffectTypeWriter : ContentTypeWriter<EffectContent>
     {
-        public EffectTypeWriter()
-        {
-        }
-
         #region implemented abstract members of ContentTypeWriter
 
         public override void Write(ContentWriter writer, EffectContent value)
@@ -24,14 +19,14 @@ namespace engenious.Content.Serialization
                 {
                     writer.Write(pass.Name);
 
-                    writer.WriteObject<BlendState>(pass.BlendState);
-                    writer.WriteObject<DepthStencilState>(pass.DepthStencilState);
-                    writer.WriteObject<RasterizerState>(pass.RasterizerState);
+                    writer.WriteObject(pass.BlendState);
+                    writer.WriteObject(pass.DepthStencilState);
+                    writer.WriteObject(pass.RasterizerState);
                     writer.Write((byte)pass.Shaders.Count);
                     foreach (var shader in pass.Shaders)
                     {
                         writer.Write((ushort)shader.Key);
-                        writer.Write(System.IO.File.ReadAllText(shader.Value));
+                        writer.Write(File.ReadAllText(shader.Value));
                     }
 
                     writer.Write((byte)pass.Attributes.Count);
@@ -44,13 +39,7 @@ namespace engenious.Content.Serialization
             }
         }
 
-        public override string RuntimeReaderName
-        {
-            get
-            {
-                return typeof(EffectTypeReader).FullName;
-            }
-        }
+        public override string RuntimeReaderName => typeof(EffectTypeReader).FullName;
 
         #endregion
     }

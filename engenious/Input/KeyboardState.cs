@@ -36,13 +36,12 @@ namespace engenious.Input
         #region Fields
 
         // Allocate enough ints to store all keyboard keys
-        const int IntSize = sizeof(int) * 8;
-        const int NumInts = ((int)Keys.LastKey + IntSize - 1) / IntSize;
+        private const int IntSize = sizeof(int) * 8;
+        private const int NumInts = ((int)Keys.LastKey + IntSize - 1) / IntSize;
         // The following line triggers bogus CS0214 in gmcs 2.0.1, sigh...
-        //TODO: fix
-        unsafe fixed int Key[NumInts];
+        internal unsafe fixed int Key[NumInts];
 
-        bool is_connected;
+        private bool is_connected;
 
         #endregion
 
@@ -66,10 +65,7 @@ namespace engenious.Input
         /// </summary>
         /// <param name="code">The scancode to check.</param>
         /// <returns>True if code is pressed; false otherwise.</returns>
-        public bool this [short code]
-        {
-            get { return IsKeyDown((Keys)code); }
-        }
+        public bool this [short code] => IsKeyDown((Keys)code);
 
         /// <summary>
         /// Gets a <see cref="System.Boolean"/> indicating whether this key is down.
@@ -252,13 +248,13 @@ namespace engenious.Input
         {
             ValidateOffset(offset);
 
-            int int_offset = offset / IntSize;
-            int bit_offset = offset % IntSize;
+            int intOffset = offset / IntSize;
+            int bitOffset = offset % IntSize;
             unsafe
             {
                 fixed (int* k = Key)
                 {
-                    return (*(k + int_offset) & (1 << bit_offset)) != 0u;
+                    return (*(k + intOffset) & (1 << bitOffset)) != 0u;
                 }
             }
         }
@@ -267,13 +263,13 @@ namespace engenious.Input
         {
             ValidateOffset(offset);
 
-            int int_offset = offset / IntSize;
-            int bit_offset = offset % IntSize;
+            int intOffset = offset / IntSize;
+            int bitOffset = offset % IntSize;
             unsafe
             {
                 fixed (int* k = Key)
                 {
-                    *(k + int_offset) |= 1 << bit_offset;
+                    *(k + intOffset) |= 1 << bitOffset;
                 }
             }
         }
@@ -282,13 +278,13 @@ namespace engenious.Input
         {
             ValidateOffset(offset);
 
-            int int_offset = offset / IntSize;
-            int bit_offset = offset % IntSize;
+            int intOffset = offset / IntSize;
+            int bitOffset = offset % IntSize;
             unsafe
             {
                 fixed (int* k = Key)
                 {
-                    *(k + int_offset) &= ~(1 << bit_offset);
+                    *(k + intOffset) &= ~(1 << bitOffset);
                 }
             }
         }
@@ -316,7 +312,7 @@ namespace engenious.Input
 
         #region Private Members
 
-        static void ValidateOffset(int offset)
+        private static void ValidateOffset(int offset)
         {
             if (offset < 0 || offset >= NumInts * IntSize)
                 throw new ArgumentOutOfRangeException();

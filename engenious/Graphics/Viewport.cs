@@ -1,7 +1,4 @@
-﻿using System;
-using OpenTK;
-
-namespace engenious.Graphics
+﻿namespace engenious.Graphics
 {
     public struct Viewport
     {
@@ -27,10 +24,7 @@ namespace engenious.Graphics
 
         }
 
-        public float AspectRatio
-        {
-            get{ return (float)Width / Height; }
-        }
+        public float AspectRatio => (float)Width / Height;
 
         public int Width{ get; internal set; }
 
@@ -49,19 +43,19 @@ namespace engenious.Graphics
             get{ return new Rectangle(X, Y, Width, Height); }
             internal set
             {
-                this.X = value.X;
-                this.Y = value.Y;
-                this.Width = value.Width;
-                this.Height = value.Height;
+                X = value.X;
+                Y = value.Y;
+                Width = value.Width;
+                Height = value.Height;
             }
         }
 
         public Vector3 Unproject(Vector3 source, Matrix matrix)
         {
             matrix = Matrix.Invert(matrix);
-            source.X = (((source.X - this.X) / ((float)this.Width)) * 2f) - 1f;
-            source.Y = -((((source.Y - this.Y) / ((float)this.Height)) * 2f) - 1f);
-            source.Z = (source.Z - this.MinDepth) / (this.MaxDepth - this.MinDepth);
+            source.X = (((source.X - X) / Width) * 2f) - 1f;
+            source.Y = -((((source.Y - Y) / Height) * 2f) - 1f);
+            source.Z = (source.Z - MinDepth) / (MaxDepth - MinDepth);
             Vector3 vector = Vector3.Transform(source, matrix);
             float a = (((source.X * matrix.M14) + (source.Y * matrix.M24)) + (source.Z * matrix.M34)) + matrix.M44;
             //float a = (((source.X * matrix.M41) + (source.Y * matrix.M42)) + (source.Z * matrix.M43)) + matrix.M44;

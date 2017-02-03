@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace engenious.Graphics
+﻿namespace engenious.Graphics
 {
     public class RasterizerState : GraphicsResource
     {
@@ -27,8 +25,8 @@ namespace engenious.Graphics
 
         public RasterizerState()
         {
-            this.CullMode = CullMode.None;
-            this.FillMode = PolygonMode.Fill;
+            CullMode = CullMode.None;
+            FillMode = PolygonMode.Fill;
         }
 
         public CullMode CullMode{ get; set; }

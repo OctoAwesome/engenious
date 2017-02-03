@@ -1,13 +1,11 @@
 ﻿using System;
-using engenious.Content.Pipeline;
-using System.Drawing;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Drawing.Imaging;
-using System.Runtime.InteropServices;
 using System.Linq;
-using System.Reflection;
-using System.Text;
+using System.Runtime.CompilerServices;
 using engenious.Content;
+using engenious.Content.Pipeline;
 using engenious.Graphics;
 using SharpFont;
 
@@ -32,7 +30,7 @@ namespace engenious.Pipeline
             }
 
             //Initialization
-            SharpFont.Library lib = new SharpFont.Library();
+            Library lib = new Library();
             var face = lib.NewFace(fontFile, 0);
             Bitmap dummyBitmap = new Bitmap(1,1);
             System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(dummyBitmap);
@@ -72,7 +70,7 @@ namespace engenious.Pipeline
                     {
                         var kerning = face.GetKerning(l.Item2, r.Item2, KerningMode.Default);
                         if (kerning == default(FTVector26Dot6)) continue;
-                        compiled.kernings[(int)l.Item1<<16|(int)r.Item1] = kerning.X.Value>>6;
+                        compiled.Kernings[l.Item1<<16|r.Item1] = kerning.X.Value>>6;
                     }
                 }
 
@@ -116,7 +114,7 @@ namespace engenious.Pipeline
 
                 if (bmp == null)
                 {
-                    compiled.characterMap.Add(character, new FontCharacter(character,targetRectangle,new Rectangle(offsetX,offsetY,1,1),new Vector2(bmpKvp.Item4.HorizontalBearingX.Value >> 6,compiled.BaseLine - (bmpKvp.Item4.HorizontalBearingY.Value>>6)), bmpKvp.Item3));
+                    compiled.CharacterMap.Add(character, new FontCharacter(character,targetRectangle,new Rectangle(offsetX,offsetY,1,1),new Vector2(bmpKvp.Item4.HorizontalBearingX.Value >> 6,compiled.BaseLine - (bmpKvp.Item4.HorizontalBearingY.Value>>6)), bmpKvp.Item3));
                     if (offsetX++ > target.Width)
                     {
                         offsetY += maxHeight;
@@ -132,7 +130,7 @@ namespace engenious.Pipeline
                     offsetX = 0;
                 }
                 //TODO divide width by 3?
-                compiled.characterMap.Add(character, new FontCharacter(character,targetRectangle,new Rectangle(offsetX,offsetY,width,height),new Vector2(bmpKvp.Item4.HorizontalBearingX.Value >> 6,compiled.BaseLine - (bmpKvp.Item4.HorizontalBearingY.Value>>6)), bmpKvp.Item3));
+                compiled.CharacterMap.Add(character, new FontCharacter(character,targetRectangle,new Rectangle(offsetX,offsetY,width,height),new Vector2(bmpKvp.Item4.HorizontalBearingX.Value >> 6,compiled.BaseLine - (bmpKvp.Item4.HorizontalBearingY.Value>>6)), bmpKvp.Item3));
 
                 unsafe{
                     switch(bmp.PixelMode)
@@ -156,7 +154,7 @@ namespace engenious.Pipeline
                 offsetX += width;//TODO divide by 3?
                 bmp.Dispose();
             }
-            compiled.texture = new TextureContent(context.GraphicsDevice,false,1,targetData.Scan0,target.Width,target.Height,TextureContentFormat.Png,TextureContentFormat.Png);
+            compiled.Texture = new TextureContent(context.GraphicsDevice,false,1,targetData.Scan0,target.Width,target.Height,TextureContentFormat.Png,TextureContentFormat.Png);
             compiled.Spacing = input.Spacing;
             compiled.DefaultCharacter = input.DefaultCharacter;
             
@@ -169,7 +167,7 @@ namespace engenious.Pipeline
 
             return compiled;
         }
-        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private unsafe void CopyFTBitmapToAtlas_Mono(uint* targetPtr,int offsetX,int offsetY,int targetWidth,FTBitmap bmp,int width,int height)
         {
             var bmpPtr = (byte*)bmp.Buffer;
@@ -191,7 +189,7 @@ namespace engenious.Pipeline
 
 
         #region Copy Implementations
-        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private unsafe void CopyFTBitmapToAtlas_Gray4(uint* targetPtr,int offsetX,int offsetY,int targetWidth,FTBitmap bmp,int width,int height,int padding)
         {
             //TODO: implement
@@ -207,7 +205,7 @@ namespace engenious.Pipeline
                 bmpPtr += padding;
             }
         }
-        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private unsafe void CopyFTBitmapToAtlas_Gray(uint* targetPtr,int offsetX,int offsetY,int targetWidth,FTBitmap bmp,int width,int height)
         {
             var bmpPtr = (byte*)bmp.Buffer;
@@ -221,7 +219,7 @@ namespace engenious.Pipeline
                 targetPtr += targetWidth - width;
             }
         }
-        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private unsafe void CopyFTBitmapToAtlas_LcdRGB(uint* targetPtr,int offsetX,int offsetY,int targetWidth,FTBitmap bmp,int width,int height)
         {
             var bmpPtr = (byte*)bmp.Buffer;
@@ -236,7 +234,7 @@ namespace engenious.Pipeline
             }
         }
         //TODO: verify direction
-        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private unsafe void CopyFTBitmapToAtlas_LcdBGR(uint* targetPtr,int offsetX,int offsetY,int targetWidth,FTBitmap bmp,int width,int height)
         {
             var bmpPtr = (byte*)bmp.Buffer;
@@ -251,7 +249,7 @@ namespace engenious.Pipeline
                 targetPtr += targetWidth - width;
             }
         }
-        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private unsafe void CopyFTBitmapToAtlas_BGRA(uint* targetPtr,int offsetX,int offsetY,int targetWidth,FTBitmap bmp,int width,int height)
         {
             var bmpPtr = (uint*)bmp.Buffer;
@@ -259,7 +257,7 @@ namespace engenious.Pipeline
             {
                 for (int x = 0; x < width; x++, targetPtr++, bmpPtr++)
                 {
-                    uint value = *(uint*)(bmpPtr);
+                    uint value = *bmpPtr;
                     //A | R | G | B
                     *targetPtr = (value << 24) | (value >> 24) | (value << 8) & 0xFF0000 | (value >> 8) & 0xFF;
                 }

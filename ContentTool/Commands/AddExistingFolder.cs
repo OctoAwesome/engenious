@@ -19,7 +19,7 @@ namespace ContentTool.Commands
                 return;
 
             var fn = new DirectoryInfo(fbd.SelectedPath).Name;
-            curFolder.AddSubFolder(fbd.SelectedPath, Path.Combine(Path.GetDirectoryName(currentFile), curFolder.getPath(), fn));
+            curFolder.AddSubFolder(fbd.SelectedPath, Path.Combine(Path.GetDirectoryName(currentFile), curFolder.GetPath(), fn));
         }
     }
 }

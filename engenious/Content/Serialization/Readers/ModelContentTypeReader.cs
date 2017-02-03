@@ -1,16 +1,11 @@
-﻿using System;
+﻿using System.Collections.Generic;
 using engenious.Graphics;
-using System.Collections.Generic;
 
 namespace engenious.Content.Serialization
 {
-    [ContentTypeReaderAttribute(typeof(ModelContent))]
+    [ContentTypeReader(typeof(ModelContent))]
     public class ModelContentTypeReader:ContentTypeReader<ModelContent>
     {
-        public ModelContentTypeReader()
-        {
-        }
-
         private NodeContent ReadTree(ModelContent model, ContentReader reader)
         {
             int index = reader.ReadInt32();
@@ -87,7 +82,7 @@ namespace engenious.Content.Serialization
                 {
                     AnimationNodeContent node = new AnimationNodeContent();
                     node.Node = model.Nodes[reader.ReadInt32()];
-                    node.Frames = new System.Collections.Generic.List<AnimationFrame>();
+                    node.Frames = new List<AnimationFrame>();
                     int frameCount = reader.ReadInt32();
                     for (int i = 0; i < frameCount; i++)
                     {

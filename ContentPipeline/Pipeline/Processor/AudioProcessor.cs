@@ -1,18 +1,13 @@
-﻿using System;
-using System.ComponentModel;
-using engenious.Content.Pipeline;
+﻿using System.ComponentModel;
 using System.IO;
 using engenious.Audio;
+using engenious.Content.Pipeline;
 
 namespace engenious.Pipeline
 {
     [ContentProcessor(DisplayName = "Audio Processor")]
     public class AudioProcessor : ContentProcessor<FFmpegContent,AudioContent,AudioProcessorSettings>
     {
-        public AudioProcessor()
-        {
-        }
-
         #region implemented abstract members of ContentProcessor
 
         public override AudioContent Process(FFmpegContent input, string filename, ContentProcessorContext context)

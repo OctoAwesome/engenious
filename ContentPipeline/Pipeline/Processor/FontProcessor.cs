@@ -1,7 +1,8 @@
 ﻿using System;
-using engenious.Graphics;
 using System.Collections.Generic;
-using OpenTK;
+using System.Drawing;
+using System.Drawing.Imaging;
+using engenious.Graphics;
 
 namespace engenious.Content.Pipeline
 {
@@ -9,15 +10,15 @@ namespace engenious.Content.Pipeline
     {
         public CompiledSpriteFont()
         {
-            kernings = new Dictionary<int, int>();
-            characterMap = new Dictionary<char, FontCharacter>();
+            Kernings = new Dictionary<int, int>();
+            CharacterMap = new Dictionary<char, FontCharacter>();
         }
 
-        internal Dictionary<int, int> kernings;
-        internal Dictionary<char, FontCharacter> characterMap;
-        internal TextureContent texture;
+        internal Dictionary<int, int> Kernings;
+        internal Dictionary<char, FontCharacter> CharacterMap;
+        internal TextureContent Texture;
 
-        public Nullable<char> DefaultCharacter { get; set; }
+        public char? DefaultCharacter { get; set; }
 
         public int LineSpacing { get; set; }
 
@@ -29,22 +30,18 @@ namespace engenious.Content.Pipeline
     [ContentProcessor(DisplayName = "Font Processor")]
     public class FontProcessor : ContentProcessor<FontContent, CompiledSpriteFont>
     {
-        public FontProcessor()
-        {
-        }
-
         public override CompiledSpriteFont Process(FontContent input,string filename, ContentProcessorContext context)
         {
             try
             {
                 CompiledSpriteFont font = new CompiledSpriteFont();
-                var text = new System.Drawing.Bitmap(input.TextureFile);
-                var textData = text.LockBits(new System.Drawing.Rectangle(0,0,text.Width,text.Height),System.Drawing.Imaging.ImageLockMode.ReadOnly,System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-                font.texture = new TextureContent(context.GraphicsDevice,false,1,textData.Scan0,text.Width,text.Height,TextureContentFormat.Png,TextureContentFormat.Png);
+                var text = new Bitmap(input.TextureFile);
+                var textData = text.LockBits(new System.Drawing.Rectangle(0,0,text.Width,text.Height),ImageLockMode.ReadOnly,System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+                font.Texture = new TextureContent(context.GraphicsDevice,false,1,textData.Scan0,text.Width,text.Height,TextureContentFormat.Png,TextureContentFormat.Png);
                 text.UnlockBits(textData);  
                 text.Dispose();
 
-                string[] lines = input.Content.Split(new char[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
+                string[] lines = input.Content.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
 
                 int lineOffset = 0;
 
@@ -55,7 +52,7 @@ namespace engenious.Content.Pipeline
                     string[] splt = lines[lineOffset].Substring("common ".Length).Split(' ');
                     foreach (string pair in splt)
                     {
-                        string[] kv = pair.Split(new char[] { '=' }, 2);
+                        string[] kv = pair.Split(new[] { '=' }, 2);
                         if (kv.Length == 1)
                             throw new Exception("Invalid common data");
                         if (kv[0] == "lineHeight")
@@ -81,7 +78,7 @@ namespace engenious.Content.Pipeline
                     string line = lines[lineOffset];
                     if (!line.StartsWith("char id="))
                         throw new Exception("Invalid char definition");
-                    string[] splt = line.Substring("char ".Length).Split(new char[] { ' ' }, 11);
+                    string[] splt = line.Substring("char ".Length).Split(new[] { ' ' }, 11);
 
                     int id = 0;//x=2 y=2 width=25 height=80 xoffset=0 yoffset=15 xadvance=28 page=0 chnl=0 letter="}"
                     int x = 0, y = 0, width = 0, height = 0;
@@ -90,7 +87,7 @@ namespace engenious.Content.Pipeline
                     char letter = '\0';
                     foreach (string pair in splt)
                     {
-                        string[] pairSplit = pair.Split(new char[] { '=' }, 2);
+                        string[] pairSplit = pair.Split(new[] { '=' }, 2);
                         string key = pairSplit[0].ToLower();
                         string value = pairSplit[1];
 
@@ -136,11 +133,11 @@ namespace engenious.Content.Pipeline
                     if (idCharMap.ContainsKey(id))
                         continue;
                     idCharMap.Add(id, letter);
-                    FontCharacter fontChar = new FontCharacter(letter, new Rectangle(0, 0, font.texture.Width, font.texture.Height), new Rectangle(x, y, width, height), new Vector2(xOffset, yOffset), advance);
+                    FontCharacter fontChar = new FontCharacter(letter, new Rectangle(0, 0, font.Texture.Width, font.Texture.Height), new Rectangle(x, y, width, height), new Vector2(xOffset, yOffset), advance);
 
-                    if (font.characterMap.ContainsKey(letter))
+                    if (font.CharacterMap.ContainsKey(letter))
                         continue;
-                    font.characterMap.Add(letter, fontChar);
+                    font.CharacterMap.Add(letter, fontChar);
 
                 }
                 int kerningCount = int.Parse(lines[lineOffset++].Substring("kernings count=".Length));
@@ -171,9 +168,9 @@ namespace engenious.Content.Pipeline
                             amount = int.Parse(value);
                         }
                     }
-                    int kerningKey = SpriteFont.getKerningKey(first, second);
-                    if (!font.kernings.ContainsKey(kerningKey))
-                        font.kernings.Add(kerningKey, amount);
+                    int kerningKey = SpriteFont.GetKerningKey(first, second);
+                    if (!font.Kernings.ContainsKey(kerningKey))
+                        font.Kernings.Add(kerningKey, amount);
                     lineOffset++;
 
                 }

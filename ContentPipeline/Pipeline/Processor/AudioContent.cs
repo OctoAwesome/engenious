@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using engenious.Audio;
 
@@ -6,6 +6,7 @@ namespace engenious.Pipeline
 {
     public class AudioContent
     {
+        [SuppressMessage("ReSharper", "InconsistentNaming")]
         public enum Format:ushort
         {
             PCM = 0x0001,
@@ -53,9 +54,9 @@ namespace engenious.Pipeline
             OLIOPR = 0x1004
         }
 
-        public SoundEffect.AudioFormat OutputFormat { get; private set; }
-        public MemoryStream Data { get; private set; }
-        public AudioContent(SoundEffect.AudioFormat outputFormat, System.IO.Stream inputStream, bool closeStream = true)
+        public SoundEffect.AudioFormat OutputFormat { get; }
+        public MemoryStream Data { get; }
+        public AudioContent(SoundEffect.AudioFormat outputFormat, Stream inputStream, bool closeStream = true)
         {
             OutputFormat = outputFormat;
             Data = new MemoryStream();

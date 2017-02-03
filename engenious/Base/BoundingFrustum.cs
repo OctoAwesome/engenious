@@ -5,7 +5,7 @@ namespace engenious
 {
     public class BoundingFrustum
     {
-        private Plane[] planes = new Plane[6];
+        private readonly Plane[] _planes = new Plane[6];
 
         public BoundingFrustum(Matrix matrix)
         {
@@ -30,55 +30,55 @@ namespace engenious
 
         public Plane Bottom
         { 
-            get{ return planes[5]; }
+            get{ return _planes[5]; }
             private set
             {
-                planes[5] = value; 
+                _planes[5] = value;
             }
         }
 
         public Plane Top
         {
-            get{ return planes[4]; }
+            get{ return _planes[4]; }
             private set
             {
-                planes[4] = value; 
+                _planes[4] = value;
             }
         }
 
         public Plane Far
         {
-            get{ return planes[3]; }
+            get{ return _planes[3]; }
             private set
             {
-                planes[3] = value; 
+                _planes[3] = value;
             }
         }
 
         public Plane Near
         { 
-            get{ return planes[2]; }
+            get{ return _planes[2]; }
             private set
             {
-                planes[2] = value; 
+                _planes[2] = value;
             }
         }
 
         public Plane Left
         { 
-            get{ return planes[1]; }
+            get{ return _planes[1]; }
             private set
             {
-                planes[1] = value; 
+                _planes[1] = value;
             }
         }
 
         public Plane Right
         {
-            get{ return planes[0]; }
+            get{ return _planes[0]; }
             private set
             {
-                planes[0] = value; 
+                _planes[0] = value;
             }
         }
 
@@ -91,7 +91,7 @@ namespace engenious
             Inside
         }
 
-        private void pVertex(Vector3 normal, BoundingBox box, out Vector3 vn, out Vector3 vp)
+        private static void PVertex(Vector3 normal, BoundingBox box, out Vector3 vn, out Vector3 vp)
         {
             float vNx, vNy,vNz,vPx,vPy,vPz;
             if (normal.X >= 0)
@@ -131,12 +131,12 @@ namespace engenious
         public bool Contains(BoundingBox box, out CollisionType type)
         {
             type = CollisionType.Outside;
-            for (int i = 0; i < planes.Length; i++)
+            for (int i = 0; i < _planes.Length; i++)
             {
-                float d = planes[i].D;
+                float d = _planes[i].D;
                 Vector3 vn, vp;
-                Vector3 n = planes[i].Normal;
-                pVertex(n, box, out vn, out vp);
+                Vector3 n = _planes[i].Normal;
+                PVertex(n, box, out vn, out vp);
 
                 float a = vp.Dot(n) + d;
                 if (a < 0)//TODO: validate

@@ -1,22 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Xml;
+using System.IO;
 using System.Linq;
+using System.Reflection;
+using System.Xml;
 using engenious.Graphics;
 
 namespace engenious.Content.Pipeline
 {
 
-    [ContentImporterAttribute(".glsl", DisplayName = "Effect Importer", DefaultProcessor = "EffectProcessor")]
+    [ContentImporter(".glsl", DisplayName = "Effect Importer", DefaultProcessor = "EffectProcessor")]
     public class EffectImporter : ContentImporter<EffectContent>
     {
-        public EffectImporter()
-        {
-        }
-
         #region implemented abstract members of ContentImporter
 
-        private static ShaderType parseShaderType(string type)
+        private static ShaderType ParseShaderType(string type)
         {
             if (type == "PixelShader" || type == "FragmentShader")
                 return ShaderType.FragmentShader;
@@ -35,7 +33,7 @@ namespace engenious.Content.Pipeline
             return (ShaderType)(-1);
         }
 
-        private static float parseColorPart(string value)
+        private static float ParseColorPart(string value)
         {
             value = value.Trim();
             int tmp;
@@ -53,19 +51,19 @@ namespace engenious.Content.Pipeline
                 {
                     if (e.Name == "A")
                     {
-                        a = parseColorPart(e.InnerText);                           
+                        a = ParseColorPart(e.InnerText);                           
                     }
                     else if (e.Name == "R")
                     {
-                        r = parseColorPart(e.InnerText);                           
+                        r = ParseColorPart(e.InnerText);                           
                     }
                     else if (e.Name == "G")
                     {
-                        g = parseColorPart(e.InnerText);                           
+                        g = ParseColorPart(e.InnerText);                           
                     }
                     else if (e.Name == "B")
                     {
-                        b = parseColorPart(e.InnerText);                           
+                        b = ParseColorPart(e.InnerText);                           
                     }
                     else
                     {
@@ -79,11 +77,13 @@ namespace engenious.Content.Pipeline
                 throw new Exception("Empty value not allowed for Colors");
             try
             {
-                System.Reflection.FieldInfo fI = typeof(Color).GetType().GetField(el.InnerText.Trim(), System.Reflection.BindingFlags.Static);
-                return (Color)fI.GetValue(null);
+                FieldInfo fI = typeof(Color).GetField(el.InnerText.Trim(), BindingFlags.Static);
+                var value = fI?.GetValue(null);
+                if (value != null) return (Color)value;
             }
             catch
             {
+                // ignored
             }
             {
                 string value = el.InnerText.Trim();
@@ -123,7 +123,6 @@ namespace engenious.Content.Pipeline
 
                 return new Color(r, g, b, a);
             }
-            //throw new Exception ("Unknown error while parsing color");
         }
 
         private static BlendState ParseBlendState(XmlElement element)
@@ -248,13 +247,14 @@ namespace engenious.Content.Pipeline
 
                 XmlDocument doc = new XmlDocument();
                 doc.Load(filename);
-                XmlElement effectElement;
                 XmlNode current = doc.FirstChild;
                 while (current != null && current.NodeType != XmlNodeType.Element)
                 {
                     current = current.NextSibling;
                 }
-                effectElement = (XmlElement)current;
+                if (current == null)
+                    throw new XmlException("no xml element found");
+                var effectElement = (XmlElement)current;
                 foreach (XmlElement technique in effectElement.ChildNodes.OfType<XmlElement>())
                 {
                     EffectTechnique info = new EffectTechnique();
@@ -267,10 +267,10 @@ namespace engenious.Content.Pipeline
                         {
                             if (sh.Name == "Shader")
                             {
-                                ShaderType type = parseShaderType(sh.GetAttribute("type"));
+                                ShaderType type = ParseShaderType(sh.GetAttribute("type"));
                                 if ((int)type == -1)
                                     throw new Exception("Unsupported Shader type detected");
-                                string shaderFile = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(filename), sh.GetAttribute("filename"));
+                                string shaderFile = Path.Combine(Path.GetDirectoryName(filename), sh.GetAttribute("filename"));
                                 pi.Shaders.Add(type, shaderFile);
                                 context.Dependencies.Add(shaderFile);
 

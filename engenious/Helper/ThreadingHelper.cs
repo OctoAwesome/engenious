@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL4;
+using OpenTK.Platform;
 
 namespace engenious
 {
@@ -27,7 +28,10 @@ namespace engenious
                         {
                             ThreadingHelper.Context.MakeCurrent(null);
                         }
-                        catch (Exception ex) { }
+                        catch (Exception)
+                        {
+                            // ignored
+                        }
                     }
                     finally
                     {
@@ -75,7 +79,7 @@ namespace engenious
                 {
                     ThreadingHelper.Context.MakeCurrent(ThreadingHelper.WindowInfo);
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     Monitor.Exit(ThreadingHelper.Context);
                 }
@@ -87,26 +91,26 @@ namespace engenious
 
     internal static class ThreadingHelper
     {
-        private static readonly GLSynchronizationContext Sync;
+        private static readonly GlSynchronizationContext Sync;
         internal static int UiThreadId;
         internal static IGraphicsContext Context;
-        internal static OpenTK.Platform.IWindowInfo WindowInfo;
+        internal static IWindowInfo WindowInfo;
 
         static ThreadingHelper()
         {
-            var uiThread = System.Threading.Thread.CurrentThread;
+            var uiThread = Thread.CurrentThread;
             UiThreadId = uiThread.ManagedThreadId;
-            System.Threading.SynchronizationContext.SetSynchronizationContext(Sync = new GLSynchronizationContext());
+            SynchronizationContext.SetSynchronizationContext(Sync = new GlSynchronizationContext());
             //System.Threading.Thread.CurrentThread.Syn
         }
 
-        public static void Initialize(OpenTK.Platform.IWindowInfo windowInfo, int major, int minor, GraphicsContextFlags contextFlags)
+        public static void Initialize(IWindowInfo windowInfo, int major, int minor, GraphicsContextFlags contextFlags)
         {
             //GraphicsContextFlags flags = GraphicsContextFlags.
-            ThreadingHelper.Context = new GraphicsContext(GraphicsMode.Default, windowInfo, major, minor, contextFlags);
-            ThreadingHelper.Context.MakeCurrent(windowInfo);
-            (ThreadingHelper.Context as IGraphicsContextInternal).LoadAll();
-            ThreadingHelper.WindowInfo = windowInfo;
+            Context = new GraphicsContext(GraphicsMode.Default, windowInfo, major, minor, contextFlags);
+            Context.MakeCurrent(windowInfo);
+            ((IGraphicsContextInternal) Context).LoadAll();
+            WindowInfo = windowInfo;
         }
 
         public static void RunUiThread()
@@ -116,7 +120,7 @@ namespace engenious
 
         public static bool IsOnUiThread()
         {
-            return UiThreadId == System.Threading.Thread.CurrentThread.ManagedThreadId;
+            return UiThreadId == Thread.CurrentThread.ManagedThreadId;
         }
 
         internal static void OnUiThread(SendOrPostCallback callback, object obj)

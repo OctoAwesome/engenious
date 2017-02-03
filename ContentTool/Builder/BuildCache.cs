@@ -8,7 +8,7 @@ namespace ContentTool.Builder
     [Serializable()]
     public class BuildCache
     {
-        public string OutputPath{ get; private set; }
+        public string OutputPath{ get; set; }
 
         public BuildCache()
         {
@@ -81,6 +81,7 @@ namespace ContentTool.Builder
             }
             catch
             {
+                // ignored
             }
         }
 
@@ -98,6 +99,7 @@ namespace ContentTool.Builder
             }
             catch
             {
+                // ignored
             }
             return new BuildCache();
         }

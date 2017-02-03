@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace engenious.Input
+﻿namespace engenious.Input
 {
     public enum MouseButton
     {

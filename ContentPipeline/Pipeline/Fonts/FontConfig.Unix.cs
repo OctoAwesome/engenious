@@ -22,7 +22,7 @@ namespace engenious.Pipeline
         }
         protected delegate IntPtr FcFontMatchDelegate(IntPtr config,IntPtr pattern,out FcResult result);
         protected delegate FcResult FcPatternGetStringDelegate(IntPtr pattern, string name, int n, out IntPtr resultString);
-        protected const string FC_FILE = "file";
+        protected const string FcFile = "file";
         protected Func<IntPtr> FcInitLoadConfigAndFonts;
         protected Func<IntPtr> FcPatternCreate;
         protected Func<string,IntPtr> FcNameParse;
@@ -59,7 +59,7 @@ namespace engenious.Pipeline
             if (font != IntPtr.Zero)
             {
                 IntPtr resultPtr;
-                if (FcPatternGetString(font, FC_FILE, 0, out resultPtr) == FcResult.FcResultMatch)
+                if (FcPatternGetString(font, FcFile, 0, out resultPtr) == FcResult.FcResultMatch)
                 {
                     // save the file to another std::string
                     fileName = System.Runtime.InteropServices.Marshal.PtrToStringAnsi(resultPtr);

@@ -36,21 +36,10 @@ namespace engenious
                 X * value2.Y - Y * value2.X);
         }
         [System.ComponentModel.Browsable(false)]
-        public float Length
-        {
-            get
-            {
-                return (float)Math.Sqrt(X * X + Y * Y + Z * Z);
-            }
-        }
+        public float Length => (float)Math.Sqrt(X * X + Y * Y + Z * Z);
+
         [System.ComponentModel.Browsable(false)]
-        public float LengthSquared
-        {
-            get
-            {
-                return X * X + Y * Y + Z * Z;
-            }
-        }
+        public float LengthSquared => X * X + Y * Y + Z * Z;
 
         public void Normalize()
         {
@@ -72,7 +61,8 @@ namespace engenious
 
         public override string ToString()
         {
-            return string.Format("[{0}, {1}, {2}]", X.ToString(System.Globalization.NumberFormatInfo.InvariantInfo), Y.ToString(System.Globalization.NumberFormatInfo.InvariantInfo), Z.ToString(System.Globalization.NumberFormatInfo.InvariantInfo));
+            return
+                $"[{X.ToString(System.Globalization.NumberFormatInfo.InvariantInfo)}, {Y.ToString(System.Globalization.NumberFormatInfo.InvariantInfo)}, {Z.ToString(System.Globalization.NumberFormatInfo.InvariantInfo)}]";
         }
 
         #region IEquatable implementation
@@ -228,10 +218,10 @@ namespace engenious
         }
 
         public static readonly Vector3 One = new Vector3(1, 1, 1);
-        public static readonly Vector3 Zero = new Vector3();
+        public static readonly Vector3 Zero;
 
-        public static readonly Vector3 UnitX = new Vector3(1, 0, 0);
-        public static readonly Vector3 UnitY = new Vector3(0, 1, 0);
+        public static readonly Vector3 UnitX = new Vector3(1, 0);
+        public static readonly Vector3 UnitY = new Vector3(0, 1);
         public static readonly Vector3 UnitZ = new Vector3(0, 0, 1);
     }
 }

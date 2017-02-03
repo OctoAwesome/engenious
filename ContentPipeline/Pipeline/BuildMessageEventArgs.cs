@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace engenious.Content.Pipeline
+﻿namespace engenious.Content.Pipeline
 {
     public class BuildMessageEventArgs
     {

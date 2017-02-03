@@ -1,6 +1,4 @@
-﻿using System;
-using engenious.Graphics;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace engenious.Graphics
 {

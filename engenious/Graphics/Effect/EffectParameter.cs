@@ -1,22 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using OpenTK;
+﻿using System.Collections.Generic;
 
 namespace engenious.Graphics
 {
     public sealed class EffectParameter
     {
-        private List<EffectPassParameter> parameters;
+        private readonly List<EffectPassParameter> _parameters;
 
         public EffectParameter(string name)
         {
-            this.parameters = new List<EffectPassParameter>();
-            this.Name = name;
+            _parameters = new List<EffectPassParameter>();
+            Name = name;
         }
 
         internal void Add(EffectPassParameter param)
         {
-            parameters.Add(param);
+            _parameters.Add(param);
         }
 
         public string Name{ get; private set; }
@@ -25,9 +23,9 @@ namespace engenious.Graphics
         {
             using (Execute.OnUiContext)
             {
-                foreach (var param in parameters)
+                foreach (var param in _parameters)
                 {
-                    param.pass.Apply();
+                    param.Pass.Apply();
                     param.SetValue(value);
                 }
             }
@@ -37,9 +35,9 @@ namespace engenious.Graphics
         {
             using (Execute.OnUiContext)
             {
-                foreach (var param in parameters)
+                foreach (var param in _parameters)
                 {
-                    param.pass.Apply();
+                    param.Pass.Apply();
                     param.SetValue(values);
                 }
             }
@@ -49,9 +47,9 @@ namespace engenious.Graphics
         {
             using (Execute.OnUiContext)
             {
-                foreach (var param in parameters)
+                foreach (var param in _parameters)
                 {
-                    param.pass.Apply();
+                    param.Pass.Apply();
                     param.SetValue(value);
                 }
             }
@@ -61,9 +59,9 @@ namespace engenious.Graphics
         {
             using (Execute.OnUiContext)
             {
-                foreach (var param in parameters)
+                foreach (var param in _parameters)
                 {
-                    param.pass.Apply();
+                    param.Pass.Apply();
                     param.SetValue(values);
                 }
             }
@@ -73,9 +71,9 @@ namespace engenious.Graphics
         {
             using (Execute.OnUiContext)
             {
-                foreach (var param in parameters)
+                foreach (var param in _parameters)
                 {
-                    param.pass.Apply();
+                    param.Pass.Apply();
                     param.SetValue(value);
                 }
             }
@@ -85,9 +83,9 @@ namespace engenious.Graphics
         {
             using (Execute.OnUiContext)
             {
-                foreach (var param in parameters)
+                foreach (var param in _parameters)
                 {
-                    param.pass.Apply();
+                    param.Pass.Apply();
                     param.SetValue(values);
                 }
             }
@@ -97,9 +95,9 @@ namespace engenious.Graphics
         {
             using (Execute.OnUiContext)
             {
-                foreach (var param in parameters)
+                foreach (var param in _parameters)
                 {
-                    param.pass.Apply();
+                    param.Pass.Apply();
                     param.SetValue(value);
                 }
             }
@@ -109,9 +107,9 @@ namespace engenious.Graphics
         {
             using (Execute.OnUiContext)
             {
-                foreach (var param in parameters)
+                foreach (var param in _parameters)
                 {
-                    param.pass.Apply();
+                    param.Pass.Apply();
                     param.SetValue(values);
                 }
             }
@@ -121,9 +119,9 @@ namespace engenious.Graphics
         {
             using (Execute.OnUiContext)
             {
-                foreach (var param in parameters)
+                foreach (var param in _parameters)
                 {
-                    param.pass.Apply();
+                    param.Pass.Apply();
                     param.SetValue(value);
                 }
             }
@@ -133,9 +131,9 @@ namespace engenious.Graphics
         {
             using (Execute.OnUiContext)
             {
-                foreach (var param in parameters)
+                foreach (var param in _parameters)
                 {
-                    param.pass.Apply();
+                    param.Pass.Apply();
                     param.SetValue(value);
                 }
             }
@@ -145,9 +143,9 @@ namespace engenious.Graphics
         {
             using (Execute.OnUiContext)
             {
-                foreach (var param in parameters)
+                foreach (var param in _parameters)
                 {
-                    param.pass.Apply();
+                    param.Pass.Apply();
                     param.SetValue(value);
                 }
             }
@@ -157,9 +155,9 @@ namespace engenious.Graphics
         {
             using (Execute.OnUiContext)
             {
-                foreach (var param in parameters)
+                foreach (var param in _parameters)
                 {
-                    param.pass.Apply();
+                    param.Pass.Apply();
                     param.SetValue(values);
                 }
             }
@@ -169,9 +167,9 @@ namespace engenious.Graphics
         {
             using (Execute.OnUiContext)
             {
-                foreach (var param in parameters)
+                foreach (var param in _parameters)
                 {
-                    param.pass.Apply();
+                    param.Pass.Apply();
                     param.SetValue(value);
                 }
             }
@@ -181,9 +179,9 @@ namespace engenious.Graphics
         {
             using (Execute.OnUiContext)
             {
-                foreach (var param in parameters)
+                foreach (var param in _parameters)
                 {
-                    param.pass.Apply();
+                    param.Pass.Apply();
                     param.SetValue(values);
                 }
             }
@@ -193,9 +191,9 @@ namespace engenious.Graphics
         {
             using (Execute.OnUiContext)
             {
-                foreach (var param in parameters)
+                foreach (var param in _parameters)
                 {
-                    param.pass.Apply();
+                    param.Pass.Apply();
                     param.SetValue(value);
                 }
             }
@@ -205,9 +203,9 @@ namespace engenious.Graphics
         {
             using (Execute.OnUiContext)
             {
-                foreach (var param in parameters)
+                foreach (var param in _parameters)
                 {
-                    param.pass.Apply();
+                    param.Pass.Apply();
                     param.SetValue(values);
                 }
             }
@@ -217,9 +215,9 @@ namespace engenious.Graphics
         {
             using (Execute.OnUiContext)
             {
-                foreach (var param in parameters)
+                foreach (var param in _parameters)
                 {
-                    param.pass.Apply();
+                    param.Pass.Apply();
                     param.SetValue(value);
                 }
             }
@@ -229,9 +227,9 @@ namespace engenious.Graphics
         {
             using (Execute.OnUiContext)
             {
-                foreach (var param in parameters)
+                foreach (var param in _parameters)
                 {
-                    param.pass.Apply();
+                    param.Pass.Apply();
                     param.SetValue(values);
                 }
             }
@@ -241,9 +239,9 @@ namespace engenious.Graphics
         {
             using (Execute.OnUiContext)
             {
-                foreach (var param in parameters)
+                foreach (var param in _parameters)
                 {
-                    param.pass.Apply();
+                    param.Pass.Apply();
                     param.SetValue(value);
                 }
             }
@@ -253,9 +251,9 @@ namespace engenious.Graphics
         {
             using (Execute.OnUiContext)
             {
-                foreach (var param in parameters)
+                foreach (var param in _parameters)
                 {
-                    param.pass.Apply();
+                    param.Pass.Apply();
                     param.SetValue(values);
                 }
             }
@@ -265,9 +263,9 @@ namespace engenious.Graphics
         {
             using (Execute.OnUiContext)
             {
-                foreach (var param in parameters)
+                foreach (var param in _parameters)
                 {
-                    param.pass.Apply();
+                    param.Pass.Apply();
                     param.SetValue(value);
                 }
             }

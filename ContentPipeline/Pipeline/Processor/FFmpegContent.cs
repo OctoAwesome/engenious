@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace engenious.Pipeline
+﻿namespace engenious.Pipeline
 {
     public class FFmpegContent
     {

@@ -1,20 +1,14 @@
-﻿using System;
+﻿using System.Linq;
 using engenious.Graphics;
-using OpenTK;
-using System.Linq;
 
 namespace engenious.Content.Serialization
 {
-    [ContentTypeReaderAttribute(typeof(Effect))]
+    [ContentTypeReader(typeof(Effect))]
     public class EffectTypeReader:ContentTypeReader<Effect>
     {
-        public EffectTypeReader()
-        {
-        }
-
         public override Effect Read(ContentManager manager, ContentReader reader)
         {
-            Effect effect = new Effect(manager.graphicsDevice);
+            Effect effect = new Effect(manager.GraphicsDevice);
 
             int techniqueCount = reader.ReadInt32();
             for (int techniqueIndex = 0; techniqueIndex < techniqueCount; techniqueIndex++)

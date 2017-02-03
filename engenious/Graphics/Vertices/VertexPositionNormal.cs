@@ -1,8 +1,4 @@
-﻿using System;
-using OpenTK;
-using System.Drawing;
-using System.Runtime.InteropServices;
-using System.Reflection;
+﻿using System.Runtime.InteropServices;
 
 namespace engenious.Graphics
 {
@@ -13,22 +9,16 @@ namespace engenious.Graphics
 
         static VertexPosition()
         {
-            VertexElement[] elements = new VertexElement[] { new VertexElement(0, VertexElementFormat.Vector3, VertexElementUsage.Position, 0) };
+            VertexElement[] elements = { new VertexElement(0, VertexElementFormat.Vector3, VertexElementUsage.Position, 0) };
             VertexDeclaration declaration = new VertexDeclaration(elements);
             VertexDeclaration = declaration;
         }
 
-        VertexDeclaration IVertexType.VertexDeclaration
-        {
-            get
-            {
-                return VertexDeclaration;
-            }
-        }
+        VertexDeclaration IVertexType.VertexDeclaration => VertexDeclaration;
 
         public VertexPosition(Vector3 position)
         {
-            this.Position = position;
+            Position = position;
         }
 
         public Vector3 Position;

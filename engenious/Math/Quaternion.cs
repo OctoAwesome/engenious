@@ -19,35 +19,35 @@ namespace engenious
 
             if (tr > 0)
             { 
-                float S = (float)(Math.Sqrt(tr + 1.0f) * 2); // S=4*qw 
-                W = 0.25f * S;
-                X = (matrix.M32 - matrix.M23) / S;
-                Y = (matrix.M13 - matrix.M31) / S; 
-                Z = (matrix.M21 - matrix.M12) / S; 
+                float s = (float)(Math.Sqrt(tr + 1.0f) * 2); // S=4*qw
+                W = 0.25f * s;
+                X = (matrix.M32 - matrix.M23) / s;
+                Y = (matrix.M13 - matrix.M31) / s;
+                Z = (matrix.M21 - matrix.M12) / s;
             }
             else if ((matrix.M11 > matrix.M22) & (matrix.M11 > matrix.M33))
             { 
-                float S = (float)(Math.Sqrt(1.0f + matrix.M11 - matrix.M22 - matrix.M33) * 2); // S=4*qx 
-                W = (matrix.M32 - matrix.M23) / S;
-                X = 0.25f * S;
-                Y = (matrix.M12 + matrix.M21) / S; 
-                Z = (matrix.M13 + matrix.M31) / S; 
+                float s = (float)(Math.Sqrt(1.0f + matrix.M11 - matrix.M22 - matrix.M33) * 2); // S=4*qx
+                W = (matrix.M32 - matrix.M23) / s;
+                X = 0.25f * s;
+                Y = (matrix.M12 + matrix.M21) / s;
+                Z = (matrix.M13 + matrix.M31) / s;
             }
             else if (matrix.M22 > matrix.M33)
             { 
-                float S = (float)(Math.Sqrt(1.0f + matrix.M22 - matrix.M11 - matrix.M33) * 2); // S=4*qy
-                W = (matrix.M13 - matrix.M31) / S;
-                X = (matrix.M12 + matrix.M21) / S; 
-                Y = 0.25f * S;
-                Z = (matrix.M23 + matrix.M32) / S; 
+                float s = (float)(Math.Sqrt(1.0f + matrix.M22 - matrix.M11 - matrix.M33) * 2); // S=4*qy
+                W = (matrix.M13 - matrix.M31) / s;
+                X = (matrix.M12 + matrix.M21) / s;
+                Y = 0.25f * s;
+                Z = (matrix.M23 + matrix.M32) / s;
             }
             else
             { 
-                float S = (float)(Math.Sqrt(1.0f + matrix.M33 - matrix.M11 - matrix.M22) * 2); // S=4*qz
-                W = (matrix.M21 - matrix.M12) / S;
-                X = (matrix.M13 + matrix.M31) / S;
-                Y = (matrix.M23 + matrix.M32) / S;
-                Z = 0.25f * S;
+                float s = (float)(Math.Sqrt(1.0f + matrix.M33 - matrix.M11 - matrix.M22) * 2); // S=4*qz
+                W = (matrix.M21 - matrix.M12) / s;
+                X = (matrix.M13 + matrix.M31) / s;
+                Y = (matrix.M23 + matrix.M32) / s;
+                Z = 0.25f * s;
             }
         }
 
@@ -104,7 +104,7 @@ namespace engenious
                 quaternion.W = (num2 * quaternion1.W) - (num * quaternion2.W);
             }
             float num4 = (((quaternion.X * quaternion.X) + (quaternion.Y * quaternion.Y)) + (quaternion.Z * quaternion.Z)) + (quaternion.W * quaternion.W);
-            float num3 = 1f / ((float)Math.Sqrt((double)num4));
+            float num3 = (float)(1.0 / Math.Sqrt(num4));
             quaternion.X *= num3;
             quaternion.Y *= num3;
             quaternion.Z *= num3;

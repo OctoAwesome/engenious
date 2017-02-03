@@ -6,7 +6,7 @@ namespace engenious.Graphics
 {
     public class AnimationNode
     {
-        private bool sorted = false;
+        private bool _sorted = false;
 
         public Node Node{ get; set; }
 
@@ -14,13 +14,13 @@ namespace engenious.Graphics
 
         public void Sort()
         {
-            if (sorted)
+            if (_sorted)
                 return;
-            sorted = true;
+            _sorted = true;
             Frames = Frames.OrderBy(f => f.Frame).ToList();
         }
         public bool Repeat{get;set;}=true;
-        private int lastF=0;
+
         public void ApplyAnimation(float time, float maxTime)
         {
             Sort();

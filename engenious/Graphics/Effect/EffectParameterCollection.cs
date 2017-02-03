@@ -1,21 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Collections;
-
+using System.Collections.Generic;
 
 namespace engenious.Graphics
 {
 	public sealed class EffectParameterCollection : IEnumerable<EffectParameter>
 	{
-		private Dictionary<string,EffectParameter> parameters;
+		private readonly Dictionary<string,EffectParameter> _parameters;
 		public List<EffectParameter> ParameterList;
 
 		public EffectParameterCollection (EffectTechniqueCollection techniques)
 		{
 		    using (Execute.OnUiContext)
 		    {
-		        parameters = new Dictionary<string, EffectParameter>();
+		        _parameters = new Dictionary<string, EffectParameter>();
 		        ParameterList = new List<EffectParameter>();
 
 		        foreach (EffectTechnique technique in techniques.TechniqueList)
@@ -26,8 +24,8 @@ namespace engenious.Graphics
 
 		                foreach (EffectPassParameter param in pass.Parameters.ParameterList)
 		                {
-		                    EffectParameter current = null;
-		                    if (!parameters.TryGetValue(param.Name, out current))
+		                    EffectParameter current;
+		                    if (!_parameters.TryGetValue(param.Name, out current))
 		                    {
 		                        current = new EffectParameter(param.Name);
 		                        Add(current);
@@ -42,7 +40,7 @@ namespace engenious.Graphics
 		internal void Add (EffectParameter parameter)
 		{
 			ParameterList.Add (parameter);
-			parameters.Add (parameter.Name, parameter);
+			_parameters.Add (parameter.Name, parameter);
 		}
 
 		public EffectParameter this [int index] { 
@@ -53,12 +51,12 @@ namespace engenious.Graphics
 
 		public EffectParameter this [string name] { 
 			get {
-				return parameters [name];
+				return _parameters [name];
 			} 
 		}
 
         [Obsolete("Use member " + nameof(ParameterList))]
-        IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        IEnumerator IEnumerable.GetEnumerator()
         {
             return ParameterList.GetEnumerator();
         }

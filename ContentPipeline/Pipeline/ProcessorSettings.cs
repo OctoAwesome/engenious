@@ -1,21 +1,16 @@
 ﻿using System;
-using System.Linq;
-using System.Runtime.Serialization;
-using System.Xml;
 using System.ComponentModel;
 using System.Globalization;
+using System.Linq;
+using System.Xml;
 
 namespace engenious.Content.Pipeline
 {
-    [Serializable()]
+    [Serializable]
     public class ProcessorSettings
     {
-        public ProcessorSettings()
-        {
-        }
-
         #region Serialization
-        private void setPrimitive(PropertyDescriptor property,object obj,string val)
+        private static void SetPrimitive(PropertyDescriptor property,object obj,string val)
         {
             var code = Type.GetTypeCode(property.PropertyType);
             if (code != TypeCode.String && val == null)
@@ -143,7 +138,7 @@ namespace engenious.Content.Pipeline
                     break;
             }
         }
-        private void ReadObject(XmlNodeList nodes,object obj)
+        private static void ReadObject(XmlNodeList nodes,object obj)
         {
             var props = TypeDescriptor.GetProperties(obj).OfType<PropertyDescriptor>().ToDictionary(x => x.Name, x => x);
             foreach (var setting in nodes.OfType<XmlElement>())
@@ -152,15 +147,21 @@ namespace engenious.Content.Pipeline
                 if (props.TryGetValue(setting.Name, out property))
                 {
                     var val = setting.ChildNodes.OfType<XmlText>().FirstOrDefault()?.InnerText;
+                    if (val == null)
+                        continue;
                     if (property.PropertyType.IsPrimitive)
                     {
-                        setPrimitive(property,obj,val);
+                        SetPrimitive(property,obj,val);
                     }
                     else if (property.PropertyType.IsEnum)
                     {
                         try{
                             property.SetValue(obj,Enum.Parse(property.PropertyType,val));
-                        }catch{}
+                        }
+                        catch
+                        {
+                            // ignored
+                        }
                     }
                     else
                     {
@@ -176,11 +177,9 @@ namespace engenious.Content.Pipeline
         {
             ReadObject(nodes,this);
         }
-        private string primitiveToString(object obj)
+        private static string PrimitiveToString(object obj)
         {
             var code = Type.GetTypeCode(obj.GetType());
-            if (obj == null)
-                return null;
             switch(code)
             {
                 case TypeCode.String:
@@ -212,7 +211,7 @@ namespace engenious.Content.Pipeline
             return obj.ToString();
         }
 
-        private void WriteObject(XmlWriter writer, object obj)
+        private static void WriteObject(XmlWriter writer, object obj)
         {
             foreach (var prop in TypeDescriptor.GetProperties(obj).OfType<PropertyDescriptor>())
             {
@@ -222,7 +221,7 @@ namespace engenious.Content.Pipeline
                 if (type.IsPrimitive || type.IsEnum)
                 {
 
-                    writer.WriteElementString(prop.Name, primitiveToString(prop.GetValue(obj)));
+                    writer.WriteElementString(prop.Name, PrimitiveToString(prop.GetValue(obj)));
                 }
                 else
                 {

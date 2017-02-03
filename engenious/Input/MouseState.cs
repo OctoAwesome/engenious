@@ -26,8 +26,6 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace engenious.Input
 {
@@ -40,10 +38,11 @@ namespace engenious.Input
         internal const int WheelDelta = 1;//Windows wheel
         internal const int MaxButtons = 16;
         // we are storing in an ushort
-        Vector2 position;
-        MouseScroll scroll;
-        ushort buttons;
-        bool is_connected;
+        private Vector2 _position;
+
+        private MouseScroll _scroll;
+        private ushort _buttons;
+        private bool _isConnected;
 
         #endregion
 
@@ -91,7 +90,7 @@ namespace engenious.Input
         /// </summary>
         public int Wheel
         {
-            get { return (int)(scroll.Y*WheelDelta); }
+            get { return (int)(_scroll.Y*WheelDelta); }
         }
 
         /// <summary>
@@ -99,7 +98,7 @@ namespace engenious.Input
         /// </summary>
         public float WheelPrecise
         {
-            get { return scroll.Y; }
+            get { return _scroll.Y; }
         }
 
         /// <summary>
@@ -108,26 +107,26 @@ namespace engenious.Input
         /// </summary>
         public MouseScroll Scroll
         {
-            get { return scroll; }
-            internal set{scroll = value;}
+            get { return _scroll; }
+            internal set{_scroll = value;}
         }
 
         /// <summary>
-        /// Gets an integer representing the absolute x position of the pointer, in window pixel coordinates.
+        /// Gets an integer representing the absolute x position of the pointer, in BaseWindow pixel coordinates.
         /// </summary>
         public int X
         {
-            get { return (int)Math.Round(position.X); }
-            internal set { position.X = value; }
+            get { return (int)Math.Round(_position.X); }
+            internal set { _position.X = value; }
         }
 
         /// <summary>
-        /// Gets an integer representing the absolute y position of the pointer, in window pixel coordinates.
+        /// Gets an integer representing the absolute y position of the pointer, in BaseWindow pixel coordinates.
         /// </summary>
         public int Y
         {
-            get { return (int)Math.Round(position.Y); }
-            internal set { position.Y = value; }
+            get { return (int)Math.Round(_position.Y); }
+            internal set { _position.Y = value; }
         }
 
         /// <summary>
@@ -184,7 +183,7 @@ namespace engenious.Input
             get
             {
                 // If any bit is set then a button is down.
-                return buttons != 0;
+                return _buttons != 0;
             }
         }
 
@@ -203,8 +202,8 @@ namespace engenious.Input
         /// <value><c>true</c> if this instance is connected; otherwise, <c>false</c>.</value>
         public bool IsConnected
         {
-            get { return is_connected; }
-            internal set { is_connected = value; }
+            get { return _isConnected; }
+            internal set { _isConnected = value; }
         }
 
         /// <summary>
@@ -270,7 +269,7 @@ namespace engenious.Input
         /// </returns>
         public override int GetHashCode()
         {
-            return buttons.GetHashCode() ^ X.GetHashCode() ^ Y.GetHashCode() ^ scroll.GetHashCode();
+            return _buttons.GetHashCode() ^ X.GetHashCode() ^ Y.GetHashCode() ^ _scroll.GetHashCode();
         }
 
         /// <summary>
@@ -279,7 +278,7 @@ namespace engenious.Input
         /// <returns>A <see cref="System.String"/> that represents the current <see cref="OpenTK.Input.MouseState"/>.</returns>
         public override string ToString()
         {
-            string b = Convert.ToString(buttons, 2).PadLeft(10, '0');
+            string b = Convert.ToString(_buttons, 2).PadLeft(10, '0');
             return String.Format("[X={0}, Y={1}, Scroll={2}, Buttons={3}, IsConnected={4}]",
                 X, Y, Scroll, b, IsConnected);
         }
@@ -290,32 +289,32 @@ namespace engenious.Input
 
         internal Vector2 Position
         {
-            get { return position; }
-            set { position = value; }
+            get { return _position; }
+            set { _position = value; }
         }
 
         internal bool ReadBit(int offset)
         {
             ValidateOffset(offset);
-            return (buttons & (1 << offset)) != 0;
+            return (_buttons & (1 << offset)) != 0;
         }
 
         internal void EnableBit(int offset)
         {
             ValidateOffset(offset);
-            buttons |= unchecked((ushort)(1 << offset));
+            _buttons |= unchecked((ushort)(1 << offset));
         }
 
         internal void DisableBit(int offset)
         {
             ValidateOffset(offset);
-            buttons &= unchecked((ushort)(~(1 << offset)));
+            _buttons &= unchecked((ushort)(~(1 << offset)));
         }
 
         internal void MergeBits(MouseState other)
         {
-            buttons |= other.buttons;
-            SetScrollRelative(other.scroll.X, other.scroll.Y);
+            _buttons |= other._buttons;
+            SetScrollRelative(other._scroll.X, other._scroll.Y);
             X += other.X;
             Y += other.Y;
             IsConnected |= other.IsConnected;
@@ -330,14 +329,14 @@ namespace engenious.Input
 
         internal void SetScrollAbsolute(float x, float y)
         {
-            scroll.X = x;
-            scroll.Y = y;
+            _scroll.X = x;
+            _scroll.Y = y;
         }
 
         internal void SetScrollRelative(float x, float y)
         {
-            scroll.X += x;
-            scroll.Y += y;
+            _scroll.X += x;
+            _scroll.Y += y;
         }
 
         #endregion
@@ -364,7 +363,7 @@ namespace engenious.Input
         public bool Equals(MouseState other)
         {
             return
-                buttons == other.buttons &&
+                _buttons == other._buttons &&
             X == other.X &&
             Y == other.Y &&
             Scroll == other.Scroll;

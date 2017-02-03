@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 
 namespace engenious
 {
@@ -7,16 +6,16 @@ namespace engenious
     {
         public Point(int x, int y)
         {
-            this.X = x;
-            this.Y = y;
+            X = x;
+            Y = y;
         }
 
         public int X{ get; set; }
 
         public int Y{ get; set; }
 
-        [BrowsableAttribute(false)]
-        public bool IsEmpty { get { return X == 0 && Y == 0; } }
+        [Browsable(false)]
+        public bool IsEmpty => X == 0 && Y == 0;
 
         public Vector2 ToVector2()
         {
@@ -27,12 +26,12 @@ namespace engenious
 
         public override string ToString()
         {
-            return string.Format("[Point: X={0}, Y={1}]", X, Y);
+            return $"[Point: X={X}, Y={Y}]";
         }
 
         public override int GetHashCode()
         {
-            return (int)(X ^ Y);//TODO
+            return X ^ Y;//TODO
         }
 
         public override bool Equals(object obj)

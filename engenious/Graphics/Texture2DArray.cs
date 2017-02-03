@@ -1,24 +1,21 @@
-﻿using OpenTK.Graphics.OpenGL4;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System;
 using System.Runtime.InteropServices;
-using System.Text;
+using OpenTK.Graphics.OpenGL4;
 
 namespace engenious.Graphics
 {
     public class Texture2DArray : Texture
     {
-        private int texture;
-        private PixelInternalFormat _internalFormat;
+        private readonly int _texture;
+        private readonly PixelInternalFormat _internalFormat;
         public Texture2DArray(GraphicsDevice graphicsDevice, int levels, int width, int height, int layers)
             : base(graphicsDevice)
         {
             using (Execute.OnUiContext)
             {
-                texture = GL.GenTexture();
+                _texture = GL.GenTexture();
                 
-                GL.BindTexture(TextureTarget.Texture2DArray, texture);
+                GL.BindTexture(TextureTarget.Texture2DArray, _texture);
                 _internalFormat = PixelInternalFormat.Rgba8;//TODO dynamic format
                 GL.TexStorage3D(TextureTarget3d.Texture2DArray, levels, SizedInternalFormat.Rgba8, width, height, Math.Max(layers,1));
             }
@@ -39,7 +36,7 @@ namespace engenious.Graphics
                         createMipMaps = true;
                     int mipWidth =text.Width,mipHeight=text.Height;
                     for (int i=0;i<1 && createMipMaps || !createMipMaps && i < levels;i++){
-                        GL.CopyImageSubData(text.texture,ImageTarget.Texture2D,i,0,0,0,texture,ImageTarget.Texture2DArray,i,0,0,layer,mipWidth,mipHeight,1);
+                        GL.CopyImageSubData(text.Texture,ImageTarget.Texture2D,i,0,0,0,_texture,ImageTarget.Texture2DArray,i,0,0,layer,mipWidth,mipHeight,1);
                         mipWidth/=2;
                         mipHeight /=2;
                     }
@@ -64,13 +61,13 @@ namespace engenious.Graphics
 
         internal override void Bind()
         {
-            GL.BindTexture(TextureTarget.Texture2DArray, texture);
+            GL.BindTexture(TextureTarget.Texture2DArray, _texture);
         }
 
         public override void BindComputation(int unit = 0)
         {
-            GL.BindImageTexture(unit, texture, 0, false, 0, TextureAccess.WriteOnly,
-                (OpenTK.Graphics.OpenGL4.SizedInternalFormat) _internalFormat);
+            GL.BindImageTexture(unit, _texture, 0, false, 0, TextureAccess.WriteOnly,
+                (SizedInternalFormat) _internalFormat);
         }
 
         internal override void SetSampler(SamplerState state)

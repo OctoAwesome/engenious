@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace engenious.Graphics
+﻿namespace engenious.Graphics
 {
     public class BlendState
     {
@@ -37,13 +35,13 @@ namespace engenious.Graphics
         public BlendState()
         {
             //GL.BlendFunc(BlendingFactorSrc.One,#
-            this.ColorSourceBlend = BlendingFactorSrc.SrcAlpha;
-            this.AlphaSourceBlend = BlendingFactorSrc.SrcAlpha;
-            this.ColorDestinationBlend = BlendingFactorDest.OneMinusSrcAlpha;
-            this.AlphaDestinationBlend = BlendingFactorDest.OneMinusSrcAlpha;
+            ColorSourceBlend = BlendingFactorSrc.SrcAlpha;
+            AlphaSourceBlend = BlendingFactorSrc.SrcAlpha;
+            ColorDestinationBlend = BlendingFactorDest.OneMinusSrcAlpha;
+            AlphaDestinationBlend = BlendingFactorDest.OneMinusSrcAlpha;
 
-            this.ColorBlendFunction = BlendEquationMode.FuncAdd;
-            this.AlphaBlendFunction = BlendEquationMode.FuncAdd;
+            ColorBlendFunction = BlendEquationMode.FuncAdd;
+            AlphaBlendFunction = BlendEquationMode.FuncAdd;
         }
 
         public BlendingFactorSrc ColorSourceBlend{ get; set; }

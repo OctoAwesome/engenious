@@ -1,7 +1,4 @@
-﻿using System;
-using engenious.Graphics;
-
-namespace engenious.Graphics
+﻿namespace engenious.Graphics
 {
     public class Mesh:GraphicsResource
     {

@@ -1,12 +1,15 @@
 ﻿using System;
+using System.Collections.Specialized;
 using System.ComponentModel;
+using System.IO;
 using System.Xml;
+using System.Xml.Serialization;
 
 namespace ContentTool.Items
 {
-    [System.Xml.Serialization.XmlInclude(typeof(ContentFolder))]
-    [System.Xml.Serialization.XmlInclude(typeof(ContentFile))]
-    public abstract class ContentItem : System.ComponentModel.INotifyPropertyChanged,System.Collections.Specialized.INotifyCollectionChanged,ICustomTypeDescriptor
+    [XmlInclude(typeof(ContentFolder))]
+    [XmlInclude(typeof(ContentFile))]
+    public abstract class ContentItem : INotifyPropertyChanged,INotifyCollectionChanged,ICustomTypeDescriptor
     {
 
         #region ICustomTypeDescriptor implementation
@@ -73,58 +76,57 @@ namespace ContentTool.Items
         #endregion
 
 
-
-        public ContentItem(ContentFolder parent = null)
+        protected ContentItem(ContentFolder parent = null)
         {
-            this.Parent = parent;
+            Parent = parent;
         }
 
-        private string name;
+        private string _name;
         [DisplayName("(Name)")]
         public virtual string Name
         {
-            get { return name; }
+            get { return _name; }
             set
             {
-                if (name != value)
+                if (_name != value)
                 {
-                    name = value;
-                    PropertyChanged?.Invoke(this, new System.ComponentModel.PropertyChangedEventArgs("Name"));
+                    _name = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Name"));
                 }
             }
         }
 
-        [System.Xml.Serialization.XmlIgnore]
-        [System.ComponentModel.Browsable(false)]
+        [XmlIgnore]
+        [Browsable(false)]
         public virtual ContentFolder Parent{ get; internal set; }
 
-        public string getPath()
+        public string GetPath()
         {
-            if (this is ContentProject || this.Parent == null)
+            if (this is ContentProject || Parent == null)
                 return "";
-            if (this.Parent is ContentProject)
-                return this.Name;
-            return System.IO.Path.Combine(this.Parent.getPath(), this.Name);
+            if (Parent is ContentProject)
+                return Name;
+            return Path.Combine(Parent.GetPath(), Name);
         }
 
         #region INotifyPropertyChanged implementation
 
-        public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler PropertyChanged;
 
         #endregion
 
         #region INotifyCollectionChanged implementation
 
-        public event System.Collections.Specialized.NotifyCollectionChangedEventHandler CollectionChanged;
+        public event NotifyCollectionChangedEventHandler CollectionChanged;
 
         #endregion
 
-        protected void InvokePropertyChange(object sender, System.ComponentModel.PropertyChangedEventArgs args)
+        protected void InvokePropertyChange(object sender, PropertyChangedEventArgs args)
         {
             PropertyChanged?.Invoke(sender, args);
         }
 
-        protected void InvokeCollectionChange(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs args)
+        protected void InvokeCollectionChange(object sender, NotifyCollectionChangedEventArgs args)
         {
             CollectionChanged?.Invoke(sender, args);
         }

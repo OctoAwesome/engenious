@@ -1,20 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Xml;
 using System.Xml.Serialization;
 
 namespace ContentTool
 {
-    [System.Serializable]
-    [System.Xml.Serialization.XmlRoot("Configuration")]
+    [Serializable]
+    [XmlRoot("Configuration")]
     public class ToolConfiguration
     {
-        [System.NonSerialized]
+        [NonSerialized]
         public static string ConfigurationLocation = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ".engenious");
 
         public string LastFile { get; set; }
@@ -29,7 +24,7 @@ namespace ContentTool
                     serializer.Serialize(w, this);
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 MessageBox.Show("An Error occured while saving the configuration", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }

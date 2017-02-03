@@ -2,12 +2,12 @@ namespace ContentTool
 {
     
     #region Windows Form Designer generated code
-    public partial class frmMain
+    public partial class FrmMain
     {
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmMain));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrmMain));
             this.splitContainer_main = new System.Windows.Forms.SplitContainer();
             this.splitContainer_left = new System.Windows.Forms.SplitContainer();
             this.treeContentFiles = new System.Windows.Forms.TreeView();
@@ -616,12 +616,12 @@ namespace ContentTool
             this.buildToolStripMenuItem1.Size = new System.Drawing.Size(161, 22);
             this.buildToolStripMenuItem1.Text = "Build";
             // 
-            // frmMain
+            // FrmMain
             // 
             this.ClientSize = new System.Drawing.Size(681, 492);
             this.Controls.Add(this.splitContainer_main);
             this.Controls.Add(this.mainMenu);
-            this.Name = "frmMain";
+            this.Name = "FrmMain";
             this.Text = "Content Pipeline";
             this.Load += new System.EventHandler(this.FrmMain_Load);
             this.splitContainer_main.Panel1.ResumeLayout(false);

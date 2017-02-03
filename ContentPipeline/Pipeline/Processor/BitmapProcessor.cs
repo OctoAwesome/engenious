@@ -1,6 +1,7 @@
 ﻿using System;
-using System.Drawing;
 using System.ComponentModel;
+using System.Drawing;
+using System.Drawing.Imaging;
 
 namespace engenious.Content.Pipeline
 {
@@ -8,21 +9,17 @@ namespace engenious.Content.Pipeline
 
     public class BitmapProcessor : ContentProcessor<Bitmap, TextureContent,BitmapProcessorSettings>
     {
-        public BitmapProcessor()
-        {
-        }
-
         #region implemented abstract members of ContentProcessor
         public override TextureContent Process(Bitmap input, string filename, ContentProcessorContext context)
         {
-            var data = input.LockBits(new System.Drawing.Rectangle(0,0,input.Width,input.Height),System.Drawing.Imaging.ImageLockMode.ReadOnly,System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+            var data = input.LockBits(new System.Drawing.Rectangle(0,0,input.Width,input.Height),ImageLockMode.ReadOnly,System.Drawing.Imaging.PixelFormat.Format32bppArgb);
             TextureContent content = new TextureContent(context.GraphicsDevice,!settings.AutoGenerateMipMaps,settings.MipMapCount,data.Scan0,input.Width,input.Height,TextureContentFormat.Png,settings.Format);
             input.UnlockBits(data);
             return content;
         }
         #endregion
     }
-    [Serializable()]
+    [Serializable]
     public class BitmapProcessorSettings : ProcessorSettings
     {
         [DefaultValue(false)]

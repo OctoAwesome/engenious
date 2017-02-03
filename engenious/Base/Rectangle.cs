@@ -16,10 +16,10 @@ namespace engenious
 
         public Rectangle(int x, int y, int width, int height)
         {
-            this.X = x;
-            this.Y = y;
-            this.Width = width;
-            this.Height = height;
+            X = x;
+            Y = y;
+            Width = width;
+            Height = height;
         }
 
         public int X{ get; set; }
@@ -30,21 +30,21 @@ namespace engenious
 
         public int Height{ get; set; }
 
-        public int Left{ get { return X; } }
+        public int Left => X;
 
-        public int Right{ get { return X + Width; } }
+        public int Right => X + Width;
 
-        public int Top{ get { return Y; } }
+        public int Top => Y;
 
-        public int Bottom{ get { return Y + Height; } }
+        public int Bottom => Y + Height;
 
         public Size Size
         { 
             get { return new Size(Width, Height); }
             set
             {
-                this.Width = value.Width;
-                this.Height = value.Height;
+                Width = value.Width;
+                Height = value.Height;
             }
         }
 
@@ -53,8 +53,8 @@ namespace engenious
             get { return new Point(X, Y); } 
             set
             {
-                this.X = value.X;
-                this.Y = value.Y;
+                X = value.X;
+                Y = value.Y;
             }
         }
 
@@ -93,11 +93,11 @@ namespace engenious
             int y = Math.Max(Y, rect.Y);
             int right = Math.Max(Right, rect.Right);
             int bottom = Math.Max(Bottom, rect.Bottom);
-            this.X = x;
-            this.Y = y;
+            X = x;
+            Y = y;
 
-            this.Width = right - x;
-            this.Height = bottom - y;
+            Width = right - x;
+            Height = bottom - y;
         }
 
         public bool IntersectsWith(Rectangle rect)
@@ -119,7 +119,7 @@ namespace engenious
 
         public override string ToString()
         {
-            return string.Format("[Rectangle: X={0}, Y={1}, Width={2}, Height={3}]", X, Y, Width, Height);
+            return $"[Rectangle: X={X}, Y={Y}, Width={Width}, Height={Height}]";
         }
 
         public override int GetHashCode()
@@ -147,6 +147,7 @@ namespace engenious
             return a.X != b.X || a.Y != b.Y || a.Width != b.Width || a.Height != b.Height;
         }
 
+        // ReSharper disable once InconsistentNaming
         public static Rectangle FromLTRB(int left, int top, int right, int bottom)
         {
             return new Rectangle(left, top, right - left, bottom - top);
@@ -164,7 +165,7 @@ namespace engenious
             int y = Math.Max(a.Y, b.Y);
             int right = Math.Max(a.Right, b.Right);
             int bottom = Math.Max(a.Bottom, b.Bottom);
-            return Rectangle.FromLTRB(x, y, right, bottom);
+            return FromLTRB(x, y, right, bottom);
         }
 
         public static readonly Rectangle Empty = new Rectangle(0, 0, 0, 0);

@@ -1,17 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace engenious.Content.Pipeline
 {
 	public abstract class ContentContext : IContentContext
 	{
         public event BuildMessageDel BuildMessage;
-        public ContentContext ()
+
+	    protected ContentContext ()
 		{
 			Dependencies = new List<string> ();
 		}
 
-		public List<string> Dependencies{ get; private set; }
+		public List<string> Dependencies{ get; }
 
 
 

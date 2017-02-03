@@ -7,31 +7,31 @@ namespace engenious.Graphics
 
     public class IndexBuffer :GraphicsResource
     {
-        private int ibo;
+        private int _ibo;
         //private byte[] buffer;
-        private int elementSize;
+        private readonly int _elementSize;
         public IndexBuffer(GraphicsDevice graphicsDevice, Type indexType, int indexCount, BufferUsageHint usage = BufferUsageHint.StaticDraw)
             : base(graphicsDevice)
         {
-            elementSize = System.Runtime.InteropServices.Marshal.SizeOf(indexType);
-            if (elementSize <= 8)
-                this.IndexElementSize = DrawElementsType.UnsignedByte;
-            else if (elementSize <= 16)
-                this.IndexElementSize = DrawElementsType.UnsignedShort;
-            else if (elementSize <= 32)
-                this.IndexElementSize = DrawElementsType.UnsignedInt;
+            _elementSize = Marshal.SizeOf(indexType);
+            if (_elementSize <= 8)
+                IndexElementSize = DrawElementsType.UnsignedByte;
+            else if (_elementSize <= 16)
+                IndexElementSize = DrawElementsType.UnsignedShort;
+            else if (_elementSize <= 32)
+                IndexElementSize = DrawElementsType.UnsignedInt;
             else
                 throw new ArgumentException("Invalid Type(bigger than 32 bits)");
 			
-            this.IndexCount = indexCount;
-            this.BufferUsage = usage;
+            IndexCount = indexCount;
+            BufferUsage = usage;
             using (Execute.OnUiContext)
             {
-                ibo = GL.GenBuffer();
-                GL.BindBuffer(BufferTarget.ElementArrayBuffer, ibo);
+                _ibo = GL.GenBuffer();
+                GL.BindBuffer(BufferTarget.ElementArrayBuffer, _ibo);
                 GL.BufferData(
                     BufferTarget.ElementArrayBuffer,
-                    new IntPtr(indexCount * elementSize),
+                    new IntPtr(indexCount * _elementSize),
                     IntPtr.Zero,
                     (OpenTK.Graphics.OpenGL4.BufferUsageHint) BufferUsage);
             }
@@ -42,17 +42,17 @@ namespace engenious.Graphics
         public IndexBuffer(GraphicsDevice graphicsDevice, DrawElementsType indexElementSize, int indexCount, BufferUsageHint usage = BufferUsageHint.StaticDraw)
             : base(graphicsDevice)
         {
-            this.IndexElementSize = indexElementSize;
-            this.IndexCount = indexCount;
-            this.BufferUsage = usage;
+            IndexElementSize = indexElementSize;
+            IndexCount = indexCount;
+            BufferUsage = usage;
             using (Execute.OnUiContext)
             {
-                ibo = GL.GenBuffer();
-                GL.BindBuffer(BufferTarget.ElementArrayBuffer, ibo);
-                elementSize = (indexElementSize == DrawElementsType.UnsignedByte ? 1 : (indexElementSize == DrawElementsType.UnsignedShort ? 2 : 4));
+                _ibo = GL.GenBuffer();
+                GL.BindBuffer(BufferTarget.ElementArrayBuffer, _ibo);
+                _elementSize = (indexElementSize == DrawElementsType.UnsignedByte ? 1 : (indexElementSize == DrawElementsType.UnsignedShort ? 2 : 4));
                 GL.BufferData(
                     BufferTarget.ElementArrayBuffer,
-                    new IntPtr(indexCount * elementSize),
+                    new IntPtr(indexCount * _elementSize),
                     IntPtr.Zero,
                     (OpenTK.Graphics.OpenGL4.BufferUsageHint) BufferUsage);
             }
@@ -124,7 +124,7 @@ namespace engenious.Graphics
             using (Execute.OnUiContext)
             {
                 Bind();
-                GL.BufferSubData<T>(BufferTarget.ElementArrayBuffer, IntPtr.Zero, new IntPtr(data.Length * Marshal.SizeOf(default(T))), data); //TODO:
+                GL.BufferSubData(BufferTarget.ElementArrayBuffer, IntPtr.Zero, new IntPtr(data.Length * Marshal.SizeOf(default(T))), data); //TODO:
             }
             GraphicsDevice.CheckError();
             //Buffer.BlockCopy (data, 0, buffer, 0, data.Length);
@@ -139,15 +139,15 @@ namespace engenious.Graphics
                 GL.BindBuffer(BufferTarget.ElementArrayBuffer, tempIBO);
                 GL.BufferData(
                     BufferTarget.ElementArrayBuffer,
-                    new IntPtr(indexCount * elementSize),
+                    new IntPtr(indexCount * _elementSize),
                     IntPtr.Zero,
                     (OpenTK.Graphics.OpenGL4.BufferUsageHint) BufferUsage);
 
 
-                GL.DeleteBuffer(ibo);
-                ibo = tempIBO;
+                GL.DeleteBuffer(_ibo);
+                _ibo = tempIBO;
 
-                this.IndexCount = indexCount;
+                IndexCount = indexCount;
             }
 
             if (keepData)
@@ -161,7 +161,7 @@ namespace engenious.Graphics
 
         internal void Bind()
         {
-            GL.BindBuffer(BufferTarget.ElementArrayBuffer, ibo);
+            GL.BindBuffer(BufferTarget.ElementArrayBuffer, _ibo);
             GraphicsDevice.CheckError();
         }
 
@@ -169,7 +169,7 @@ namespace engenious.Graphics
         {
             using (Execute.OnUiContext)
             {
-                GL.DeleteBuffer(ibo);
+                GL.DeleteBuffer(_ibo);
             }
             base.Dispose();
         }

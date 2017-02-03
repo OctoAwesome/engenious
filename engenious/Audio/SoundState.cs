@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace engenious.Audio
+﻿namespace engenious.Audio
 {
     public enum SoundState
     {

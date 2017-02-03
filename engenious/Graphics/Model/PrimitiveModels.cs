@@ -6,19 +6,19 @@ namespace engenious.Graphics
     public class PrimitiveModels
     {
         #region IcoSphere
-        private static int addVertex(Vector3 p,List<Vector3> vertices,ref int index)
+        private static int AddVertex(Vector3 p,List<Vector3> vertices,ref int index)
         {
             float length = (float)Math.Sqrt(p.X * p.X + p.Y * p.Y + p.Z * p.Z);
             vertices.Add(new Vector3(p.X/length, p.Y/length, p.Z/length));
             return index++;
         }
-        private static int getMiddlePoint(int p1, int p2,List<Vector3> vertices, Dictionary<Int64, int> middlePointIndexCache,ref int index)
+        private static int GetMiddlePoint(int p1, int p2,List<Vector3> vertices, Dictionary<long, int> middlePointIndexCache,ref int index)
         {
             // first check if we have it already
             bool firstIsSmaller = p1 < p2;
-            Int64 smallerIndex = firstIsSmaller ? p1 : p2;
-            Int64 greaterIndex = firstIsSmaller ? p2 : p1;
-            Int64 key = (smallerIndex << 32) + greaterIndex;
+            long smallerIndex = firstIsSmaller ? p1 : p2;
+            long greaterIndex = firstIsSmaller ? p2 : p1;
+            long key = (smallerIndex << 32) + greaterIndex;
 
             int ret;
             if (middlePointIndexCache.TryGetValue(key, out ret))
@@ -35,7 +35,7 @@ namespace engenious.Graphics
                 (point1.Z + point2.Z) / 2.0f);
 
             // add vertex makes sure point is on unit sphere
-            int i = addVertex(middle,vertices,ref index); 
+            int i = AddVertex(middle,vertices,ref index);
 
             // store it, return index
             middlePointIndexCache.Add(key, i);
@@ -50,20 +50,20 @@ namespace engenious.Graphics
             // create 12 vertices of a icosahedron
             var t = (float)((1.0 + Math.Sqrt(5.0)) / 2.0);
 
-            addVertex(new Vector3(-1,  t,  0),vertices,ref index);
-            addVertex(new Vector3( 1,  t,  0),vertices,ref index);
-            addVertex(new Vector3(-1, -t,  0),vertices,ref index);
-            addVertex(new Vector3( 1, -t,  0),vertices,ref index);
+            AddVertex(new Vector3(-1,  t),vertices,ref index);
+            AddVertex(new Vector3( 1,  t),vertices,ref index);
+            AddVertex(new Vector3(-1, -t),vertices,ref index);
+            AddVertex(new Vector3( 1, -t),vertices,ref index);
 
-            addVertex(new Vector3( 0, -1,  t),vertices,ref index);
-            addVertex(new Vector3( 0,  1,  t),vertices,ref index);
-            addVertex(new Vector3( 0, -1, -t),vertices,ref index);
-            addVertex(new Vector3( 0,  1, -t),vertices,ref index);
+            AddVertex(new Vector3( 0, -1,  t),vertices,ref index);
+            AddVertex(new Vector3( 0,  1,  t),vertices,ref index);
+            AddVertex(new Vector3( 0, -1, -t),vertices,ref index);
+            AddVertex(new Vector3( 0,  1, -t),vertices,ref index);
 
-            addVertex(new Vector3( t,  0, -1),vertices,ref index);
-            addVertex(new Vector3( t,  0,  1),vertices,ref index);
-            addVertex(new Vector3(-t,  0, -1),vertices,ref index);
-            addVertex(new Vector3(-t,  0,  1),vertices,ref index);
+            AddVertex(new Vector3( t,  0, -1),vertices,ref index);
+            AddVertex(new Vector3( t,  0,  1),vertices,ref index);
+            AddVertex(new Vector3(-t,  0, -1),vertices,ref index);
+            AddVertex(new Vector3(-t,  0,  1),vertices,ref index);
 
 
             // create 20 triangles of the icosahedron
@@ -105,9 +105,9 @@ namespace engenious.Graphics
                 for(int j=0;j<faces.Count;j+=3)
                 {
                     // replace triangle by 4 triangles
-                    int a = getMiddlePoint(faces[j+0], faces[j+1],vertices,middlePointIndexCache,ref index);
-                    int b = getMiddlePoint(faces[j+1], faces[j+2],vertices,middlePointIndexCache,ref index);
-                    int c = getMiddlePoint(faces[j+2], faces[j+0],vertices,middlePointIndexCache,ref index);
+                    int a = GetMiddlePoint(faces[j+0], faces[j+1],vertices,middlePointIndexCache,ref index);
+                    int b = GetMiddlePoint(faces[j+1], faces[j+2],vertices,middlePointIndexCache,ref index);
+                    int c = GetMiddlePoint(faces[j+2], faces[j+0],vertices,middlePointIndexCache,ref index);
 
                     faces2.Add(faces[j+0]);faces2.Add( a);faces2.Add( c);
                     faces2.Add(faces[j+1]);faces2.Add( b);faces2.Add( a);
@@ -121,6 +121,7 @@ namespace engenious.Graphics
         }
         #endregion
         #region UVSphere
+        // ReSharper disable once InconsistentNaming
         public static void CreateUVSphere(out Vector3[] vertices,out int[] indices,int nbLong=24,int nbLat=16)
         {
             float radius = 1f;
@@ -132,13 +133,13 @@ namespace engenious.Graphics
             vertices[0] = Vector3.UnitZ * radius;
             for( int lat = 0; lat < nbLat; lat++ )
             {
-                float a1 = _pi * (float)(lat+1) / (nbLat+1);
+                float a1 = _pi * (lat+1) / (nbLat+1);
                 float sin1 = (float)Math.Sin(a1);
                 float cos1 = (float)Math.Cos(a1);
 
                 for( int lon = 0; lon <= nbLong; lon++ )
                 {
-                    float a2 = _2pi * (float)(lon == nbLong ? 0 : lon) / nbLong;
+                    float a2 = _2pi * (lon == nbLong ? 0 : lon) / nbLong;
                     float sin2 = (float)Math.Sin(a2);
                     float cos2 = (float)Math.Cos(a2);
 

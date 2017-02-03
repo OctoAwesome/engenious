@@ -1,21 +1,25 @@
 ﻿using System;
 using System.IO;
-using engenious.Content.Pipeline;
 using System.Reflection;
+using Assimp;
+using Assimp.Unmanaged;
+using engenious.Content.Pipeline;
 
 namespace engenious.Pipeline
 {
-    [ContentImporterAttribute(".fbx",".dae", DisplayName = "Model Importer", DefaultProcessor = "ModelProcessor")]
-    public class FbxImporter : ContentImporter<Assimp.Scene>
+    [ContentImporter(".fbx",".dae", DisplayName = "Model Importer", DefaultProcessor = "ModelProcessor")]
+    public class FbxImporter : ContentImporter<Scene>
     {
 
-        private static Exception dllLoadExc;
+        private static readonly Exception DllLoadExc;
 
         static FbxImporter()
         {
             try
             {
                 string dir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                if (dir == null)
+                    throw new Exception("executing path not found");
                 string ext = ".dll";
                 switch (PlatformHelper.RunningPlatform())
                 {
@@ -30,26 +34,22 @@ namespace engenious.Pipeline
                     dir = Path.Combine(dir, "Assimp64" + ext);
                 else
                     dir = Path.Combine(dir, "Assimp64" + ext);
-                Assimp.Unmanaged.AssimpLibrary.Instance.LoadLibrary(dir);
+                AssimpLibrary.Instance.LoadLibrary(dir);
             }
             catch (Exception ex)
             {
-                dllLoadExc = ex;
+                DllLoadExc = ex;
             }
         }
 
-        public FbxImporter()
+        public override Scene Import(string filename, ContentImporterContext context)
         {
-        }
-
-        public override Assimp.Scene Import(string filename, ContentImporterContext context)
-        {
-            if (dllLoadExc != null)
-                context.RaiseBuildMessage("FBXIMPORT" , dllLoadExc.Message, BuildMessageEventArgs.BuildMessageType.Error);
+            if (DllLoadExc != null)
+                context.RaiseBuildMessage("FBXIMPORT" , DllLoadExc.Message, BuildMessageEventArgs.BuildMessageType.Error);
             try
             {
-                Assimp.AssimpContext c = new Assimp.AssimpContext();
-                return c.ImportFile(filename,Assimp.PostProcessSteps.Triangulate | Assimp.PostProcessSteps.OptimizeMeshes | Assimp.PostProcessSteps.OptimizeGraph);
+                AssimpContext c = new AssimpContext();
+                return c.ImportFile(filename,PostProcessSteps.Triangulate | PostProcessSteps.OptimizeMeshes | PostProcessSteps.OptimizeGraph);
             }
             catch (Exception ex)
             {

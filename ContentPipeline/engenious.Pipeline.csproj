@@ -72,7 +72,6 @@
     <Compile Include="Pipeline\Importers\BitmapImporter.cs" />
     <Compile Include="Pipeline\Attributes\ContentImporterAttribute.cs" />
     <Compile Include="Pipeline\Attributes\ContentProcessorAttribute.cs" />
-    <Compile Include="Pipeline\Attributes\AttributeHelper.cs" />
     <Compile Include="Pipeline\Importers\EffectImporter.cs" />
     <Compile Include="Pipeline\Processor\EffectProcessor.cs" />
     <Compile Include="Pipeline\Processor\PassthroughProcessor.cs" />

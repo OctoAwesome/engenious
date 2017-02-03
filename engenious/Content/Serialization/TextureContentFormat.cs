@@ -1,7 +1,8 @@
-﻿using System;
+﻿using System.Diagnostics.CodeAnalysis;
 
 namespace engenious.Content
 {
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
     public enum TextureContentFormat
     {
         Png = 0,

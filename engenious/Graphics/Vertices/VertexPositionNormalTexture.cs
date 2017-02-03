@@ -1,6 +1,4 @@
-﻿using System;
-using System.Runtime.InteropServices;
-using OpenTK;
+﻿using System.Runtime.InteropServices;
 
 namespace engenious.Graphics
 {
@@ -11,22 +9,17 @@ namespace engenious.Graphics
 
 		static VertexPositionNormalTexture()
 		{
-			VertexElement[] elements = new VertexElement[] { new VertexElement (0, VertexElementFormat.Vector3, VertexElementUsage.Position, 0),new VertexElement (12, VertexElementFormat.Vector3, VertexElementUsage.Normal, 0), new VertexElement (24, VertexElementFormat.Vector2, VertexElementUsage.TextureCoordinate, 0) };
+			VertexElement[] elements = { new VertexElement (0, VertexElementFormat.Vector3, VertexElementUsage.Position, 0),new VertexElement (12, VertexElementFormat.Vector3, VertexElementUsage.Normal, 0), new VertexElement (24, VertexElementFormat.Vector2, VertexElementUsage.TextureCoordinate, 0) };
 			VertexDeclaration declaration = new VertexDeclaration (elements);
 			VertexDeclaration = declaration;
 		}
-		VertexDeclaration IVertexType.VertexDeclaration
+		VertexDeclaration IVertexType.VertexDeclaration => VertexDeclaration;
+
+	    public VertexPositionNormalTexture (Vector3 position,Vector3 normal,Vector2 textureCoord)
 		{
-			get
-			{
-				return VertexDeclaration;
-			}
-		}
-		public VertexPositionNormalTexture (Vector3 position,Vector3 normal,Vector2 textureCoord)
-		{
-			this.Position = position;
-			this.Normal = normal;
-			this.TextureCoordinate = textureCoord;
+			Position = position;
+			Normal = normal;
+			TextureCoordinate = textureCoord;
 		}
 			
 		public Vector3 Position{ get; private set;}

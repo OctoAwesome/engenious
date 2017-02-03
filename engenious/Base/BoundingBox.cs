@@ -1,5 +1,4 @@
 ﻿using System;
-using OpenTK;
 using System.Collections.Generic;
 
 namespace engenious
@@ -33,23 +32,17 @@ namespace engenious
             return Contains(box.Min) && Contains(box.Max);
         }
 
-        private static void swap(ref float val1, ref float val2)
-        {
-            float tmp = val1;
-            val1 = val2;
-            val2 = tmp;
-        }
         public bool Intersects(BoundingBox box)
         {
             throw new NotImplementedException();//TODO: return (this.Max.X >= box.Min.X) && (this.Min.X <= box.Max.X)
         }
         public float? Intersects(Ray ray)
         {
-            const float Epsilon = 1e-6f;
+            const float epsilon = 1e-6f;
 
             float? tMin = null, tMax = null;
 
-            if (Math.Abs(ray.Direction.X) < Epsilon)
+            if (Math.Abs(ray.Direction.X) < epsilon)
             {
                 if (ray.Position.X < Min.X || ray.Position.X > Max.X)
                     return null;
@@ -67,7 +60,7 @@ namespace engenious
                 }
             }
 
-            if (Math.Abs(ray.Direction.Y) < Epsilon)
+            if (Math.Abs(ray.Direction.Y) < epsilon)
             {
                 if (ray.Position.Y < Min.Y || ray.Position.Y > Max.Y)
                     return null;
@@ -93,7 +86,7 @@ namespace engenious
                     tMax = tMaxY;
             }
 
-            if (Math.Abs(ray.Direction.Z) < Epsilon)
+            if (Math.Abs(ray.Direction.Z) < epsilon)
             {
                 if (ray.Position.Z < Min.Z || ray.Position.Z > Max.Z)
                     return null;
@@ -171,7 +164,7 @@ namespace engenious
 
         public Vector3[] GetCorners()
         {
-            return new Vector3[]
+            return new[]
             { new Vector3(Min.X, Max.Y, Max.Z), Max, new Vector3(Max.X, Min.Y, Max.Z), new Vector3(Min.X, Min.Y, Max.Z),
                 new Vector3(Min.X, Max.Y, Min.Z), Max, new Vector3(Max.X, Min.Y, Min.Z), new Vector3(Min.X, Min.Y, Min.Z),
             };//TODO: verify?

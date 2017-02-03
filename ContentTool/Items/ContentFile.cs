@@ -1,12 +1,17 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Drawing.Design;
+using System.IO;
 using System.Linq;
 using System.Xml;
 using System.Xml.Serialization;
+using ContentTool.Dialog;
+using engenious.Content.Pipeline;
+using engenious.Pipeline;
 
 namespace ContentTool.Items
 {
-    [Serializable()]
+    [Serializable]
     public class ContentFile : ContentItem
     {
         public ContentFile(ContentFolder parent = null)
@@ -18,7 +23,7 @@ namespace ContentTool.Items
         public ContentFile(string name, ContentFolder parent = null)
             : this(parent)
         {
-            this.Name = name;
+            Name = name;
             ProcessorName = null;
         }
 
@@ -28,12 +33,12 @@ namespace ContentTool.Items
         public override PropertyDescriptorCollection GetProperties(Attribute[] attributes)
         {
             var props = base.GetProperties(attributes);
-            var processorProps = TypeDescriptor.GetProperties(this.Processor?.Settings,true);
+            var processorProps = TypeDescriptor.GetProperties(Processor?.Settings,true);
             var newProps = new PropertyDescriptor[props.Count+processorProps.Count];
             for (int i=0;i<props.Count;i++)
                 newProps[i] = props[i];
             for (int i=0;i<processorProps.Count;i++){
-                newProps[i+props.Count]=new engenious.Pipeline.CustomPropertyDescriptor(processorProps[i],this.Processor.Settings,attributes);
+                newProps[i+props.Count]=new CustomPropertyDescriptor(processorProps[i],Processor?.Settings,attributes);
             }
             return new PropertyDescriptorCollection(newProps);
         }
@@ -47,15 +52,15 @@ namespace ContentTool.Items
             set
             {
                 base.Name = value;
-                Importer = PipelineHelper.CreateImporter(System.IO.Path.GetExtension(value));
+                Importer = PipelineHelper.CreateImporter(Path.GetExtension(value));
             }
         }
         private static string GetProcessor(string name,string importerName)
         {
-            var tp = PipelineHelper.GetImporterType(System.IO.Path.GetExtension(name),importerName);
+            var tp = PipelineHelper.GetImporterType(Path.GetExtension(name),importerName);
             if (tp != null)
             {
-                foreach (var attr in tp.GetCustomAttributes(true).Select(x => x as engenious.Content.Pipeline.ContentImporterAttribute))
+                foreach (var attr in tp.GetCustomAttributes(true).Select(x => x as ContentImporterAttribute))
                 {
                     if (attr == null)
                         continue;
@@ -65,7 +70,7 @@ namespace ContentTool.Items
             return "";
         }
         [Browsable(false)]
-        public engenious.Content.Pipeline.ProcessorSettings Settings
+        public ProcessorSettings Settings
         {
             get{
                 if (Processor == null)
@@ -79,54 +84,53 @@ namespace ContentTool.Items
             }
         }
 
-        [XmlIgnore()]
-        private string processorName;
+        [XmlIgnore]
+        private string _processorName;
         [XmlElement(IsNullable = true)]
-        [System.ComponentModel.Editor(typeof(Dialog.ProcessorEditor), typeof(System.Drawing.Design.UITypeEditor))]
+        [Editor(typeof(ProcessorEditor), typeof(UITypeEditor))]
         public string ProcessorName {
             get {
-                return processorName;
+                return _processorName;
             }
             set
             {
-                string old = processorName;
-                processorName = value;
-                if (string.IsNullOrWhiteSpace(processorName))
+                string old = _processorName;
+                _processorName = value;
+                if (string.IsNullOrWhiteSpace(_processorName))
                 {
-                    processorName = GetProcessor(Name,importerName);
+                    _processorName = GetProcessor(Name,_importerName);
                 }
-                if (processorName != old && !string.IsNullOrWhiteSpace(processorName))
+                if (_processorName != old && !string.IsNullOrWhiteSpace(_processorName))
                 {
                     Processor = PipelineHelper.CreateProcessor(Importer.GetType(), ProcessorName);
                 }
             }
         }
-        [XmlIgnore()]
-        private string importerName;
+        [XmlIgnore]
+        private string _importerName;
         [XmlElement(IsNullable = true)]
-        [System.ComponentModel.Editor(typeof(Dialog.ImporterEditor), typeof(System.Drawing.Design.UITypeEditor))]
+        [Editor(typeof(ImporterEditor), typeof(UITypeEditor))]
         public string ImporterName
         {
             get
             {
-                return importerName;
+                return _importerName;
             }
             set
             {
-                string old = importerName;
-                importerName = value;
-                Importer = PipelineHelper.CreateImporter(System.IO.Path.GetExtension(Name),ref importerName);
+                _importerName = value;
+                Importer = PipelineHelper.CreateImporter(Path.GetExtension(Name),ref _importerName);
                 
             }
         }
         [Browsable(false)]
-        [XmlIgnore()]
-        public engenious.Content.Pipeline.IContentImporter Importer{
+        [XmlIgnore]
+        public IContentImporter Importer{
             get;private set;
         }
         [Browsable(false)]
-        [XmlIgnore()]
-        public engenious.Content.Pipeline.IContentProcessor Processor{
+        [XmlIgnore]
+        public IContentProcessor Processor{
             get;private set;
         }
 
@@ -136,7 +140,7 @@ namespace ContentTool.Items
         }
 
         #region implemented abstract members of ContentItem
-        public override void ReadItem(System.Xml.XmlElement node)
+        public override void ReadItem(XmlElement node)
         {
             switch (node.Name)
             {
@@ -158,7 +162,7 @@ namespace ContentTool.Items
             }
         }
 
-        public override void WriteItems(System.Xml.XmlWriter writer)
+        public override void WriteItems(XmlWriter writer)
         {
             writer.WriteElementString("Name",Name);
             writer.WriteElementString("Processor",ProcessorName);

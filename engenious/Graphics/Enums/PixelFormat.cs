@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.Diagnostics.CodeAnalysis;
 
 namespace engenious
 {
@@ -43,6 +43,7 @@ namespace engenious
         BgraInteger
     }
 
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
     public enum PixelInternalFormat
     {
         DepthComponent = 6402,

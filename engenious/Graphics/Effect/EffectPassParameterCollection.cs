@@ -1,35 +1,35 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace engenious.Graphics
 {
 	public sealed class EffectPassParameterCollection : IEnumerable<EffectPassParameter>
 	{
 		public List<EffectPassParameter> ParameterList;
-		private Dictionary<string,EffectPassParameter> parameters;
-		private EffectPass pass;
+		private readonly Dictionary<string,EffectPassParameter> _parameters;
+		private readonly EffectPass _pass;
 
 		internal EffectPassParameterCollection (EffectPass pass)
 		{
-			this.pass = pass;
+			_pass = pass;
 			ParameterList = new List<EffectPassParameter> ();
-			parameters = new Dictionary<string, EffectPassParameter> ();
+			_parameters = new Dictionary<string, EffectPassParameter> ();
 		}
 
 		internal void Add (EffectPassParameter parameter)
 		{
 			ParameterList.Add (parameter);
-			parameters.Add (parameter.Name, parameter);
+			_parameters.Add (parameter.Name, parameter);
 		}
 
 		private EffectPassParameter CacheParameter (string name)
 		{
-            EffectPassParameter param=null;
+            EffectPassParameter param;
 		    using (Execute.OnUiContext)
 		    {
-		        int location = pass.GetUniformLocation(name);
-		        param = new EffectPassParameter(pass, name, location);
+		        int location = _pass.GetUniformLocation(name);
+		        param = new EffectPassParameter(_pass, name, location);
 		    }
 		    return param;
 		}
@@ -43,9 +43,9 @@ namespace engenious.Graphics
 		public EffectPassParameter this [string name] { 
 			get {
 				EffectPassParameter val;
-				if (!parameters.TryGetValue (name, out val)) {
+				if (!_parameters.TryGetValue (name, out val)) {
 					val = CacheParameter (name);
-					parameters.Add (name, val);
+					_parameters.Add (name, val);
 				}
 				return val;
 			} 

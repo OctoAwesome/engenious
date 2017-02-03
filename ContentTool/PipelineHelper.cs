@@ -1,30 +1,31 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Reflection;
+using System.IO;
 using System.Linq;
-using engenious.Content.Pipeline;
 using System.Linq.Expressions;
+using System.Reflection;
 using ContentTool.Items;
+using engenious.Content.Pipeline;
 using engenious.Pipeline.Pipeline.Editors;
 
 namespace ContentTool
 {
     public static class PipelineHelper
     {
-        private static IList<Type> importers;
-        private static List<Type> editors = new List<Type>();
-        private static Dictionary<string, ContentEditorWrapper> editorsByType = new Dictionary<string, ContentEditorWrapper>();
-        private static Dictionary<string, Type> processors = new Dictionary<string, Type>();
+        private static IList<Type> _importers;
+        private static readonly List<Type> Editors = new List<Type>();
+        private static readonly Dictionary<string, ContentEditorWrapper> EditorsByType = new Dictionary<string, ContentEditorWrapper>();
+        private static readonly Dictionary<string, Type> Processors = new Dictionary<string, Type>();
 
 
-        private static List<KeyValuePair<Type, string>> processorsByType = new List<KeyValuePair<Type, string>>();
+        private static readonly List<KeyValuePair<Type, string>> ProcessorsByType = new List<KeyValuePair<Type, string>>();
 
-        private static List<Assembly> assemblies = new List<Assembly>();
+        private static readonly List<Assembly> Assemblies = new List<Assembly>();
         public static void DefaultInit()
         {
-            assemblies.Clear();
-            assemblies.Add(Assembly.GetExecutingAssembly());
-            assemblies.Add(typeof(IContentImporter).Assembly);
+            Assemblies.Clear();
+            Assemblies.Add(Assembly.GetExecutingAssembly());
+            Assemblies.Add(typeof(IContentImporter).Assembly);
             ListImporters();
             ListProcessors();
         }
@@ -32,20 +33,21 @@ namespace ContentTool
         {
             if (currentProject == null)
                 return;
-            assemblies.Clear();
-            assemblies.Add(Assembly.GetExecutingAssembly());
-            assemblies.Add(typeof(IContentImporter).Assembly);
+            Assemblies.Clear();
+            Assemblies.Add(Assembly.GetExecutingAssembly());
+            Assemblies.Add(typeof(IContentImporter).Assembly);
             if (currentProject.References == null)
                 currentProject.References = new List<string>();
             foreach (string reference in currentProject.References)
             {
                 try
                 {
-                    if (System.IO.File.Exists(reference))
-                        assemblies.Add(Assembly.LoadFile(reference));
+                    if (File.Exists(reference))
+                        Assemblies.Add(Assembly.LoadFile(reference));
                 }
                 catch
                 {
+                    // ignored
                 }
             }
             ListImporters();
@@ -55,12 +57,12 @@ namespace ContentTool
 
         private static void ListImporters()
         {
-            importers = EnumerateImporters().ToList();
+            _importers = EnumerateImporters().ToList();
         }
         public static List<string> GetProcessors(Type tp)
         {
             List<string> fitting = new List<string>();
-            foreach (var pair in processorsByType)
+            foreach (var pair in ProcessorsByType)
             {
                 if (pair.Key.IsAssignableFrom(tp))
                 {
@@ -73,7 +75,7 @@ namespace ContentTool
         public static List<string> GetImporters(string extension)
         {
             List<string> fitting = new List<string>();
-            foreach (var type in importers)
+            foreach (var type in _importers)
             {
                 var attribute =
                     (ContentImporterAttribute)type.GetCustomAttributes(typeof(ContentImporterAttribute), true).First();
@@ -86,12 +88,12 @@ namespace ContentTool
         public static ContentEditorWrapper GetContentEditor(string extension, Type inputType, Type outputType)
         {
             string key = extension + "$" + inputType.FullName + "$" + outputType.FullName;
-            ContentEditorWrapper editorWrap = null;
-            if (editorsByType.TryGetValue(key, out editorWrap))
+            ContentEditorWrapper editorWrap;
+            if (EditorsByType.TryGetValue(key, out editorWrap))
                 return editorWrap;
             Type genericType = typeof(IContentEditor<,>).MakeGenericType(inputType, outputType);
 
-            foreach (var type in editors)
+            foreach (var type in Editors)
             {
                 var attribute =
                    (ContentEditorAttribute)type.GetCustomAttributes(typeof(ContentEditorAttribute), true).First();
@@ -116,7 +118,7 @@ namespace ContentTool
 
                     editorWrap = new ContentEditorWrapper(editor,openMethod);
                     foreach (var ext in attribute.SupportedFileExtensions)
-                        editorsByType[ext + "$" + inputType.FullName + "$" + outputType.FullName] = editorWrap;
+                        EditorsByType[ext + "$" + inputType.FullName + "$" + outputType.FullName] = editorWrap;
                     
                 }
             }
@@ -127,8 +129,8 @@ namespace ContentTool
 
         private static void ListEditors()
         {
-            editors.Clear();
-            foreach (var assembly in assemblies)
+            Editors.Clear();
+            foreach (var assembly in Assemblies)
             {
                 foreach (var type in assembly.GetTypes())
                 {
@@ -138,27 +140,27 @@ namespace ContentTool
                    (ContentEditorAttribute)type.GetCustomAttributes(typeof(ContentEditorAttribute), true).First();
                         if (attribute == null)
                             continue;
-                        editors.Add(type);
+                        Editors.Add(type);
                     }
                 }
             }
         }
         private static void ListProcessors()
         {
-            processors.Clear();
-            processorsByType.Clear();
-            foreach (Assembly assembly in assemblies)
+            Processors.Clear();
+            ProcessorsByType.Clear();
+            foreach (Assembly assembly in Assemblies)
             {
                 foreach (Type type in assembly.GetTypes())
                 {
 
                     if (typeof(IContentProcessor).IsAssignableFrom(type) && !(type.IsAbstract || type.IsInterface))
                     {
-                        if (!processors.ContainsKey(type.Name))
-                            processors.Add(type.Name, type);
+                        if (!Processors.ContainsKey(type.Name))
+                            Processors.Add(type.Name, type);
 
                         Type baseType = GetProcessorInputType(type);
-                        processorsByType.Add(new KeyValuePair<Type, string>(baseType, type.Name));
+                        ProcessorsByType.Add(new KeyValuePair<Type, string>(baseType, type.Name));
                     }
                 }
             }
@@ -184,7 +186,7 @@ namespace ContentTool
         }
         public static Type GetImporterType(string extension, string importerName)
         {
-            foreach (var type in importers)
+            foreach (var type in _importers)
             {
                 var attribute = (ContentImporterAttribute)type.GetCustomAttributes(typeof(ContentImporterAttribute), true).First();
                 if (attribute.FileExtensions.Contains(extension) && (importerName == null || attribute.DisplayName == importerName))
@@ -195,9 +197,9 @@ namespace ContentTool
 
         public static IContentImporter CreateImporter(string extension, ref string importerName)
         {
-            if (importers == null)
+            if (_importers == null)
                 DefaultInit();
-            foreach (var type in importers)
+            foreach (var type in _importers)
             {
                 var attribute = (ContentImporterAttribute)type.GetCustomAttributes(typeof(ContentImporterAttribute), true).First();
                 if (attribute.FileExtensions != null && attribute.FileExtensions.Contains(extension) &&
@@ -212,18 +214,17 @@ namespace ContentTool
         }
         public static IContentImporter CreateImporter(string extension, string importerName = null)
         {
-            string dummy = importerName;
             return CreateImporter(extension, ref importerName);
         }
 
         public static IContentProcessor CreateProcessor(Type importerType, string processorName)
         {
-            Type type = null;
-            if (!string.IsNullOrEmpty(processorName) && processors.TryGetValue(processorName, out type))
+            Type type;
+            if (!string.IsNullOrEmpty(processorName) && Processors.TryGetValue(processorName, out type))
                 return (IContentProcessor)Activator.CreateInstance(type);
 
             var attribute = (ContentImporterAttribute)importerType.GetCustomAttributes(typeof(ContentImporterAttribute), true).First();
-            if (processors.TryGetValue(attribute.DefaultProcessor, out type))
+            if (Processors.TryGetValue(attribute.DefaultProcessor, out type))
                 return (IContentProcessor)Activator.CreateInstance(type);
 
             return null;
@@ -247,7 +248,7 @@ namespace ContentTool
 
         private static IEnumerable<Type> EnumerateImporters()
         {
-            foreach (Assembly assembly in assemblies)
+            foreach (Assembly assembly in Assemblies)
             {
                 foreach (Type type in assembly.GetTypes())
                 {
@@ -258,7 +259,7 @@ namespace ContentTool
                                 null, Type.EmptyTypes, null) == null)
                             continue;
 
-                        var importerAttribute = (ContentImporterAttribute)System.Attribute.GetCustomAttributes(type, typeof(ContentImporterAttribute)).FirstOrDefault();
+                        var importerAttribute = (ContentImporterAttribute)Attribute.GetCustomAttributes(type, typeof(ContentImporterAttribute)).FirstOrDefault();
                         if (importerAttribute != null)
                         {
                             yield return type;
@@ -266,7 +267,6 @@ namespace ContentTool
                     }
                 }
             }
-            yield break;
         }
     }
 }

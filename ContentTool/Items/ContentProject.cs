@@ -1,7 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Drawing.Design;
+using System.IO;
 using System.Linq;
+using System.Text;
 using System.Xml;
+using System.Xml.Serialization;
+using ContentTool.Dialog;
 
 namespace ContentTool.Items
 {
@@ -11,8 +17,8 @@ namespace ContentTool.Items
         Release
     }
 
-    [Serializable()]
-    [System.Xml.Serialization.XmlRoot("Content")]
+    [Serializable]
+    [XmlRoot("Content")]
     public class ContentProject : ContentFolder
     {
         public ContentProject()
@@ -21,7 +27,7 @@ namespace ContentTool.Items
         }
 
         public ContentProject(string file)
-            : base(System.IO.Path.GetFileNameWithoutExtension(file))
+            : base(Path.GetFileNameWithoutExtension(file))
         {
             File = file;
             OutputDir = "bin/{Configuration}/";
@@ -29,29 +35,29 @@ namespace ContentTool.Items
         }
 
 
-        private string name;
+        private string _name;
 
-        [System.ComponentModel.DefaultValue("Content")]
+        [DefaultValue("Content")]
         public override string Name
         { 
-            get{ return name; }
+            get{ return _name; }
             set
             { 
-                name = System.IO.Path.GetFileNameWithoutExtension(value);
+                _name = Path.GetFileNameWithoutExtension(value);
             }
         }
 
-        [System.ComponentModel.DefaultValue(Configuration.Debug)]
+        [DefaultValue(Configuration.Debug)]
         public Configuration Configuration{ get; set; }
 
-        [System.ComponentModel.DefaultValue("bin/{Configuration}/")]
+        [DefaultValue("bin/{Configuration}/")]
         public string OutputDir{ get; set; }
 
-        [System.Xml.Serialization.XmlIgnore()]
-        [System.ComponentModel.Browsable(false)]
+        [XmlIgnore]
+        [Browsable(false)]
         public string File{ get; private set; }
 
-        [System.ComponentModel.Editor(typeof(Dialog.ReferenceCollectionEditor), typeof(System.Drawing.Design.UITypeEditor))]
+        [Editor(typeof(ReferenceCollectionEditor), typeof(UITypeEditor))]
         public List<string> References{ get; set; }
 
 
@@ -97,7 +103,7 @@ namespace ContentTool.Items
                         {
                             var val = child.ChildNodes.OfType<XmlText>().FirstOrDefault()?.InnerText;
                             Configuration config;
-                            if (val != null && Enum.TryParse<Configuration>(val,out config))
+                            if (val != null && Enum.TryParse(val,out config))
                                 project.Configuration = config;
                         }
                         break;
@@ -133,9 +139,9 @@ namespace ContentTool.Items
             settings.IndentChars = "  ";
             settings.NewLineOnAttributes = false;
             settings.OmitXmlDeclaration = true;
-            settings.Encoding = System.Text.Encoding.UTF8;
+            settings.Encoding = Encoding.UTF8;
 
-            this.File = filename;
+            File = filename;
 
             //System.Xml.Serialization.XmlSerializer serializer = new System.Xml.Serialization.XmlSerializer(typeof(ContentProject));
             using (var writer = XmlWriter.Create(filename, settings))
@@ -151,7 +157,7 @@ namespace ContentTool.Items
             writer.WriteStartElement("Content");
             {
                 writer.WriteStartElement("References");
-                if (this.References != null)
+                if (References != null)
                 {
                     foreach (var reference in References)
                         writer.WriteElementString("Reference", reference);

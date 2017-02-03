@@ -1,6 +1,5 @@
-﻿using System;
-using System.IO;
-using OpenTK;
+﻿using System.IO;
+using engenious.Graphics;
 
 namespace engenious.Content.Serialization
 {
@@ -26,24 +25,24 @@ namespace engenious.Content.Serialization
 
         }
 
-        public engenious.Graphics.VertexPositionNormalTexture ReadVertexPositionNormalTexture()
+        public VertexPositionNormalTexture ReadVertexPositionNormalTexture()
         {
-            return new engenious.Graphics.VertexPositionNormalTexture(ReadVector3(), ReadVector3(), ReadVector2());
+            return new VertexPositionNormalTexture(ReadVector3(), ReadVector3(), ReadVector2());
         }
 
-        public engenious.Graphics.VertexPositionColor ReadVertexPositionColor()
+        public VertexPositionColor ReadVertexPositionColor()
         {
-            return new engenious.Graphics.VertexPositionColor(ReadVector3(), ReadColor());
+            return new VertexPositionColor(ReadVector3(), ReadColor());
         }
 
-        public engenious.Graphics.VertexPositionColorTexture ReadVertexPositionColorTexture()
+        public VertexPositionColorTexture ReadVertexPositionColorTexture()
         {
-            return new engenious.Graphics.VertexPositionColorTexture(ReadVector3(), ReadColor(), ReadVector2());
+            return new VertexPositionColorTexture(ReadVector3(), ReadColor(), ReadVector2());
         }
 
-        public engenious.Graphics.VertexPositionTexture ReadVertexPositionTexture()
+        public VertexPositionTexture ReadVertexPositionTexture()
         {
-            return new engenious.Graphics.VertexPositionTexture(ReadVector3(), ReadVector2());
+            return new VertexPositionTexture(ReadVector3(), ReadVector2());
         }
 
         public Matrix ReadMatrix()

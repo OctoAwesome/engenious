@@ -16,7 +16,7 @@ namespace ContentTool
             OutputDirectory = null;
             ProjectDir = Environment.CurrentDirectory;
         }
-        private static string parsePath(string dir)
+        private static string ParsePath(string dir)
         {
             if (dir.Length >= 2)
             {
@@ -40,21 +40,21 @@ namespace ContentTool
                 }else if(arg.StartsWith("/outputDir:"))
                 {
                     string dir = arg.Substring("/outputDir:".Length).Trim();
-                    OutputDirectory = parsePath(dir);
+                    OutputDirectory = ParsePath(dir);
                 }else if(arg.StartsWith("/@:"))
                 {
                     string dir = arg.Substring("/@:".Length).Trim();
-                    ContentProject = parsePath(dir);
+                    ContentProject = ParsePath(dir);
                 }
                 else if (arg.StartsWith("/projectDir:"))
                 {
                     string dir = arg.Substring("/projectDir:".Length).Trim();
-                    ProjectDir = parsePath(dir);
+                    ProjectDir = ParsePath(dir);
                 }
                 else if(arg.StartsWith("/configuration:"))
                 {
                     Configuration configuration;
-                    if (Enum.TryParse<Configuration>(arg.Substring("/configuration:".Length),out configuration))
+                    if (Enum.TryParse(arg.Substring("/configuration:".Length),out configuration))
                         Configuration = configuration;
                 }
             }

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using engenious.Content.Serialization;
-using engenious.Content;
 
 namespace engenious.Content
 {
@@ -20,7 +19,7 @@ namespace engenious.Content
     {
         internal ContentFile(string type)
         {
-            this.FileType = type;
+            FileType = type;
         }
 
         public string FileType{ get; private set; }

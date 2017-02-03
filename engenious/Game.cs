@@ -1,16 +1,16 @@
 ﻿using System;
-using OpenTK;
-using OpenTK.Graphics.OpenGL4;
-using engenious.Graphics;
-using engenious.Content;
-using System.Linq;
+using System.Drawing;
 using engenious.Audio;
-using engenious.Input;
-using OpenTK.Audio.OpenAL;
+using engenious.Content;
+using engenious.Graphics;
+using OpenTK;
+using OpenTK.Graphics;
+using OpenTK.Graphics.OpenGL4;
+using OpenTK.Platform;
 
 namespace engenious
 {
-    public delegate void KeyPressDelegate(object sender,char Key);
+    public delegate void KeyPressDelegate(object sender,char key);
     public abstract class Game : GraphicsResource
     {
         public event KeyPressDelegate KeyPress;
@@ -19,86 +19,85 @@ namespace engenious
         public event EventHandler Exiting;
         public event EventHandler Resized;
 
-        private GameTime gameTime;
-        internal int major, minor;
-        internal OpenTK.Graphics.GraphicsContextFlags contextFlags;
-        private OpenTK.Graphics.IGraphicsContext Context;
-        private Audio.AudioDevice audio;
+        internal int Major, Minor;
+        internal GraphicsContextFlags ContextFlags;
+        private IGraphicsContext _context;
+        private AudioDevice _audio;
         private void ConstructContext()
         {
-            OpenTK.Platform.IWindowInfo windowInfo = Window.window.WindowInfo;
-            if (Window.window.Context == null)
+            IWindowInfo windowInfo = Window.BaseWindow.WindowInfo;
+            if (Window.BaseWindow.Context == null)
             {//TODO: really - what was that even for?
-                OpenTK.Graphics.GraphicsContextFlags flags = OpenTK.Graphics.GraphicsContextFlags.Default;
+                GraphicsContextFlags flags = GraphicsContextFlags.Default;
                 int major = 1;
                 int minor = 0;
 
-                if (System.Environment.OSVersion.Platform == PlatformID.Win32NT ||
-                    System.Environment.OSVersion.Platform == PlatformID.Win32S ||
-                    System.Environment.OSVersion.Platform == PlatformID.Win32Windows ||
-                    System.Environment.OSVersion.Platform == PlatformID.WinCE)
+                if (Environment.OSVersion.Platform == PlatformID.Win32NT ||
+                    Environment.OSVersion.Platform == PlatformID.Win32S ||
+                    Environment.OSVersion.Platform == PlatformID.Win32Windows ||
+                    Environment.OSVersion.Platform == PlatformID.WinCE)
                 {
                     major = 4;
                     minor = 4;
                 }
-                if (this.Context == null || this.Context.IsDisposed)
+                if (_context == null || _context.IsDisposed)
                 {
 
-                    OpenTK.Graphics.ColorFormat colorFormat = new OpenTK.Graphics.ColorFormat(8, 8, 8, 8);
+                    ColorFormat colorFormat = new ColorFormat(8, 8, 8, 8);
                     int depth = 24; //TODO: wth?
                     int stencil = 8;
                     int samples = 4;
 
-                    OpenTK.Graphics.GraphicsMode mode =
-                        new OpenTK.Graphics.GraphicsMode(colorFormat, depth, stencil, samples);
+                    GraphicsMode mode =
+                        new GraphicsMode(colorFormat, depth, stencil, samples);
                     try
                     {
-                        this.Context = new OpenTK.Graphics.GraphicsContext(mode, windowInfo, major, minor, flags);
+                        _context = new GraphicsContext(mode, windowInfo, major, minor, flags);
                         //this.Context = Window.Context;
                     }
-                    catch (Exception ex)
+                    catch (Exception)
                     {
-                        mode = OpenTK.Graphics.GraphicsMode.Default;
+                        mode = GraphicsMode.Default;
                         major = 1;
                         minor = 0;
-                        flags = OpenTK.Graphics.GraphicsContextFlags.Default;
-                        this.Context = new OpenTK.Graphics.GraphicsContext(mode, windowInfo, major, minor, flags);
+                        flags = GraphicsContextFlags.Default;
+                        _context = new GraphicsContext(mode, windowInfo, major, minor, flags);
                     }
                 }
             }
             else
-                this.Context = Window.window.Context;
-            this.Context.MakeCurrent(windowInfo);
-            (this.Context as OpenTK.Graphics.IGraphicsContextInternal).LoadAll();
-            ThreadingHelper.Initialize(windowInfo, major, minor, contextFlags);
-            this.Context.MakeCurrent(windowInfo);
+                _context = Window.BaseWindow.Context;
+            _context.MakeCurrent(windowInfo);
+            (_context as IGraphicsContextInternal)?.LoadAll();
+            ThreadingHelper.Initialize(windowInfo, Major, Minor, ContextFlags);
+            _context.MakeCurrent(windowInfo);
 
         }
 
         public Game()
         {
-            audio = new AudioDevice();
-            OpenTK.Graphics.GraphicsContext.ShareContexts = true;
+            _audio = new AudioDevice();
+            GraphicsContext.ShareContexts = true;
             var window = new GameWindow(1280, 720);
 
             Window = new Window(window);
             ConstructContext();
 
-            GraphicsDevice = new GraphicsDevice(this, Context);
+            GraphicsDevice = new GraphicsDevice(this, _context);
             GraphicsDevice.Viewport = new Viewport(window.ClientRectangle);
             window.Context.MakeCurrent(window.WindowInfo);
             window.Context.LoadAll();
             GL.Viewport(window.ClientRectangle);
             //Window.Location = new System.Drawing.Point();
             Mouse = new MouseDevice(window.Mouse);
-            engenious.Input.Mouse.UpdateWindow(window);
+            Input.Mouse.UpdateWindow(window);
             window.FocusedChanged += Window_FocusedChanged;
-            window.Closing += delegate(object sender, System.ComponentModel.CancelEventArgs e)
+            window.Closing += delegate
             {
                 Exiting?.Invoke(this, new EventArgs());
             };
-            
-            gameTime = new GameTime(new TimeSpan(), new TimeSpan());
+
+            var gameTime = new GameTime(new TimeSpan(), new TimeSpan());
 
             window.UpdateFrame += delegate(object sender, FrameEventArgs e)
             {
@@ -108,7 +107,7 @@ namespace engenious
 
                 Update(gameTime);
             };
-            window.RenderFrame += delegate(object sender, FrameEventArgs e)
+            window.RenderFrame += delegate
             {
                 ThreadingHelper.RunUiThread();
                 GraphicsDevice.Clear(Color.CornflowerBlue);
@@ -124,12 +123,12 @@ namespace engenious
                 Resized?.Invoke(sender,e);
                 OnResize(this, e);
             };
-            window.Load += delegate(object sender, EventArgs e)
+            window.Load += delegate
             {
                 Initialize();
                 LoadContent();
             };
-            window.Closing += delegate(object sender, System.ComponentModel.CancelEventArgs e)
+            window.Closing += delegate
             {
                 OnExiting(this, new EventArgs());
             };
@@ -140,9 +139,9 @@ namespace engenious
 
             //Window.Context.MakeCurrent(Window.WindowInfo);
 
-            Content = new engenious.Content.ContentManager(GraphicsDevice);
+            Content = new ContentManager(GraphicsDevice);
             Components = new GameComponentCollection();
-           
+
 
         }
 
@@ -184,7 +183,7 @@ namespace engenious
 
         public ContentManager Content{ get; private set; }
 
-        public System.Drawing.Icon Icon { get { return Window.Icon; } set { Window.Icon = value; } }
+        public Icon Icon { get { return Window.Icon; } set { Window.Icon = value; } }
         
         public Window Window{ get; private set; }
 
@@ -214,12 +213,12 @@ namespace engenious
 
         public void Run()
         {
-            Window.window.Run();
+            Window.BaseWindow.Run();
         }
 
         public void Run(double updatesPerSec, double framesPerSec)
         {
-            Window.window.Run(updatesPerSec, framesPerSec);
+            Window.BaseWindow.Run(updatesPerSec, framesPerSec);
         }
 
         public GameComponentCollection Components{ get; private set; }
@@ -266,7 +265,7 @@ namespace engenious
         public override void Dispose()
         {
             Window.Dispose();
-
+            _audio.Dispose();
             base.Dispose();
         }
 

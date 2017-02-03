@@ -7,27 +7,20 @@ namespace engenious.Graphics
 	public sealed class EffectPassCollection //: IEnumerable<EffectPass>
 	{
 		public List<EffectPass> PassesList;
-		private Dictionary<string,EffectPass> passes;
+		private readonly Dictionary<string,EffectPass> _passes;
 		public EffectPassCollection ()
 		{
 			PassesList = new List<EffectPass> ();
-			passes = new Dictionary<string, EffectPass> ();
+			_passes = new Dictionary<string, EffectPass> ();
 		}
 		internal void Add(EffectPass pass)
 		{
 			PassesList.Add (pass);
-			passes.Add (pass.Name, pass);
+			_passes.Add (pass.Name, pass);
 		}
-		public EffectPass this [int index] { 
-			get {
-				return PassesList[index];
-			} 
-		}
-		public EffectPass this [string name] { 
-			get {
-				return passes[name];
-			} 
-		}
+		public EffectPass this [int index] => PassesList[index];
+
+	    public EffectPass this [string name] => _passes[name];
 	}
 }
 

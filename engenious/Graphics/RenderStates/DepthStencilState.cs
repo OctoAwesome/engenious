@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace engenious.Graphics
+﻿namespace engenious.Graphics
 {
     public class DepthStencilState : GraphicsResource
     {
@@ -25,8 +23,8 @@ namespace engenious.Graphics
 
         public DepthStencilState()
         {
-            this.DepthBufferEnable = true;
-            this.DepthBufferWriteEnable = true;
+            DepthBufferEnable = true;
+            DepthBufferWriteEnable = true;
         }
 
         public bool DepthBufferEnable{ get; set; }

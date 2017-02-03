@@ -1,5 +1,5 @@
 ﻿using System;
-using OpenTK;
+using System.Text;
 
 namespace engenious.Graphics
 {
@@ -14,7 +14,7 @@ namespace engenious.Graphics
             Texture
         }
 
-        [FlagsAttribute]
+        [Flags]
         public enum SpriteEffects
         {
             None,
@@ -23,20 +23,20 @@ namespace engenious.Graphics
         }
 
 
-        private Matrix matrix;
-        private SpriteSortMode sortMode;
-        private BlendState blendState;
-        private SamplerState samplerState;
-        private DepthStencilState depthStencilState;
-        private RasterizerState rasterizerState;
-        private Effect effect;
-        private SpriteBatcher batcher;
-        private EffectParameter worldViewProj;
+        private Matrix _matrix;
+        private SpriteSortMode _sortMode;
+        private BlendState _blendState;
+        private SamplerState _samplerState;
+        private DepthStencilState _depthStencilState;
+        private RasterizerState _rasterizerState;
+        private readonly Effect _effect;
+        private readonly SpriteBatcher _batcher;
+        private EffectParameter _worldViewProj;
 
         public SpriteBatch(GraphicsDevice graphicsDevice)
             : base(graphicsDevice)
         {
-            batcher = new SpriteBatcher(graphicsDevice);
+            _batcher = new SpriteBatcher(graphicsDevice);
 
             var effect = new BasicEffect(graphicsDevice);
             effect.TextureEnabled = true;
@@ -44,27 +44,27 @@ namespace engenious.Graphics
             effect.Parameters["View"].SetValue(Matrix.Identity);
             effect.Parameters["Proj"].SetValue(Matrix.Identity);
 
-            this.effect = effect;
+            _effect = effect;
         }
 
 
         public void Begin(SpriteSortMode sortMode = SpriteSortMode.Deffered, BlendState blendState = null, SamplerState samplerState = null, DepthStencilState depthStencilState = null, RasterizerState rasterizerState = null, Effect effect = null, Matrix? transformMatrix = null)
         {
-            this.sortMode = sortMode;
-            this.blendState = blendState;
-            this.samplerState = samplerState;
+            _sortMode = sortMode;
+            _blendState = blendState;
+            _samplerState = samplerState;
             if (depthStencilState == null)
-                this.depthStencilState = DepthStencilState.None;
+                _depthStencilState = DepthStencilState.None;
             else
-                this.depthStencilState = depthStencilState;
-            this.rasterizerState = rasterizerState;
+                _depthStencilState = depthStencilState;
+            _rasterizerState = rasterizerState;
             //TODO: this.effect = effect;
             if (transformMatrix.HasValue)
-                this.matrix = transformMatrix.Value;
+                _matrix = transformMatrix.Value;
             else
-                this.matrix = Matrix.Identity;
-            worldViewProj = this.effect.Parameters["World"];
-            batcher.Begin(sortMode);
+                _matrix = Matrix.Identity;
+            _worldViewProj = _effect.Parameters["World"];
+            _batcher.Begin(sortMode);
         }
 
         public void Draw(Texture2D texture, Rectangle destinationRectangle, Color color)
@@ -85,7 +85,7 @@ namespace engenious.Graphics
 
         public void Draw(Texture2D texture, Vector2 position, Rectangle? sourceRectangle, Color color)
         {
-            Draw(texture, position, sourceRectangle, color, 0, new Vector2(texture.Width / 2f, texture.Height / 2f), 1f, SpriteEffects.None, 0.0f);//TODO?
+            Draw(texture, position, sourceRectangle, color, 0, new Vector2(texture.Width / 2f, texture.Height / 2f), 1f, SpriteEffects.None);//TODO?
         }
 
         public void Draw(Texture2D texture, Vector2 position, Rectangle? sourceRectangle, Color color, float rotation, Vector2 origin, float scale, SpriteEffects effects, float layerDepth = 0.0f)
@@ -95,7 +95,7 @@ namespace engenious.Graphics
 
         public void Draw(Texture2D texture, Vector2 position, Rectangle? sourceRectangle, Color color, float rotation, Vector2 origin, Vector2 size, SpriteEffects effects, float layerDepth)
         {
-            batcher.AddBatch(SpriteBatcher.BatchPool.AquireBatch(texture, position, sourceRectangle, color, rotation, origin, size, effects, layerDepth, sortMode));
+            _batcher.AddBatch(SpriteBatcher.BatchPool.AquireBatch(texture, position, sourceRectangle, color, rotation, origin, size, effects, layerDepth, _sortMode));
         }
 
         public void Draw(Texture2D texture, Rectangle destinationRectangle, RectangleF sourceRectangle, Color color)
@@ -106,7 +106,7 @@ namespace engenious.Graphics
 
         public void Draw(Texture2D texture, Vector2 position, RectangleF sourceRectangle, Color color)
         {
-            Draw(texture, position, sourceRectangle, color, 0, new Vector2(texture.Width / 2f, texture.Height / 2f), 1f, SpriteEffects.None, 0.0f);//TODO?
+            Draw(texture, position, sourceRectangle, color, 0, new Vector2(texture.Width / 2f, texture.Height / 2f), 1f, SpriteEffects.None);//TODO?
         }
 
         public void Draw(Texture2D texture, Vector2 position, RectangleF sourceRectangle, Color color, float rotation, Vector2 origin, float scale, SpriteEffects effects, float layerDepth = 0.0f)
@@ -116,21 +116,21 @@ namespace engenious.Graphics
 
         public void Draw(Texture2D texture, Vector2 position, RectangleF sourceRectangle, Color color, float rotation, Vector2 origin, Vector2 size, SpriteEffects effects, float layerDepth)
         {
-            batcher.AddBatch(SpriteBatcher.BatchPool.AquireBatch(texture, position, sourceRectangle, color, rotation, origin, size, effects, layerDepth, sortMode));
+            _batcher.AddBatch(SpriteBatcher.BatchPool.AquireBatch(texture, position, sourceRectangle, color, rotation, origin, size, effects, layerDepth, _sortMode));
         }
 
 
-        public void DrawString(SpriteFont spriteFont, System.Text.StringBuilder text, Vector2 position, Color color)
+        public void DrawString(SpriteFont spriteFont, StringBuilder text, Vector2 position, Color color)
         {
             DrawString(spriteFont, text, position, color, 0.0f, new Vector2(), 1.0f);
         }
 
-        public void DrawString(SpriteFont spriteFont, System.Text.StringBuilder text, Vector2 position, Color color, float rotation, Vector2 origin, float scale, SpriteEffects effects = SpriteEffects.None, float layerDepth = 0.0f)
+        public void DrawString(SpriteFont spriteFont, StringBuilder text, Vector2 position, Color color, float rotation, Vector2 origin, float scale, SpriteEffects effects = SpriteEffects.None, float layerDepth = 0.0f)
         {
             DrawString(spriteFont, text, position, color, rotation, origin, new Vector2(scale, scale), effects, layerDepth);
         }
 
-        public void DrawString(SpriteFont spriteFont, System.Text.StringBuilder text, Vector2 position, Color color, float rotation, Vector2 origin, Vector2 scale, SpriteEffects effects = SpriteEffects.None, float layerDepth = 0.0f)
+        public void DrawString(SpriteFont spriteFont, StringBuilder text, Vector2 position, Color color, float rotation, Vector2 origin, Vector2 scale, SpriteEffects effects = SpriteEffects.None, float layerDepth = 0.0f)
         {
             DrawString(spriteFont, text.ToString(), position, color, rotation, origin, scale, effects, layerDepth);
         }
@@ -154,7 +154,7 @@ namespace engenious.Graphics
 
                 char c = text[i];
                 FontCharacter fontChar;
-                if (!spriteFont.characterMap.TryGetValue(c, out fontChar))
+                if (!spriteFont.CharacterMap.TryGetValue(c, out fontChar))
                 {
                     if (c == '\n')
                     {
@@ -162,7 +162,7 @@ namespace engenious.Graphics
                         offset.Y += spriteFont.LineSpacing;
                         continue;
                     }
-                    if (!spriteFont.DefaultCharacter.HasValue || !spriteFont.characterMap.TryGetValue(spriteFont.DefaultCharacter.Value, out fontChar))
+                    if (!spriteFont.DefaultCharacter.HasValue || !spriteFont.CharacterMap.TryGetValue(spriteFont.DefaultCharacter.Value, out fontChar))
                     {
                         continue;
                     }
@@ -170,12 +170,12 @@ namespace engenious.Graphics
                 if (fontChar == null)
                     continue;
                 
-                Draw(spriteFont.texture, position + offset + fontChar.Offset, fontChar.TextureRegion, color, rotation, origin - offset, 1.0f, SpriteEffects.None, layerDepth);
+                Draw(spriteFont.Texture, position + offset + fontChar.Offset, fontChar.TextureRegion, color, rotation, origin - offset, 1.0f, SpriteEffects.None, layerDepth);
                 offset.X += fontChar.Advance;
                 if (i < text.Length - 1)
                 {
-                    int kerning = 0;
-                    if (spriteFont.kernings.TryGetValue(SpriteFont.getKerningKey(c, text[i + 1]), out kerning))
+                    int kerning;
+                    if (spriteFont.Kernings.TryGetValue(SpriteFont.GetKerningKey(c, text[i + 1]), out kerning))
                         offset.X += kerning;
                 }
             }
@@ -183,22 +183,22 @@ namespace engenious.Graphics
 
         public void End()
         {
-            GraphicsDevice.BlendState = blendState;
-            GraphicsDevice.RasterizerState = rasterizerState;
-            GraphicsDevice.DepthStencilState = depthStencilState;
-            batcher.samplerState = samplerState;
+            GraphicsDevice.BlendState = _blendState;
+            GraphicsDevice.RasterizerState = _rasterizerState;
+            GraphicsDevice.DepthStencilState = _depthStencilState;
+            _batcher.SamplerState = _samplerState;
 
             Matrix projection = Matrix.CreateOrthographicOffCenter(0, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, 0, 0, -1);
 
-            worldViewProj.SetValue(projection * matrix);
-            batcher.End(effect);
+            _worldViewProj.SetValue(projection * _matrix);
+            _batcher.End(_effect);
 
 
         }
 
         public override void Dispose()
         {
-            batcher.Dispose();
+            _batcher.Dispose();
             base.Dispose();
         }
     }

@@ -1,7 +1,4 @@
-﻿using System;
-using OpenTK;
-
-namespace engenious
+﻿namespace engenious
 {
     public struct Ray
     {
@@ -45,7 +42,7 @@ namespace engenious
 
         public override string ToString()
         {
-            return string.Format("[Position: {0},Direction: {1}]", Position.ToString(), Direction.ToString());
+            return $"[Position: {Position.ToString()},Direction: {Direction.ToString()}]";
         }
     }
 }

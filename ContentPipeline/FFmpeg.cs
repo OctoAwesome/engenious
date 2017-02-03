@@ -1,16 +1,16 @@
-﻿using System;
-using System.ComponentModel;
-using System.Threading.Tasks;
+﻿using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
-using System.Windows.Forms;
+using System.Reflection;
 using System.Threading;
+using System.Windows.Forms;
 
 namespace engenious.Pipeline
 {
     public class FFmpeg
     {
         private string _ffmpegExe;
-        private SynchronizationContext _syncContext;
+        private readonly SynchronizationContext _syncContext;
         public FFmpeg(SynchronizationContext syncContext)
             : this(syncContext,LocateFFmpegExe())
         {
@@ -22,13 +22,16 @@ namespace engenious.Pipeline
             try
             {
                 completePath = File.ReadAllText(".ffmpeg");
-                if (System.IO.File.Exists(completePath))
+                if (File.Exists(completePath))
                     return completePath;
             }
-            catch { }
+            catch
+            {
+                // ignored
+            }
 
-            string path = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
-            string ext = "", searchPath = "";
+            string path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            string ext = "";
             var platform = PlatformHelper.RunningPlatform();
             switch (platform)
             {
@@ -36,19 +39,20 @@ namespace engenious.Pipeline
                     ext = ".exe";
                     break;
             }
-            completePath = System.IO.Path.Combine(path, "ffmpeg" + ext);
-            if (System.IO.File.Exists(completePath))
+            // ReSharper disable once AssignNullToNotNullAttribute
+            completePath = Path.Combine(path, "ffmpeg" + ext);
+            if (File.Exists(completePath))
                 return completePath;
             switch (platform)
             {
                 case Platform.Linux:
-                    completePath = System.IO.Path.Combine("/usr/bin", "ffmpeg" + ext);
-                    if (System.IO.File.Exists(completePath))
+                    completePath = Path.Combine("/usr/bin", "ffmpeg" + ext);
+                    if (File.Exists(completePath))
                         return completePath;
                     break;
                 case Platform.Mac:
-                    completePath = System.IO.Path.Combine("/Applications", "ffmpeg" + ext);
-                    if (System.IO.File.Exists(completePath))
+                    completePath = Path.Combine("/Applications", "ffmpeg" + ext);
+                    if (File.Exists(completePath))
                         return completePath;
                     break;
             }
@@ -59,10 +63,10 @@ namespace engenious.Pipeline
             _syncContext = syncContext;
             _ffmpegExe = exePath;
         }
-        public System.Diagnostics.Process RunCommand(string arguments, bool throwAll = false)
+        public Process RunCommand(string arguments, bool throwAll = false)
         {
-            System.Diagnostics.Process p = new System.Diagnostics.Process();
-            p.StartInfo = new System.Diagnostics.ProcessStartInfo(_ffmpegExe, arguments);
+            Process p = new Process();
+            p.StartInfo = new ProcessStartInfo(_ffmpegExe, arguments);
             p.StartInfo.UseShellExecute = false;
             p.StartInfo.CreateNoWindow = true;
             p.StartInfo.RedirectStandardOutput = true;
@@ -79,8 +83,8 @@ namespace engenious.Pipeline
             catch (Win32Exception ex)
             {
                 if (throwAll || ex.NativeErrorCode != 2) //File not found
-                    throw ex;
-                _syncContext.Send(new SendOrPostCallback((o) =>
+                    throw;
+                _syncContext.Send(o =>
                 {
                     using (var ofd = new OpenFileDialog())
                     {
@@ -94,10 +98,10 @@ namespace engenious.Pipeline
                             
                         }
                     }
-                }),null);
+                },null);
                 if (File.Exists(_ffmpegExe))
                     return RunCommand(arguments, true);
-                throw ex;
+                throw;
 
             }
             return null;

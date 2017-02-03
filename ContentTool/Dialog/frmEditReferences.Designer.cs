@@ -1,6 +1,6 @@
 ﻿namespace ContentTool.Dialog
 {
-    partial class frmEditReferences
+    partial class FrmEditReferences
     {
         /// <summary>
         /// Required designer variable.
@@ -147,7 +147,7 @@
             this.Controls.Add(this.btnOk);
             this.Controls.Add(this.btnAdd);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
-            this.Name = "frmEditReferences";
+            this.Name = "FrmEditReferences";
             this.Text = "Edit References";
             this.Load += new System.EventHandler(this.frmEditReferences_Load);
             this.ResumeLayout(false);

@@ -24,7 +24,6 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 //
 #endregion
-using System;
 
 namespace engenious.Input
 {
@@ -401,6 +400,7 @@ namespace engenious.Input
         /// <summary>The backslash key.</summary>
         BackSlash,
         /// <summary>The secondary backslash key.</summary>
+        // ReSharper disable once InconsistentNaming
         NonUSBackSlash,
         /// <summary>Indicates the last available keyboard key.</summary>
         LastKey

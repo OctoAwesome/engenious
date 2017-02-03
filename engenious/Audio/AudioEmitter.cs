@@ -1,7 +1,4 @@
-﻿using System;
-using OpenTK;
-
-namespace engenious.Audio
+﻿namespace engenious.Audio
 {
     public class AudioEmitter
     {

@@ -1,45 +1,34 @@
 ﻿using System;
-using System.Collections.ObjectModel;
-using System.Text;
-using OpenTK;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
+using System.Text;
 
 namespace engenious.Graphics
 {
     public sealed class SpriteFont : IDisposable
     {
-        internal Dictionary<int,int> kernings;
-        internal Dictionary<char,FontCharacter> characterMap;
-        internal Texture2D texture;
+        internal Dictionary<int,int> Kernings;
+        internal Dictionary<char,FontCharacter> CharacterMap;
+        internal Texture2D Texture;
 
         internal SpriteFont(Texture2D texture)
         {
-            this.texture = texture;
-            kernings = new Dictionary<int, int>();
-            characterMap = new Dictionary<char, FontCharacter>();
+            Texture = texture;
+            Kernings = new Dictionary<int, int>();
+            CharacterMap = new Dictionary<char, FontCharacter>();
         }
 
-        internal static int getKerningKey(char first, char second)
+        internal static int GetKerningKey(char first, char second)
         {
-            return (int)first << 16 | (int)second;
+            return first << 16 | second;
         }
 
-        ReadOnlyCollection<char> characters;
+        private ReadOnlyCollection<char> _characters;
 
-        public ReadOnlyCollection<char> Characters
-        {
-            get
-            {
-                if (characters == null)
-                {
-                    characters = new ReadOnlyCollection<char>(characterMap.Keys.ToList());
-                }
-                return characters;
-            }
-        }
+        public ReadOnlyCollection<char> Characters => _characters ?? (_characters = new ReadOnlyCollection<char>(CharacterMap.Keys.ToList()));
 
-        public Nullable<char> DefaultCharacter { get; set; }
+        public char? DefaultCharacter { get; set; }
 
         public int LineSpacing { get; set; }
 
@@ -59,9 +48,9 @@ namespace engenious.Graphics
             {
                 char c = text[i];
                 FontCharacter fontChar;
-                if (!characterMap.TryGetValue(c, out fontChar))
+                if (!CharacterMap.TryGetValue(c, out fontChar))
                 {
-                    if (!DefaultCharacter.HasValue || !characterMap.TryGetValue(DefaultCharacter.Value, out fontChar))
+                    if (!DefaultCharacter.HasValue || !CharacterMap.TryGetValue(DefaultCharacter.Value, out fontChar))
                     {
                         continue;
                     }
@@ -72,8 +61,8 @@ namespace engenious.Graphics
                 width += fontChar.Advance;
                 if (i < text.Length - 1)
                 {
-                    int kerning = 0;
-                    if (kernings.TryGetValue(SpriteFont.getKerningKey(c, text[i + 1]), out kerning))
+                    int kerning;
+                    if (Kernings.TryGetValue(GetKerningKey(c, text[i + 1]), out kerning))
                         width += kerning;
                 }
             }
@@ -82,7 +71,7 @@ namespace engenious.Graphics
 
         public void Dispose()
         {
-            texture?.Dispose();
+            Texture?.Dispose();
         }
     }
 }

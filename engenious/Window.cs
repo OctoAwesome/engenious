@@ -1,109 +1,107 @@
 ﻿using System;
+using System.Drawing;
 using OpenTK;
+using OpenTK.Input;
 
 namespace engenious
 {
     public class Window : IDisposable
     {
-        internal GameWindow window;
-        internal Window(GameWindow window)
+        internal GameWindow BaseWindow;
+        internal Window(GameWindow baseWindow)
         {
-            this.window = window;
-            window.KeyDown += delegate(object sender, OpenTK.Input.KeyboardKeyEventArgs e)
+            BaseWindow = baseWindow;
+            baseWindow.KeyDown += delegate(object sender, KeyboardKeyEventArgs e)
             {
-                if (e.Key == OpenTK.Input.Key.F4 && e.Alt)
+                if (e.Key == Key.F4 && e.Alt)
                 {
                     Close();
-                    return;
                 }
             };
 
         }
         public Rectangle ClientRectangle{
             get{
-                return new Rectangle(window.ClientRectangle.X,window.ClientRectangle.Y,window.ClientRectangle.Width,window.ClientRectangle.Height);
+                return new Rectangle(BaseWindow.ClientRectangle.X,BaseWindow.ClientRectangle.Y,BaseWindow.ClientRectangle.Width,BaseWindow.ClientRectangle.Height);
             }
             set{
-                window.ClientRectangle = new System.Drawing.Rectangle(value.X,value.Y,value.Width,value.Height);
+                BaseWindow.ClientRectangle = new System.Drawing.Rectangle(value.X,value.Y,value.Width,value.Height);
             }
         }
         public Size ClientSize{
             get{
-                return new Size(window.ClientSize.Width,window.ClientSize.Height);
+                return new Size(BaseWindow.ClientSize.Width,BaseWindow.ClientSize.Height);
             }
             set{
-                window.ClientSize = new System.Drawing.Size(value.Width,value.Height);
+                BaseWindow.ClientSize = new System.Drawing.Size(value.Width,value.Height);
             }
         }
-        public System.Drawing.Icon Icon { get { return window.Icon; } set { window.Icon = value; } }
+        public Icon Icon { get { return BaseWindow.Icon; } set { BaseWindow.Icon = value; } }
         public bool Visible{
             get{
-                return window.Visible;
+                return BaseWindow.Visible;
             }
             set{
-                window.Visible = value;
+                BaseWindow.Visible = value;
             }
         }
-        public bool Focused{
-            get{
-                return window.Focused;
-            }
-        }
+        public bool Focused => BaseWindow.Focused;
+
         public bool CursorVisible{
             get{
-                return window.CursorVisible;
+                return BaseWindow.CursorVisible;
             }
             set{
-                window.CursorVisible = value;
+                BaseWindow.CursorVisible = value;
             }
         }
         public bool IsBorderless{
             get{
-                return window.WindowBorder != WindowBorder.Hidden;
+                return BaseWindow.WindowBorder != WindowBorder.Hidden;
             }
             set{
                 if (value)
-                    window.WindowBorder = WindowBorder.Hidden;
+                    BaseWindow.WindowBorder = WindowBorder.Hidden;
                 else
-                    window.WindowBorder = allowUserResizing ? WindowBorder.Resizable : WindowBorder.Fixed;
+                    BaseWindow.WindowBorder = _allowUserResizing ? WindowBorder.Resizable : WindowBorder.Fixed;
             }
         }
-        private bool allowUserResizing;
+        private bool _allowUserResizing;
         public bool AllowUserResizing{
             get{
-                return allowUserResizing;
+                return _allowUserResizing;
             }
             set{
-                allowUserResizing = value;
+                _allowUserResizing = value;
                 if (IsBorderless)
                     return;
-                window.WindowBorder = allowUserResizing ? WindowBorder.Resizable : WindowBorder.Fixed;
+                BaseWindow.WindowBorder = _allowUserResizing ? WindowBorder.Resizable : WindowBorder.Fixed;
             }
         }
-        private bool fullscreen;
-        private WindowState oWindowState= WindowState.Normal;
+        private bool _fullscreen;
+        private WindowState _oWindowState= WindowState.Normal;
         public bool Fullscreen{
             get{
-                return fullscreen;
+                return _fullscreen;
             }
             set{
-                if (!fullscreen)
-                    oWindowState = window.WindowState;
-                fullscreen = value;
-                window.WindowState = fullscreen ? WindowState.Fullscreen : oWindowState;
+                if (!_fullscreen)
+                    _oWindowState = BaseWindow.WindowState;
+                _fullscreen = value;
+                BaseWindow.WindowState = _fullscreen ? WindowState.Fullscreen : _oWindowState;
             }
         }
         public string Title{
             get{
-                return window.Title;
+                return BaseWindow.Title;
             }
             set{
-                window.Title = value;
+                BaseWindow.Title = value;
             }
         }
         public Point Position{
             get{
-                return new Point(window.X,window.Y);
+                return new Point(BaseWindow.X,BaseWindow.Y);
             }
             set{
                 X = value.X;
@@ -112,18 +110,18 @@ namespace engenious
         }
         public int X{
             get{
-                return window.X;
+                return BaseWindow.X;
             }
             set{
-                window.X = value;
+                BaseWindow.X = value;
             }
         }
         public int Y{
             get{
-                return window.Y;
+                return BaseWindow.Y;
             }
             set{
-                window.Y = value;
+                BaseWindow.Y = value;
             }
         }
 
@@ -131,14 +129,14 @@ namespace engenious
 
         public void Close()
         {
-            window.Close();
+            BaseWindow.Close();
         }
 
         #region IDisposable implementation
 
         public void Dispose()
         {
-            window.Dispose();
+            BaseWindow.Dispose();
         }
 
         #endregion

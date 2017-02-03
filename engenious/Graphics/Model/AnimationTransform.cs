@@ -1,13 +1,9 @@
-﻿using System;
-
-namespace engenious
+﻿namespace engenious
 {
     public class AnimationTransform
     {
-        static string dubi;
         public AnimationTransform(string name,Vector3 location, Vector3 scale, Quaternion quaternion)
         {
-            this.name = name;
             //dubi += name + ": " + quaternion.ToString() + "\n";
             Location = location;
             if (name.Contains("$")){
@@ -19,7 +15,7 @@ namespace engenious
         public Quaternion Rotation{get;private set;}
         public Vector3 Location{get;private set;}
         public Vector3 Scale{get;private set;}
-        string name;
+
         public Matrix ToMatrix()
         {
             Matrix res = Matrix.CreateFromQuaternion(Rotation.X, Rotation.Y, Rotation.Z, Rotation.W);

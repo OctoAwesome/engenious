@@ -1,21 +1,18 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
+using Assimp;
 using engenious.Content.Pipeline;
 using engenious.Graphics;
-using System.Collections.Generic;
-using System.Linq;
-using System.ComponentModel;
-using System.IO;
+using Node = Assimp.Node;
 
 namespace engenious.Pipeline
 {
     [ContentProcessor(DisplayName = "Model Processor")]
-    public class ModelProcessor : ContentProcessor<Assimp.Scene, ModelContent,ModelProcessorSettings>
+    public class ModelProcessor : ContentProcessor<Scene, ModelContent,ModelProcessorSettings>
     {
-        public ModelProcessor()
-        {
-        }
-
-        private NodeContent ParseNode(ModelContent model, Assimp.Node node,NodeContent parent=null)
+        private NodeContent ParseNode(ModelContent model, Node node,NodeContent parent=null)
         {
             NodeContent n = new NodeContent(parent);
             model.Nodes.Add(n);
@@ -38,7 +35,7 @@ namespace engenious.Pipeline
             return n;
         }
 
-        private Matrix ConvertMatrix(Assimp.Matrix4x4 m)
+        private Matrix ConvertMatrix(Matrix4x4 m)
         {
             return new Matrix(m.A1, m.A2, m.A3, m.A4,
                 m.B1, m.B2, m.B3, m.B4,
@@ -49,7 +46,6 @@ namespace engenious.Pipeline
         {
             if (node.Parent == null)
                 return false;
-            bool changed = false;
             foreach(var c in node.Children)
             {
                 c.Parent = node.Parent;
@@ -60,7 +56,7 @@ namespace engenious.Pipeline
             node.Children.Clear();
             content.Nodes.Remove(node);
 
-            changed = node.Parent.Children.Remove(node);
+            var changed = node.Parent.Children.Remove(node);
             if (changed)
             {
                 foreach(var anim in content.Animations)
@@ -138,13 +134,12 @@ namespace engenious.Pipeline
                 }
             }
         }
-        public override ModelContent Process(Assimp.Scene scene, string filename, ContentProcessorContext context)
+        public override ModelContent Process(Scene scene, string filename, ContentProcessorContext context)
         {
             try
             {
-                Assimp.AssimpContext c = new Assimp.AssimpContext();
-                
-                Assimp.ExportFormatDescription des = c.GetSupportedExportFormats()[0];
+                //AssimpContext c = new AssimpContext();
+                //ExportFormatDescription des = c.GetSupportedExportFormats()[0];
                 //c.ExportFile(scene,Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop),"test.dae"),des.FormatId);
                 ModelContent content = new ModelContent();
                 content.Meshes = new MeshContent[scene.MeshCount];
@@ -163,7 +158,7 @@ namespace engenious.Pipeline
                         {
                             var pos = sceneMesh.Vertices[i];
                             var norm = sceneMesh.Normals[i];
-                            Assimp.Vector3D tex = new Assimp.Vector3D();
+                            Vector3D tex = new Vector3D();
                             if (sceneMesh.TextureCoordinateChannels.Length > 0 && sceneMesh.TextureCoordinateChannels[0].Count >i)
                                 tex = sceneMesh.TextureCoordinateChannels[0][i];
                             var translated = new Vector3(pos.X, pos.Y, pos.Z)+settings.Translate;
@@ -192,7 +187,7 @@ namespace engenious.Pipeline
                         node.Node = curNode;
                         node.Frames = new List<AnimationFrame>();
                         int frameCount = Math.Max(Math.Max(channel.PositionKeyCount, channel.RotationKeyCount), channel.ScalingKeyCount);
-                        float diff=0.0f,maxTime = 0;;
+                        float diff=0.0f,maxTime = 0;
                         for (int i = 0; i < frameCount; i++)
                         {
 
@@ -211,8 +206,8 @@ namespace engenious.Pipeline
                             maxTime = Math.Max(frame.Frame, maxTime);
                             //TODO: interpolation
                             var rot = channel.RotationKeyCount == 0 ? new Assimp.Quaternion(1, 0, 0, 0) : i >= channel.RotationKeyCount ? channel.RotationKeys.Last().Value : channel.RotationKeys[i].Value;
-                            var loc = channel.PositionKeyCount == 0 ? new Assimp.Vector3D() : i >= channel.PositionKeyCount ? channel.PositionKeys.Last().Value : channel.PositionKeys[i].Value;
-                            var sca = channel.ScalingKeyCount == 0 ? new Assimp.Vector3D(1, 1, 1) : i >= channel.ScalingKeyCount ? channel.ScalingKeys.Last().Value : channel.ScalingKeys[i].Value;
+                            var loc = channel.PositionKeyCount == 0 ? new Vector3D() : i >= channel.PositionKeyCount ? channel.PositionKeys.Last().Value : channel.PositionKeys[i].Value;
+                            var sca = channel.ScalingKeyCount == 0 ? new Vector3D(1, 1, 1) : i >= channel.ScalingKeyCount ? channel.ScalingKeys.Last().Value : channel.ScalingKeys[i].Value;
                             rot.Normalize();
 
                             frame.Transform = new AnimationTransform(node.Node.Name,new Vector3((loc.X+settings.Translate.X), (loc.Y+settings.Translate.Y), (loc.Z+settings.Translate.Z)),

@@ -1,11 +1,8 @@
-﻿using System;
-using OpenTK;
-
-namespace engenious.Graphics
+﻿namespace engenious.Graphics
 {
     public class BasicEffect : Effect,IModelEffect
     {
-        private const string vertexShader = 
+        private const string VertexShader =
             @"
 #version 440
 
@@ -25,7 +22,7 @@ void main(void)
    psTexCoord = textureCoordinate;
 }
 ";
-        private const string pixelShader = 
+        private const string PixelShader =
             @"
 #version 440
 in vec4 psColor;
@@ -50,9 +47,9 @@ void main(void)
 
             using (Execute.OnUiContext)
             {
-                Shader[] shaders = new Shader[] {
-                    new Shader(ShaderType.VertexShader, vertexShader),
-                    new Shader(ShaderType.FragmentShader, pixelShader)
+                Shader[] shaders = {
+                    new Shader(ShaderType.VertexShader, VertexShader),
+                    new Shader(ShaderType.FragmentShader, PixelShader)
                 };
 
                 foreach (Shader shader in shaders)
@@ -79,19 +76,19 @@ void main(void)
 
         #region IEffectMatrices implementation
 
-        private Matrix world, view, projection;
+        private Matrix _world, _view, _projection;
 
         public Matrix Projection
         {
             get
             {
-                return projection;
+                return _projection;
             }
             set
             {
-                if (projection != value)
+                if (_projection != value)
                 {
-                    projection = value;
+                    _projection = value;
                     Parameters["Proj"].SetValue(value);
                 }
             }
@@ -101,13 +98,13 @@ void main(void)
         {
             get
             {
-                return view;
+                return _view;
             }
             set
             {
-                if (view != value)
+                if (_view != value)
                 {
-                    view = value;
+                    _view = value;
                     Parameters["View"].SetValue(value);
                 }
             }
@@ -117,13 +114,13 @@ void main(void)
         {
             get
             {
-                return world;
+                return _world;
             }
             set
             {
-                if (world != value)
+                if (_world != value)
                 {
-                    world = value;
+                    _world = value;
                     Parameters["World"].SetValue(value);
                 }
             }

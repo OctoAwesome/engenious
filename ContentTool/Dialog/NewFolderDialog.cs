@@ -1,11 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace ContentTool.Dialog
@@ -36,10 +29,7 @@ namespace ContentTool.Dialog
 
         private void textBox_name_TextChanged(object sender, EventArgs e)
         {
-            if (textBox_name.Text == "")
-                button_ok.Enabled = false;
-            else
-                button_ok.Enabled = true;
+            button_ok.Enabled = textBox_name.Text != "";
         }
     }
 }

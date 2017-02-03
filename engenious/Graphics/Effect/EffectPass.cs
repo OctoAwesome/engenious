@@ -1,19 +1,20 @@
 ﻿using System;
-using OpenTK.Graphics.OpenGL4;
 using System.Collections.Generic;
+using System.Text;
+using OpenTK.Graphics.OpenGL4;
 
 namespace engenious.Graphics
 {
     public sealed class EffectPass :IDisposable
     {
-        internal int program;
+        internal int Program;
 
         internal EffectPass(string name)//TODO: content loading
         {
-            this.Name = name;
+            Name = name;
             using (Execute.OnUiContext)
             {
-                program = GL.CreateProgram();
+                Program = GL.CreateProgram();
             }
 
         }
@@ -22,7 +23,7 @@ namespace engenious.Graphics
         {
             using (Execute.OnUiContext)
             {
-                GL.BindAttribLocation(program, (int) usage, name);
+                GL.BindAttribLocation(Program, (int) usage, name);
             }
         }
 
@@ -31,24 +32,23 @@ namespace engenious.Graphics
             int total = -1;
             using (Execute.OnUiContext)
             {
-                GL.GetProgram(program, GetProgramParameterName.ActiveUniforms, out total);
+                GL.GetProgram(Program, GetProgramParameterName.ActiveUniforms, out total);
                 for (int i = 0; i < total; ++i)
                 {
                     int size;
                     ActiveUniformType type;
-                    string name = GL.GetActiveUniform(program, i, out size, out type);
+                    string name = GL.GetActiveUniform(Program, i, out size, out type);
                     int location = GetUniformLocation(name);
                     Parameters.Add(new EffectPassParameter(this, name, location));
                 }
-                GL.GetProgram(program, GetProgramParameterName.ActiveUniformBlocks, out total);
+                GL.GetProgram(Program, GetProgramParameterName.ActiveUniformBlocks, out total);
                 for (int i = 0; i < total; ++i)
                 {
                     int size;
-                    System.Text.StringBuilder sb = new System.Text.StringBuilder(512);
-                    GL.GetActiveUniformBlockName(program, i, 512, out size, sb);
+                    StringBuilder sb = new StringBuilder(512);
+                    GL.GetActiveUniformBlockName(Program, i, 512, out size, sb);
                     string name = sb.ToString();
-                    int location = i; //TODO: is index really the correct location?
-                    location = GL.GetUniformBlockIndex(program, name);
+                    var location = GL.GetUniformBlockIndex(Program, name);
                     Parameters.Add(new EffectPassParameter(this, name, location));
                 }
                 //TODO: ssbos?
@@ -58,10 +58,10 @@ namespace engenious.Graphics
 
         internal int GetUniformLocation(string name)
         {
-            return GL.GetUniformLocation(program, name);
+            return GL.GetUniformLocation(Program, name);
         }
 
-        internal List<Shader> attached = new List<Shader>();
+        internal List<Shader> Attached = new List<Shader>();
 
         internal void AttachShaders(IEnumerable<Shader> shaders)
         {
@@ -78,33 +78,33 @@ namespace engenious.Graphics
         {
             using (Execute.OnUiContext)
             {
-                GL.AttachShader(program, shader.shader);
+                GL.AttachShader(Program, shader.BaseShader);
             }
         }
 
         internal void Link()
         {
-            if (attached == null)
+            if (Attached == null)
                 throw new Exception("Already linked");
             using (Execute.OnUiContext)
             {
-                GL.LinkProgram(program);
+                GL.LinkProgram(Program);
                 int linked;
-                GL.GetProgram(program, GetProgramParameterName.LinkStatus, out linked);
+                GL.GetProgram(Program, GetProgramParameterName.LinkStatus, out linked);
                 if (linked != 1)
                 {
-                    string error = GL.GetProgramInfoLog(program);
+                    string error = GL.GetProgramInfoLog(Program);
                     if (string.IsNullOrEmpty(error))
                         throw new Exception("Unknown error occured");
                     throw new Exception(error);
                 }
-                foreach (Shader shader in attached)
+                foreach (Shader shader in Attached)
                 {
-                    GL.DetachShader(program, shader.shader);
+                    GL.DetachShader(Program, shader.BaseShader);
                 }
             }
-            attached.Clear();
-            attached = null;
+            Attached.Clear();
+            Attached = null;
             using (Execute.OnUiContext)
             {
                 Parameters = new EffectPassParameterCollection(this);
@@ -123,7 +123,7 @@ namespace engenious.Graphics
         {
             using (Execute.OnUiContext)
             {
-                GL.UseProgram(program);
+                GL.UseProgram(Program);
             }
         }
 
@@ -132,7 +132,7 @@ namespace engenious.Graphics
         {
             using (Execute.OnUiContext)
             {
-                GL.UseProgram(program);
+                GL.UseProgram(Program);
                 GL.DispatchCompute(x, y, z);
             }
         }
@@ -149,7 +149,7 @@ namespace engenious.Graphics
         {
             using (Execute.OnUiContext)
             {
-                GL.DeleteProgram(program);
+                GL.DeleteProgram(Program);
             }
         }
 

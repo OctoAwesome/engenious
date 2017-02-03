@@ -1,5 +1,4 @@
-﻿using System;
-using engenious.Audio;
+﻿using engenious.Audio;
 
 namespace engenious.Content.Serialization
 {
@@ -9,7 +8,7 @@ namespace engenious.Content.Serialization
         public override SoundEffect Read(ContentManager manager, ContentReader reader)
         {
             var format = (SoundEffect.AudioFormat)reader.ReadByte();
-            return new SoundEffect(reader.BaseStream);
+            return new SoundEffect(reader.BaseStream,format);
         }
     }
 }

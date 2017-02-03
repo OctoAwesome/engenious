@@ -1,26 +1,13 @@
-﻿using System;
-using engenious.Pipeline;
-using System.Linq;
-using engenious.Graphics;
+﻿using engenious.Graphics;
 
 namespace engenious.Content.Serialization
 {
-    [ContentTypeWriterAttribute()]
+    [ContentTypeWriter]
     public class ModelContentTypeWriter : ContentTypeWriter<ModelContent>
     {
-        public ModelContentTypeWriter()
-        {
-        }
+        public override string RuntimeReaderName => typeof(ModelTypeReader).FullName;
 
-        public override string RuntimeReaderName
-        {
-            get
-            {
-                return typeof(ModelTypeReader).FullName;
-            }
-        }
-
-        private void WriteTree(ContentWriter writer, ModelContent value, NodeContent node)
+        private static void WriteTree(ContentWriter writer, ModelContent value, NodeContent node)
         {
             int index = value.Nodes.IndexOf(node);
             writer.Write(index);
