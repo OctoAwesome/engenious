@@ -7,7 +7,7 @@ namespace engenious.Input
         static Keyboard()
         {
             if (!WrappingHelper.ValidateStructs<OpenTK.Input.KeyboardState,KeyboardState>())
-                throw new Exception("test");
+                throw new TypeLoadException("Can't wrap OpenTK Keyboard two own internal struct");
         }
         public static unsafe KeyboardState GetState()
         {

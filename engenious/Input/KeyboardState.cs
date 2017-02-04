@@ -37,7 +37,9 @@ namespace engenious.Input
 
         // Allocate enough ints to store all keyboard keys
         private const int IntSize = sizeof(int) * 8;
+        private const int ShiftDivide = 5; // ld(IntSize) = 5
         private const int NumInts = ((int)Keys.LastKey + IntSize - 1) / IntSize;
+
         // The following line triggers bogus CS0214 in gmcs 2.0.1, sigh...
         internal unsafe fixed int Key[NumInts];
 
@@ -248,8 +250,8 @@ namespace engenious.Input
         {
             ValidateOffset(offset);
 
-            int intOffset = offset / IntSize;
-            int bitOffset = offset % IntSize;
+            int intOffset = offset >> ShiftDivide;
+            int bitOffset = offset & (IntSize-1);
             unsafe
             {
                 fixed (int* k = Key)
@@ -263,8 +265,8 @@ namespace engenious.Input
         {
             ValidateOffset(offset);
 
-            int intOffset = offset / IntSize;
-            int bitOffset = offset % IntSize;
+            int intOffset = offset >> ShiftDivide;
+            int bitOffset = offset & (IntSize-1);
             unsafe
             {
                 fixed (int* k = Key)
@@ -278,8 +280,8 @@ namespace engenious.Input
         {
             ValidateOffset(offset);
 
-            int intOffset = offset / IntSize;
-            int bitOffset = offset % IntSize;
+            int intOffset = offset >> ShiftDivide;
+            int bitOffset = offset & (IntSize-1);
             unsafe
             {
                 fixed (int* k = Key)
