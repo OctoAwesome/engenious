@@ -6,10 +6,15 @@ namespace engenious.Audio
     public class SoundEffectInstance : AudioResource
     {
         internal int Sid;
-        private bool _isLooped;
-        private float _volume=1f,_pitch=1f,_pan;
-        private readonly SoundEffect _effect;
+        protected bool _isLooped;
+        protected float _volume=1f,_pitch=1f,_pan;
+        protected SoundEffect _effect;
 
+        public SoundEffectInstance()
+            :this(null)
+        {
+
+        }
         public SoundEffectInstance(SoundEffect effect)
             : this(effect,TimeSpan.Zero)
         {
@@ -23,7 +28,7 @@ namespace engenious.Audio
 
 
 
-        public TimeSpan Duration { get; }
+        public TimeSpan Duration { get; protected set; }
 
 
         public bool IsLooped
@@ -79,7 +84,7 @@ namespace engenious.Audio
             }
         }
 
-        public SoundState State { get; internal set; }
+        public virtual SoundState State { get; internal set; }
 
         public void Apply3D(AudioListener[] listeners, AudioEmitter emitter)
         {

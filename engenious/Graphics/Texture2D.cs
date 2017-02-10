@@ -96,8 +96,13 @@ namespace engenious.Graphics
 
         public Rectangle Bounds { get; private set; }
 
+        public void SetData<T>(T[] data, int level = 0)
+            where T : struct
+        {
+            SetData(data,level,OpenTK.Graphics.OpenGL4.PixelFormat.Bgra);
+        }
 
-        internal void SetData<T>(T[] data, int level=0,OpenTK.Graphics.OpenGL4.PixelFormat format = OpenTK.Graphics.OpenGL4.PixelFormat.Bgra)
+        internal void SetData<T>(T[] data, int level,OpenTK.Graphics.OpenGL4.PixelFormat format)
             where T : struct //ValueType
         {
             bool hwCompressed =

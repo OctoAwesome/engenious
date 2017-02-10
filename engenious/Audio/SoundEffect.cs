@@ -213,9 +213,13 @@ namespace engenious.Audio
         {
             return null;
         }*/
+        public void Play()
+        {
+            SoundEffectInstancePool.Instance.Aquire(this).Play();
+        }
         public virtual SoundEffectInstance CreateInstance()
         {
-            return new SoundEffectInstance(this);
+            return SoundEffectInstancePool.Instance.Aquire(this);
         }
         #region IDisposable implementation
         public void Dispose()
