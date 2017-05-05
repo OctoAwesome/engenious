@@ -75,12 +75,7 @@ namespace engenious
 
         public static Quaternion operator*(Quaternion val1, Quaternion val2)
         {
-            Quaternion result = new Quaternion();
-            result.W = val1.W * val2.W - val1.X * val2.X - val1.Y * val2.Y - val1.Z * val2.Z;
-            result.X = val1.W * val2.X + val1.X * val2.W + val1.Y * val2.Z - val1.Z * val2.Y;
-            result.Y = val1.W * val2.Y + val1.Y * val2.W + val1.X * val2.Z - val1.Z * val2.X;
-            result.Z = val1.W * val2.Z + val1.Z * val2.W + val1.X * val2.Y - val1.Y * val2.X;
-            return result;
+            return new Quaternion(val1.W * val2.X + val1.X * val2.W + val1.Y * val2.Z - val1.Z * val2.Y, val1.W * val2.Y + val1.Y * val2.W + val1.Z * val2.X - val1.X * val2.Z, val1.W * val2.Z + val1.Z * val2.W + val1.X * val2.Y - val1.Y * val2.X, val1.W * val2.W - val1.X * val2.X - val1.Y * val2.Y - val1.Z * val2.Z);
         }
 
         public static Quaternion Lerp(Quaternion quaternion1, Quaternion quaternion2, float amount)//copied from MonoGame
@@ -104,6 +99,8 @@ namespace engenious
                 quaternion.W = (num2 * quaternion1.W) - (num * quaternion2.W);
             }
             float num4 = (((quaternion.X * quaternion.X) + (quaternion.Y * quaternion.Y)) + (quaternion.Z * quaternion.Z)) + (quaternion.W * quaternion.W);
+            if (num4 == 0)
+                return quaternion;
             float num3 = (float)(1.0 / Math.Sqrt(num4));
             quaternion.X *= num3;
             quaternion.Y *= num3;
@@ -129,6 +126,7 @@ namespace engenious
 
             float zw = 2*Z*W;
 
+
             m.M11 = 1 - y2-z2;
             m.M12 = xy-zw;
             m.M13 = xz+ yw;
@@ -148,6 +146,17 @@ namespace engenious
         {
             return string.Format("[{0}, {1}, {2}, {3}]", X.ToString(System.Globalization.NumberFormatInfo.InvariantInfo), Y.ToString(System.Globalization.NumberFormatInfo.InvariantInfo), Z.ToString(System.Globalization.NumberFormatInfo.InvariantInfo), W.ToString(System.Globalization.NumberFormatInfo.InvariantInfo));
         }
+
+        public static bool operator ==(Quaternion q1, Quaternion q2)
+        {
+            return q1.X == q2.X && q1.Y == q2.Y && q1.Z == q2.Z && q1.W == q2.W;
+        }
+        public static bool operator !=(Quaternion q1, Quaternion q2)
+        {
+            return q1.X != q2.X || q1.Y != q2.Y || q1.Z != q2.Z || q1.W != q2.W;
+        }
+
+        public static readonly Quaternion Identity = new Quaternion(0,0,0,1);
     }
 }
 

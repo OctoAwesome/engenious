@@ -216,6 +216,10 @@ namespace engenious
                 position.X * matrix.M12 + position.Y * matrix.M22 + position.Z * matrix.M32 + matrix.M42,
                 position.X * matrix.M13 + position.Y * matrix.M23 + position.Z * matrix.M33 + matrix.M43);
         }
+        public static Vector3 Transform(Vector3 position,Quaternion quaternion)
+        {
+            return Vector3.Transform(position,Matrix.CreateFromQuaternion(quaternion));
+        }
 
         public static readonly Vector3 One = new Vector3(1, 1, 1);
         public static readonly Vector3 Zero;

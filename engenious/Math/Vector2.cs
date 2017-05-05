@@ -55,6 +55,7 @@ namespace engenious
             return new Vector2((X * matrix.M11) + (Y * matrix.M21) + matrix.M41, (X * matrix.M12) + (Y * matrix.M22) + matrix.M42);
         }
 
+
         public override int GetHashCode()
         {
             return X.GetHashCode() ^ Y.GetHashCode();
