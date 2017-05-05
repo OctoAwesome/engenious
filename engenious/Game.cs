@@ -74,7 +74,6 @@ namespace engenious
             _context.MakeCurrent(windowInfo);
 
         }
-
         public Game()
         {
             _audio = new AudioDevice();
@@ -204,13 +203,7 @@ namespace engenious
             }
         }
 
-        public bool IsActive
-        {
-            get
-            {
-                return Window.Focused;
-            }
-        }
+        public bool IsActive => Window.Focused;
 
         public void Run()
         {
@@ -267,6 +260,7 @@ namespace engenious
         {
             Window.Dispose();
             _audio.Dispose();
+            SoundSourceManager.Instance.Dispose();
             base.Dispose();
         }
 

@@ -6,7 +6,7 @@ using System.Threading;
 
 namespace engenious.Audio
 {
-    public class SoundSourceManager
+    public class SoundSourceManager : IDisposable
     {
 
         private static SoundSourceManager _instance;
@@ -101,6 +101,21 @@ namespace engenious.Audio
             Enqueue(inst.Sid);
             inst.Sid = 0;
             inst.State = SoundState.Stopped;
+        }
+        public void Dispose()
+        {
+            foreach(var inst in _playingInstances)
+                FreeSource(inst);
+            foreach(var sid in _inUse)
+            {
+                _playing.Remove(sid);
+
+            }
+            _inUse.Clear();
+            _playing.Clear();
+
+            AL.DeleteSources(_sources);
+            _updateThread.Abort();
         }
     }
 }
