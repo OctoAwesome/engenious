@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using System.Runtime.CompilerServices;
 
 namespace engenious
 {
@@ -7,11 +8,27 @@ namespace engenious
     [System.ComponentModel.TypeConverter(typeof(Vector4Converter))]
     public struct Vector4
     {
-        public float X{get;set;}
-        public float Y{get;set;}
-        public float Z{get;set;}
-        public float W{get;set;}
-
+        public float X
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]get;
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]set;
+        }
+        public float Y
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]get;
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]set;
+        }
+        public float Z
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]get;
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]set;
+        }
+        public float W
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]get;
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]set;
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Vector4(float val)
         {
             X = val;
@@ -19,7 +36,7 @@ namespace engenious
             Z = val;
             W = val;
         }
-
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Vector4(float x, float y, float z, float w)
         {
             X = x;
@@ -27,7 +44,7 @@ namespace engenious
             Z = z;
             W = w;
         }
-
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Vector4(Vector2 val, float z, float w)
         {
             X = val.X;
@@ -35,7 +52,7 @@ namespace engenious
             Z = z;
             W = w;
         }
-
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Vector4(Vector3 val, float w)
         {
             X = val.X;
@@ -43,7 +60,204 @@ namespace engenious
             Z = val.Z;
             W = w;
         }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public float Dot(Vector4 value2)
+        {
+            return Vector4.Dot(this,value2);
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public Vector4 Cross(Vector4 value2)
+        {
+            return Vector4.Cross(this,value2);
+        }
+        [System.ComponentModel.Browsable(false)]
+        public float Length
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get{return (float)Math.Sqrt(LengthSquared);}
+        }
 
+        [System.ComponentModel.Browsable(false)]
+        public float LengthSquared
+        {
+            get{return Vector4.Dot(this,this);}
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Normalize()
+        {
+            this /= Length;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public Vector4 Normalized()
+        {
+            return this / Length;
+        }
+            
+
+        #region IEquatable implementation
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override bool Equals(object obj)
+        {
+            if (obj is Vector4)
+                return Equals((Vector4)obj);
+            return false;
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool Equals(Vector4 other)
+        {
+            return X == other.X && Y == other.Y && Z == other.Z && W == other.W;
+        }
+
+        #endregion
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool operator ==(Vector4 value1, Vector4 value2)
+        {
+            return value1.X == value2.X && value1.Y == value2.Y && value1.Z == value2.Z && value1.W == value2.W;
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool operator !=(Vector4 value1, Vector4 value2)
+        {
+            return value1.X != value2.X || value1.Y != value2.Y || value1.Z != value2.Z || value1.W != value2.W;
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector4 operator +(Vector4 value1, Vector4 value2)
+        {
+            value1.X += value2.X;
+            value1.Y += value2.Y;
+            value1.Z += value2.Z;
+            value1.W += value2.W;
+            return value1;
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector4 operator -(Vector4 value1, Vector4 value2)
+        {
+            value1.X -= value2.X;
+            value1.Y -= value2.Y;
+            value1.Z -= value2.Z;
+            value1.W -= value2.W;
+            return value1;
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector4 operator -(Vector4 value)
+        {
+            value.X = -value.X;
+            value.Y = -value.Y;
+            value.Z = -value.Z;
+            value.W = -value.W;
+            return value;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector4 operator *(Vector4 value, float scalar)
+        {
+            value.X *= scalar;
+            value.Y *= scalar;
+            value.Z *= scalar;
+            value.W *= scalar;
+            return value;
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector4 operator *(float scalar, Vector4 value)
+        {
+            return value * scalar;
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector4 operator *(Vector4 value1, Vector4 value2)//TODO: ugly as hell
+        {
+            value1.X *= value2.X;
+            value1.Y *= value2.Y;
+            value1.Z *= value2.Z;
+            value1.W *= value2.W;
+            return value1;
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector4 operator /(Vector4 value, float scalar)
+        {
+            value.X /= scalar;
+            value.Y /= scalar;
+            value.Z /= scalar;
+            value.W /= scalar;
+            return value;
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector4 operator /(Vector4 value1, Vector4 value2)//TODO: ugly as hell?
+        {
+            value1.X /= value2.X;
+            value1.Y /= value2.Y;
+            value1.Z /= value2.Z;
+            value1.W /= value2.W;
+            return value1;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector4 Cross(Vector4 value1, Vector4 value2)
+        {
+            throw new NotImplementedException();
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector4 Clamp(Vector4 value, Vector4 min, Vector4 max)
+        {
+            value.X = Math.Min(Math.Max(min.X, value.X), max.X);
+            value.Y = Math.Min(Math.Max(min.Y, value.Y), max.Y);
+            value.Z = Math.Min(Math.Max(min.Z, value.Z), max.Y);
+            value.W = Math.Min(Math.Max(min.W, value.W), max.W);
+            return value;
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void Clamp(Vector4 value, Vector4 min, Vector4 max, out Vector4 output)
+        {
+            output = new Vector4(Math.Min(Math.Max(min.X, value.X), max.X),
+                Math.Min(Math.Max(min.Y, value.Y), max.Y),
+                Math.Min(Math.Max(min.Z, value.Z), max.Z),
+                Math.Min(Math.Max(min.W, value.W), max.W));
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float Dot(Vector4 value1, Vector4 value2)
+        {
+            Vector4 res = value1*value2;
+            return res.X+res.Y+res.Z+res.W;
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float Distance(Vector4 value1, Vector4 value2)
+        {
+            return (value1 - value2).Length;
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float DistanceSquared(Vector4 value1, Vector4 value2)
+        {
+            return (value1 - value2).LengthSquared;
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector4 Lerp(Vector4 value1, Vector4 value2, float amount)
+        {
+            return value1 + (value2 - value1) * amount;
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector4 Max(Vector4 value1, Vector4 value2)
+        {
+            return new Vector4(Math.Max(value1.X, value2.X), Math.Max(value1.Y, value2.Y), Math.Max(value1.Z, value2.Z),Math.Max(value1.W, value2.W));
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector4 Min(Vector4 value1, Vector4 value2)
+        {
+            return new Vector4(Math.Min(value1.X, value2.X), Math.Min(value1.Y, value2.Y), Math.Min(value1.Z, value2.Z),Math.Min(value1.W, value2.W));
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector4 Reflect(Vector4 vector, Vector4 normal)
+        {
+            normal.Normalize();
+            return 2 * (normal.Dot(vector) * normal - vector); //TODO: normalize normal?
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector4 Transform(Vector4 position,Quaternion quaternion)
+        {
+            return Vector4.Transform(position,Matrix.CreateFromQuaternion(quaternion));
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector4 Transform(Vector4 position, Matrix matrix)
         {
 
@@ -61,9 +275,17 @@ namespace engenious
         public static readonly Vector4 UnitZ = new Vector4(0, 0, 1, 0);
         public static readonly Vector4 UnitW = new Vector4(0, 0, 0, 1);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override int GetHashCode()
+        {
+            return X.GetHashCode() ^ Y.GetHashCode() ^ Z.GetHashCode();
+        }
+
         public override string ToString()
         {
-            return $"{{{X}, {Y}, {Z}, {W}}}";
+            return
+                $"[{X.ToString(System.Globalization.NumberFormatInfo.InvariantInfo)}, {Y.ToString(System.Globalization.NumberFormatInfo.InvariantInfo)}, {Z.ToString(System.Globalization.NumberFormatInfo.InvariantInfo)}]";
         }
+
     }
 }
