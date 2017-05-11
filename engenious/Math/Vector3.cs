@@ -227,29 +227,12 @@ namespace engenious
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public unsafe static Vector3 Clamp(Vector3 value, Vector3 min, Vector3 max)
         {
-#if USE_SIMD
-            Fast.Vector3 res= Fast.Vector3.Max(*(Fast.Vector3*)&value,*(Fast.Vector3*)&min);
-            res = Fast.Vector3.Min(*(Fast.Vector3*)&value,*(Fast.Vector3*)&max);
-            return *(Vector3*)&res;
-#else
-            value.X = Math.Min(Math.Max(min.X, value.X), max.X);
-            value.Y = Math.Min(Math.Max(min.Y, value.Y), max.Y);
-            value.Z = Math.Min(Math.Max(min.Z, value.Z), max.Y);
-            return value;
-#endif
+            return Vector3.Min(Vector3.Max(min,value),max);
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public unsafe static void Clamp(Vector3 value, Vector3 min, Vector3 max, out Vector3 output)
         {
-#if USE_SIMD
-            Fast.Vector3 res= Fast.Vector3.Max(*(Fast.Vector3*)&value,*(Fast.Vector3*)&min);
-            res = Fast.Vector3.Min(*(Fast.Vector3*)&value,*(Fast.Vector3*)&max);
-            output = *(Vector3*)&res;
-#else
-            output = new Vector3(Math.Min(Math.Max(min.X, value.X), max.X),
-                                    Math.Min(Math.Max(min.Y, value.Y), max.Y),
-                                    Math.Min(Math.Max(min.Z, value.Z), max.Z));
-#endif
+            output = Vector3.Min(Vector3.Max(min,value),max);
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float Dot(Vector3 value1, Vector3 value2)

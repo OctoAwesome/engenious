@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
-
+using Fast = System.Numerics;
 namespace engenious
 {
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
@@ -66,9 +66,9 @@ namespace engenious
             return Vector4.Dot(this,value2);
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public Vector4 Cross(Vector4 value2)
+        public Vector4 Cross(Vector4 value2,Vector4 value3)
         {
-            return Vector4.Cross(this,value2);
+            return Vector4.Cross(this,value2,value3);
         }
         [System.ComponentModel.Browsable(false)]
         public float Length
@@ -122,41 +122,61 @@ namespace engenious
             return value1.X != value2.X || value1.Y != value2.Y || value1.Z != value2.Z || value1.W != value2.W;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Vector4 operator +(Vector4 value1, Vector4 value2)
+        public unsafe static Vector4 operator +(Vector4 value1, Vector4 value2)
         {
+#if USE_SIMD
+            Fast.Vector4 res = *(Fast.Vector4*)&value1 + *(Fast.Vector4*)&value2;
+            return *(Vector4*)&res;
+#else
             value1.X += value2.X;
             value1.Y += value2.Y;
             value1.Z += value2.Z;
             value1.W += value2.W;
             return value1;
+#endif
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Vector4 operator -(Vector4 value1, Vector4 value2)
+        public unsafe static Vector4 operator -(Vector4 value1, Vector4 value2)
         {
+#if USE_SIMD
+            Fast.Vector4 res = *(Fast.Vector4*)&value1 - *(Fast.Vector4*)&value2;
+            return *(Vector4*)&res;
+#else
             value1.X -= value2.X;
             value1.Y -= value2.Y;
             value1.Z -= value2.Z;
             value1.W -= value2.W;
             return value1;
+#endif
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Vector4 operator -(Vector4 value)
+        public unsafe static Vector4 operator -(Vector4 value)
         {
+#if USE_SIMD
+            Fast.Vector4 res = -*(Fast.Vector4*)&value;
+            return *(Vector4*)&res;
+#else
             value.X = -value.X;
             value.Y = -value.Y;
             value.Z = -value.Z;
             value.W = -value.W;
             return value;
+#endif
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Vector4 operator *(Vector4 value, float scalar)
+        public unsafe static Vector4 operator *(Vector4 value, float scalar)
         {
+#if USE_SIMD
+            Fast.Vector4 res = *(Fast.Vector4*)&value * scalar;
+            return *(Vector4*)&res;
+#else
             value.X *= scalar;
             value.Y *= scalar;
             value.Z *= scalar;
             value.W *= scalar;
             return value;
+#endif
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector4 operator *(float scalar, Vector4 value)
@@ -164,54 +184,62 @@ namespace engenious
             return value * scalar;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Vector4 operator *(Vector4 value1, Vector4 value2)//TODO: ugly as hell
+        public unsafe static Vector4 operator *(Vector4 value1, Vector4 value2)//TODO: ugly as hell
         {
+#if USE_SIMD
+            Fast.Vector4 res = *(Fast.Vector4*)&value1 * *(Fast.Vector4*)&value2;
+            return *(Vector4*)&res;
+#else
             value1.X *= value2.X;
             value1.Y *= value2.Y;
             value1.Z *= value2.Z;
             value1.W *= value2.W;
             return value1;
+#endif
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Vector4 operator /(Vector4 value, float scalar)
+        public unsafe static Vector4 operator /(Vector4 value, float scalar)
         {
+#if USE_SIMD
+            Fast.Vector4 res = *(Fast.Vector4*)&value / scalar;
+            return *(Vector4*)&res;
+#else
             value.X /= scalar;
             value.Y /= scalar;
             value.Z /= scalar;
             value.W /= scalar;
             return value;
+#endif
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Vector4 operator /(Vector4 value1, Vector4 value2)//TODO: ugly as hell?
+        public unsafe static Vector4 operator /(Vector4 value1, Vector4 value2)//TODO: ugly as hell?
         {
+#if USE_SIMD
+            Fast.Vector4 res = *(Fast.Vector4*)&value1 / *(Fast.Vector4*)&value2;
+            return *(Vector4*)&res;
+#else
             value1.X /= value2.X;
             value1.Y /= value2.Y;
             value1.Z /= value2.Z;
             value1.W /= value2.W;
             return value1;
+#endif
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Vector4 Cross(Vector4 value1, Vector4 value2)
+        public static Vector4 Cross(Vector4 value1, Vector4 value2,Vector4 value3)
         {
             throw new NotImplementedException();
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector4 Clamp(Vector4 value, Vector4 min, Vector4 max)
         {
-            value.X = Math.Min(Math.Max(min.X, value.X), max.X);
-            value.Y = Math.Min(Math.Max(min.Y, value.Y), max.Y);
-            value.Z = Math.Min(Math.Max(min.Z, value.Z), max.Y);
-            value.W = Math.Min(Math.Max(min.W, value.W), max.W);
-            return value;
+            return Vector4.Min(Vector4.Max(min,value),max);
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Clamp(Vector4 value, Vector4 min, Vector4 max, out Vector4 output)
         {
-            output = new Vector4(Math.Min(Math.Max(min.X, value.X), max.X),
-                Math.Min(Math.Max(min.Y, value.Y), max.Y),
-                Math.Min(Math.Max(min.Z, value.Z), max.Z),
-                Math.Min(Math.Max(min.W, value.W), max.W));
+            output = Vector4.Min(Vector4.Max(min,value),max);
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float Dot(Vector4 value1, Vector4 value2)
@@ -235,14 +263,24 @@ namespace engenious
             return value1 + (value2 - value1) * amount;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Vector4 Max(Vector4 value1, Vector4 value2)
+        public unsafe static Vector4 Max(Vector4 value1, Vector4 value2)
         {
+#if USE_SIMD
+            Fast.Vector4 res = Fast.Vector4.Max(*(Fast.Vector4*)&value1,*(Fast.Vector4*)&value2);
+            return *(Vector4*)&res;
+#else
             return new Vector4(Math.Max(value1.X, value2.X), Math.Max(value1.Y, value2.Y), Math.Max(value1.Z, value2.Z),Math.Max(value1.W, value2.W));
+#endif
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Vector4 Min(Vector4 value1, Vector4 value2)
+        public unsafe static Vector4 Min(Vector4 value1, Vector4 value2)
         {
+#if USE_SIMD
+            Fast.Vector4 res = Fast.Vector4.Min(*(Fast.Vector4*)&value1,*(Fast.Vector4*)&value2);
+            return *(Vector4*)&res;
+#else
             return new Vector4(Math.Min(value1.X, value2.X), Math.Min(value1.Y, value2.Y), Math.Min(value1.Z, value2.Z),Math.Min(value1.W, value2.W));
+#endif
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector4 Reflect(Vector4 vector, Vector4 normal)
