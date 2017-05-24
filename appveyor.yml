@@ -4,9 +4,9 @@ init:
 version: '{build}'
 
 build_script:
-- ps: ./build
+  - ps: ./build
 
 # Build cache
 cache:
-- packages -> **\packages.config
-- tools -> tools\packages.config
+  - packages -> **\packages.config
+  - tools -> tools\packages.config
