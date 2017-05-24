@@ -249,10 +249,21 @@ namespace ContentTool
             ContentFile file =  e.Node.Tag as ContentFile;
             if (file == null || file.Importer == null || file.Processor == null)
                 return;
+
+            var absPath = Path.Combine(Path.GetDirectoryName(CurrentProject.File), file.GetPath());
+
+            if(!File.Exists(absPath))
+            {
+                if(MessageBox.Show($"\"{file.Name}\" could not be found. {Environment.NewLine} Should it be removed from the project?", "File not found!", MessageBoxButtons.YesNo, MessageBoxIcon.Error) == DialogResult.Yes)
+                {
+                    DeleteItem.Execute(file);
+                }
+                return;
+            }
+
             var editorWrap = PipelineHelper.GetContentEditor(Path.GetExtension(file.Name), file.Importer.ExportType, file.Processor.ExportType);
             if (editorWrap == null)
                 return;
-            var absPath = Path.Combine(Path.GetDirectoryName(CurrentProject.File), file.GetPath());
             var importValue = file.Importer.Import(absPath, new ContentImporterContext());
             var processValue = file.Processor.Process(importValue, absPath,
                 new ContentProcessorContext(_builder.UiContext));

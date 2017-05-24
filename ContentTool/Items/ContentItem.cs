@@ -81,6 +81,11 @@ namespace ContentTool.Items
             Parent = parent;
         }
 
+        public string FilePath
+        {
+            get { return GetPath(); }
+        }
+
         private string _name;
         [DisplayName("(Name)")]
         public virtual string Name

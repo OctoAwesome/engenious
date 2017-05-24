@@ -133,6 +133,12 @@ namespace ContentTool.Builder
             string destFile = GetDestinationFileAbsolute(contentFile);
             string outputPath = GetOutputDir();
 
+            if (!File.Exists(importFile))
+            {
+                RaiseBuildMessage(this,new BuildMessageEventArgs(contentFile.Name,": File not found!",BuildMessageEventArgs.BuildMessageType.Warning));
+                return null;
+            }
+
             CreateFolderIfNeeded(destFile);
 
             if (!_cache.NeedsRebuild(importDir,outputPath,contentFile.GetPath())){
