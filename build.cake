@@ -9,7 +9,7 @@
 //      ARGUMENTS
 // *********************
 var Target = Argument("target", "default");
-var Configuration = Argument("configuration", "CI");
+var Configuration = Argument("configuration", "Release");
 var IsPrerelease = HasArgument("pre");
 
 // *********************
