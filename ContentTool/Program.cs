@@ -13,18 +13,16 @@ namespace ContentTool
 {
     static class Program
     {
+        [STAThread]
         static void Main(string[] args)
         {
             //TODO implement CommandLine
-
-            var project = ContentProject.Load(@"D:\Projects\AntMe\antme\src\AntMe.Client.ThreeD\Content\Content.ecp");
-
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
             MainShell mainShell = new MainShell();
             MainShellPresenter mainShellPresenter = new MainShellPresenter(mainShell);
-            mainShell.Project = project;
+            mainShellPresenter.OpenProject(@"D:\Projects\AntMe\antme\src\AntMe.Client.ThreeD\Content\Content.ecp");
             Application.Run(mainShell);
         }
     }

@@ -34,5 +34,16 @@ namespace ContentTool.Controls
         {
             richTextBox.Clear();
         }
+
+        private void clearToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Clear();
+        }
+
+        private void ConsoleView_MouseClick(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+                contextMenuStrip.Show(Cursor.Position);
+        }
     }
 }

@@ -28,17 +28,44 @@ namespace ContentTool.Models
         /// <summary>
         /// Directory to save the output to
         /// </summary>
-        public string OutputDirectory { get; set; }
+        public string OutputDirectory { get => outputDirectory; set
+            {
+                if (value == outputDirectory) return;
+                outputDirectory = value;
+                InternalRaiseChangedEvent(this);
+            }
+        }
+        private string outputDirectory;
 
         /// <summary>
         /// The configuration of the project
         /// </summary>
-        public string Configuration { get; set; }
+        public string Configuration { get => configuration; set
+            {
+                if (value == configuration) return;
+                configuration = value;
+                InternalRaiseChangedEvent(this);
+            }
+        }
+        private string configuration;
 
         /// <summary>
         /// References of the project
         /// </summary>
-        public List<string> References { get; set; }
+        public List<string> References { get => references;
+            set
+            {
+                if (value == references) return;
+                references = value;
+                InternalRaiseChangedEvent(this);
+            }
+        }
+        private List<string> references;
+
+        /// <summary>
+        /// Tells if the project has unsaved changes
+        /// </summary>
+        public bool HasUnsavedChanges { get; private set; }
 
         private string filePath;
 
@@ -54,6 +81,8 @@ namespace ContentTool.Models
 
             ContentProjectPath = contentProjectPath;
             filePath = folderPath;
+
+            ContentItemChanged += (a, b) => HasUnsavedChanges = true;
         }
 
         public override ContentItem Deserialize(XElement element)
@@ -118,6 +147,19 @@ namespace ContentTool.Models
             project.Deserialize(element);
 
             return project;
+        }
+
+        public void Save()
+        {
+            Save(ContentProjectPath);
+        }
+
+        public void Save(string path)
+        {
+            var xelement = this.Serialize();
+            xelement.Save(path);
+            ContentProjectPath = path;
+            HasUnsavedChanges = false;
         }
     }
 }

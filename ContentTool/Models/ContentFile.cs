@@ -15,22 +15,47 @@ namespace ContentTool.Models
         /// <summary>
         /// Importer of the file
         /// </summary>
-        public IContentImporter Importer { get; set; }
+        public IContentImporter Importer { get; private set; }
 
         /// <summary>
         /// Processor of the file
         /// </summary>
-        public IContentProcessor Processor { get; set; }
+        public IContentProcessor Processor { get; private set; }
 
         /// <summary>
         /// Name of the importer
         /// </summary>
-        public string ImporterName { get; set; }
+        public string ImporterName { get => importerName;
+            set
+            {
+                if (importerName == value) return;
+                importerName = value;
+                Importer = PipelineHelper.CreateImporter(Path.GetExtension(FilePath), ref importerName);
+                InternalRaiseChangedEvent(this);
+            }
+        }
+        private string importerName;
 
         /// <summary>
         /// Name of the processor
         /// </summary>
-        public string ProcessorName { get; set; }
+        public string ProcessorName { get => processorName;
+            set
+            {
+                if (value == processorName) return;
+                string old = processorName;
+                processorName = value;
+
+                if (string.IsNullOrWhiteSpace(processorName))
+                    processorName = PipelineHelper.GetProcessor(Name, importerName);
+
+                if (old != processorName && !string.IsNullOrWhiteSpace(processorName) && Importer != null)
+                    Processor = PipelineHelper.CreateProcessor(Importer.GetType(), processorName);
+
+                InternalRaiseChangedEvent(this);
+            }
+        }
+        private string processorName;
 
         /// <summary>
         /// Settings for the processor

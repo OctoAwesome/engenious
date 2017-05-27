@@ -11,6 +11,7 @@ using ContentTool.Models;
 using System.Collections;
 using ContentTool.Forms;
 using static ContentTool.Delegates;
+using System.IO;
 
 namespace ContentTool.Controls
 {
@@ -33,6 +34,8 @@ namespace ContentTool.Controls
 
         public ContentItem SelectedItem => treeView.SelectedNode?.Tag as ContentItem;
 
+        public string Pat { get; private set; }
+
         public ProjectTreeView()
         {
             InitializeComponent();
@@ -43,19 +46,22 @@ namespace ContentTool.Controls
             base.OnLoad(e);
             treeView.TreeViewNodeSorter = new TreeSorter();
             treeView.AfterSelect += (s,ev) => SelectedContentItemChanged?.Invoke(SelectedItem);
-            treeView.NodeMouseClick += (s, ev) => treeView.SelectedNode = ev.Node;
+            treeView.NodeMouseClick += (s, ev) => { if (ev.Button == MouseButtons.Right) treeView.SelectedNode = ev.Node; };
         }
 
         internal void RecalculateView()
         {
-            var projectNode = GetNode(Project);
-
             treeView.Nodes.Clear();
-            treeView.Nodes.Add(projectNode);
 
-            treeView.Sort();
+            if (Project == null)
+                return;
 
-            projectNode.Expand();
+            //Task.Run(() => {
+                var projectNode = GetNode(Project);
+                treeView.Nodes.Add(projectNode);
+                treeView.Sort();
+                projectNode.Expand();
+           // });
         }
 
         internal TreeNode GetNode(ContentItem item)
@@ -70,6 +76,9 @@ namespace ContentTool.Controls
             }
 
             node.ContextMenuStrip = GetContextMenu(item);
+            var key = GetIconKey(item);
+            node.ImageKey = key;
+            node.SelectedImageKey = key;
 
             return node;
         }
@@ -118,6 +127,32 @@ namespace ContentTool.Controls
             }
 
             return menu;
+        }
+
+        internal string GetIconKey(ContentItem item)
+        {
+            string key = "file";
+
+            if (item is ContentProject) {
+                key = "project";
+            }
+            else if (item is ContentFolder) {
+                key = "folder";
+            }
+            else
+            {
+                key = Path.GetExtension(item.FilePath);
+                if (!treeView.ImageList.Images.ContainsKey(key))
+                {
+                    Icon ico = Icon.ExtractAssociatedIcon(Path.GetFullPath(item.FilePath));
+                    if (ico != null)
+                        treeView.ImageList.Images.Add(key, ico);
+                    else
+                        key = "file";
+                }
+            }
+
+            return key;
         }
 
         private ToolStripMenuItem CreateToolStripMenuItem(string text, EventHandler onClick)

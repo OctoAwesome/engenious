@@ -19,7 +19,16 @@ namespace ContentTool.Models
         /// <summary>
         /// The content of the folder
         /// </summary>
-        public List<ContentItem> Content { get; set; }
+        public List<ContentItem> Content {
+            get => content;
+            set
+            {
+                if (value == content) return;
+                content = value;
+                InternalRaiseChangedEvent(this);
+            }
+        }
+        private List<ContentItem> content;
 
         /// <summary>
         /// Constructor
@@ -28,7 +37,7 @@ namespace ContentTool.Models
         /// <param name="parent">Parent item</param>
         public ContentFolder(string name, ContentItem parent) : base(name, parent)
         {
-            Content = new List<ContentItem>();
+            content = new List<ContentItem>();
 
         }
 

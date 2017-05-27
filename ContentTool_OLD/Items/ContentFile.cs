@@ -55,20 +55,7 @@ namespace ContentTool.old.Items
                 Importer = PipelineHelper.CreateImporter(Path.GetExtension(value));
             }
         }
-        private static string GetProcessor(string name,string importerName)
-        {
-            var tp = PipelineHelper.GetImporterType(Path.GetExtension(name),importerName);
-            if (tp != null)
-            {
-                foreach (var attr in tp.GetCustomAttributes(true).Select(x => x as ContentImporterAttribute))
-                {
-                    if (attr == null)
-                        continue;
-                    return attr.DefaultProcessor;
-                }
-            }
-            return "";
-        }
+
         [Browsable(false)]
         public ProcessorSettings Settings
         {
@@ -98,7 +85,7 @@ namespace ContentTool.old.Items
                 _processorName = value;
                 if (string.IsNullOrWhiteSpace(_processorName))
                 {
-                    _processorName = GetProcessor(Name,_importerName);
+                    //_processorName = GetProcessor(Name,_importerName);
                 }
                 if (_processorName != old && !string.IsNullOrWhiteSpace(_processorName))
                 {

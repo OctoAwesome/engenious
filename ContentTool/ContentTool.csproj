@@ -80,6 +80,7 @@
     <Compile Include="Models\ContentFolder.cs" />
     <Compile Include="Models\ContentItem.cs" />
     <Compile Include="Models\ContentProject.cs" />
+    <Compile Include="PipelineHelper.cs" />
     <Compile Include="Presenters\MainShellPresenter.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

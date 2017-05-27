@@ -13,7 +13,15 @@ namespace ContentTool.Models
         /// <summary>
         /// The name of the content item
         /// </summary>
-        public string Name { get; set; }
+        public string Name { get => name;
+            set
+            {
+                if (name == value) return;
+                name = value;
+                InternalRaiseChangedEvent(this);
+            }
+        }
+        private string name;
 
         /// <summary>
         /// The path of the content item
@@ -23,7 +31,15 @@ namespace ContentTool.Models
         /// <summary>
         /// The parent item
         /// </summary>
-        public virtual ContentItem Parent { get; set; }
+        public virtual ContentItem Parent { get => parent;
+            set
+            {
+                if (value == parent) return;
+                parent = value;
+                InternalRaiseChangedEvent(this);
+            }
+        }
+        private ContentItem parent;
 
         /// <summary>
         /// Constructor
@@ -45,6 +61,15 @@ namespace ContentTool.Models
         /// Deserializes the item
         /// </summary>
         public abstract XElement Serialize();
+
+        internal void InternalRaiseChangedEvent(ContentItem changedItem)
+        {
+            ContentItemChanged?.Invoke(this, changedItem);
+            Parent?.InternalRaiseChangedEvent(changedItem);
+        }
+
+        public delegate void ContentItemChangedHandler(ContentItem thisItem, ContentItem changedItem);
+        public event ContentItemChangedHandler ContentItemChanged;
 
     }
 }
