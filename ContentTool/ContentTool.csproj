@@ -22,6 +22,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -49,12 +50,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Builder\BuildCache.cs" />
+    <Compile Include="Builder\BuildFile.cs" />
+    <Compile Include="Builder\ContentBuilder.cs" />
     <Compile Include="Commandline\Options.cs" />
     <Compile Include="Controls\ConsoleView.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Controls\ConsoleView.Designer.cs">
       <DependentUpon>ConsoleView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\FontComboBox.cs">
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="Controls\ItemPropertyView.cs">
       <SubType>UserControl</SubType>
@@ -69,6 +76,12 @@
       <DependentUpon>ProjectTreeView.cs</DependentUpon>
     </Compile>
     <Compile Include="Events\Delegates.cs" />
+    <Compile Include="Forms\AboutBox.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\AboutBox.Designer.cs">
+      <DependentUpon>AboutBox.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\IMainShell.cs" />
     <Compile Include="Forms\MainShell.cs">
       <SubType>Form</SubType>
@@ -84,6 +97,27 @@
     <Compile Include="Presenters\MainShellPresenter.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Viewer\IViewer.cs" />
+    <Compile Include="Viewer\ViewerInfo.cs" />
+    <Compile Include="Viewer\ViewerManager.cs" />
+    <Compile Include="Viewer\Viewers\BitmapViewer.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Viewer\Viewers\BitmapViewer.Designer.cs">
+      <DependentUpon>BitmapViewer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Viewer\Viewers\SpriteFontViewer.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Viewer\Viewers\SpriteFontViewer.Designer.cs">
+      <DependentUpon>SpriteFontViewer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Viewer\Viewers\TextViewer.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Viewer\Viewers\TextViewer.Designer.cs">
+      <DependentUpon>TextViewer.cs</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="Controls\ConsoleView.resx">
       <DependentUpon>ConsoleView.cs</DependentUpon>
     </EmbeddedResource>
@@ -93,11 +127,14 @@
     <EmbeddedResource Include="Controls\ProjectTreeView.resx">
       <DependentUpon>ProjectTreeView.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\AboutBox.resx">
+      <DependentUpon>AboutBox.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\MainShell.resx">
       <DependentUpon>MainShell.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
+      <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
@@ -106,6 +143,15 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <EmbeddedResource Include="Viewer\Viewers\BitmapViewer.resx">
+      <DependentUpon>BitmapViewer.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Viewer\Viewers\SpriteFontViewer.resx">
+      <DependentUpon>SpriteFontViewer.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Viewer\Viewers\TextViewer.resx">
+      <DependentUpon>TextViewer.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -120,9 +166,7 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Builder\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\ContentPipeline\engenious.Pipeline.csproj">
       <Project>{9771e0fc-d752-4d7a-89e4-4f6fa2ec3c1d}</Project>

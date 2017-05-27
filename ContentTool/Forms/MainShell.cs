@@ -42,18 +42,28 @@ namespace ContentTool.Forms
             projectTreeView.RemoveItemClick += (i) => RemoveItemClick?.Invoke(i);
             projectTreeView.ShowInExplorerItemClick += (i) => ShowInExplorerItemClick?.Invoke(i);
 
-            newToolStripMenuItem.Click += (s, e) => NewProjectClick?.Invoke(this, null);
-            openToolStripMenuItem.Click += (s, e) => OpenProjectClick?.Invoke(this, null);
+            newToolStripMenuItem.Click += (s, e) => NewProjectClick?.Invoke(this, EventArgs.Empty);
+            openToolStripMenuItem.Click += (s, e) => OpenProjectClick?.Invoke(this, EventArgs.Empty);
             closeProjectToolStripMenuItem.Click += (s, e) => CloseProjectClick?.Invoke(Project);
             saveProjectToolStripMenuItem.Click += (s, e) => SaveProjectClick?.Invoke(Project);
             saveProjectAsToolStripMenuItem.Click += (s, e) => SaveProjectAsClick?.Invoke(Project);
 
-            toolStripButton_new.Click += (s, e) => NewProjectClick?.Invoke(this, null);
-            toolStripButton_open.Click += (s, e) => OpenProjectClick?.Invoke(this, null);
+            toolStripButton_new.Click += (s, e) => NewProjectClick?.Invoke(this, EventArgs.Empty);
+            toolStripButton_open.Click += (s, e) => OpenProjectClick?.Invoke(this, EventArgs.Empty);
             toolStripButton_save.Click += (s, e) => SaveProjectClick?.Invoke(Project);
 
             toolStripButton_build.Click += (s, e) => BuildItemClick?.Invoke(Project);
+            toolStripButton_clean.Click += (s, e) => CleanClick?.Invoke(this, EventArgs.Empty);
+
+            buildToolStripMenuItem1.Click += (s, e) => BuildItemClick?.Invoke(Project);
+            rebuildToolStripMenuItem.Click += (s, e) => RebuildClick?.Invoke(this, EventArgs.Empty);
+            cleanToolStripMenuItem.Click += (s, e) => CleanClick?.Invoke(this, EventArgs.Empty);
             //toolStripButton_clean.Click += (s,e) => Clea
+
+            aboutToolStripMenuItem1.Click += (s, e) => OnAboutClick?.Invoke(this, EventArgs.Empty);
+            helpToolStripMenuItem.Click += (s, e) => OnHelpClick?.Invoke(this, EventArgs.Empty);
+
+            projectTreeView.SelectedContentItemChanged += (i) => OnItemSelect?.Invoke(i);
 
             alwaysShowLogToolStripMenuItem.CheckedChanged += (s, e) => { if (alwaysShowLogToolStripMenuItem.Checked) splitContainer_right.Panel2Collapsed = false; else splitContainer_right.Panel2Collapsed = true; };
         }
@@ -113,6 +123,37 @@ namespace ContentTool.Forms
 
         void IMainShell.Invoke(Delegate d) => Invoke(d);
 
+        public void ShowViewer(Control viewer)
+        {
+            splitContainer_right.Panel1.Controls.Clear();
+
+            if (viewer == null)
+                return;
+            viewer.Dock = DockStyle.Fill;
+            splitContainer_right.Panel1.Controls.Add(viewer);
+        }
+
+        public void HideViewer()
+        {
+            splitContainer_right.Panel1.Controls.Clear();
+        }
+
+        public void ShowLog()
+        {
+            splitContainer_right.Panel2Collapsed = false;
+        }
+
+        public void HideLog()
+        {
+            if (alwaysShowLogToolStripMenuItem.Checked == false)
+                splitContainer_right.Panel2Collapsed = true;
+        }
+
+        public void ShowAbout()
+        {
+            new AboutBox().ShowDialog();
+        }
+
         public event Delegates.ItemActionEventHandler BuildItemClick;
         public event Delegates.ItemActionEventHandler ShowInExplorerItemClick;
         public event Delegates.ItemAddActionEventHandler AddItemClick;
@@ -123,5 +164,14 @@ namespace ContentTool.Forms
         public event Delegates.ItemActionEventHandler CloseProjectClick;
         public event Delegates.ItemActionEventHandler SaveProjectClick;
         public event Delegates.ItemActionEventHandler SaveProjectAsClick;
+        public event Delegates.ItemActionEventHandler OnItemSelect;
+        public event EventHandler RebuildClick;
+        public event EventHandler CleanClick;
+        public event Delegates.ItemActionEventHandler AddExistingFolderClick;
+        public event Delegates.ItemActionEventHandler AddNewFolderClick;
+        public event Delegates.ItemActionEventHandler AddNewItemClick;
+        public event Delegates.ItemActionEventHandler AddExistingItemClick;
+        public event EventHandler OnAboutClick;
+        public event EventHandler OnHelpClick;
     }
 }

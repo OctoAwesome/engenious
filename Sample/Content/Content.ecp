@@ -1,18 +1,15 @@
-﻿<Content>
-  <References />
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Content>
   <Configuration>Debug</Configuration>
   <OutputDir>bin/{Configuration}/</OutputDir>
-  <Name>Content</Name>
   <Contents>
     <ContentFile>
       <Name>brick.jpg</Name>
       <Processor>BitmapProcessor</Processor>
-      <Importer>Bitmap Importer</Importer>
-      <Settings>
-        <AutoGenerateMipMaps>True</AutoGenerateMipMaps>
-        <MipMapCount>599</MipMapCount>
-        <Format>1</Format>
-      </Settings>
+      <Importer>BitmapImporter</Importer>
+      <AutoGenerateMipMaps>True</AutoGenerateMipMaps>
+      <MipMapCount>599</MipMapCount>
+      <Format>1</Format>
     </ContentFile>
     <ContentFile>
       <Name>test.spritefont</Name>
@@ -22,15 +19,13 @@
     <ContentFile>
       <Name>simple.glsl</Name>
       <Processor>EffectProcessor</Processor>
-      <Importer>Effect Importer</Importer>
+      <Importer>EffectImporter</Importer>
     </ContentFile>
     <ContentFile>
       <Name>blub.ogg</Name>
       <Processor>AudioProcessor</Processor>
-      <Importer />
-      <Settings>
-        <OutputFormat>0</OutputFormat>
-      </Settings>
+      <Importer>WaveImporter</Importer>
+      <OutputFormat>0</OutputFormat>
     </ContentFile>
   </Contents>
 </Content>

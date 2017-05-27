@@ -14,16 +14,22 @@ namespace ContentTool
     static class Program
     {
         [STAThread]
-        static void Main(string[] args)
+        static int Main(string[] args)
         {
+
+            Console.WriteLine(@"D:\Projects\engenious\Sample\Content\simple.glsl(13) : error C2143: syntax error : missing';' before '}'");
+
+            //return -1;
             //TODO implement CommandLine
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
             MainShell mainShell = new MainShell();
             MainShellPresenter mainShellPresenter = new MainShellPresenter(mainShell);
-            mainShellPresenter.OpenProject(@"D:\Projects\AntMe\antme\src\AntMe.Client.ThreeD\Content\Content.ecp");
+            mainShellPresenter.OpenProject(@"D:\Projects\engenious\Sample\Content\Content.ecp");
             Application.Run(mainShell);
+
+            return 0;
         }
     }
 }

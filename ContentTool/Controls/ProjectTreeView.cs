@@ -49,7 +49,7 @@ namespace ContentTool.Controls
             treeView.NodeMouseClick += (s, ev) => { if (ev.Button == MouseButtons.Right) treeView.SelectedNode = ev.Node; };
         }
 
-        internal void RecalculateView()
+        protected void RecalculateView()
         {
             treeView.Nodes.Clear();
 
@@ -64,7 +64,7 @@ namespace ContentTool.Controls
            // });
         }
 
-        internal TreeNode GetNode(ContentItem item)
+        protected TreeNode GetNode(ContentItem item)
         {
             var node = new TreeNode(item.Name) { Tag = item };
             
@@ -83,7 +83,7 @@ namespace ContentTool.Controls
             return node;
         }
 
-        internal class TreeSorter : IComparer
+        protected class TreeSorter : IComparer
         {
             public int Compare(object x, object y)
             {
@@ -104,7 +104,7 @@ namespace ContentTool.Controls
             }
         }
 
-        internal ContextMenuStrip GetContextMenu(ContentItem item)
+        protected ContextMenuStrip GetContextMenu(ContentItem item)
         {
             if (item == null)
                 return new ContextMenuStrip();
@@ -129,7 +129,7 @@ namespace ContentTool.Controls
             return menu;
         }
 
-        internal string GetIconKey(ContentItem item)
+        protected string GetIconKey(ContentItem item)
         {
             string key = "file";
 

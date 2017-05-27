@@ -91,16 +91,20 @@ namespace ContentTool.Models
         /// <param name="element">XMLElement</param>
         public override ContentItem Deserialize(XElement element)
         {
-            Name = element.Element("Name")?.Value;
-            ProcessorName = element.Element("Processor")?.Value;
-            ImporterName = element.Element("Importer")?.Value;
+            name = element.Element("Name")?.Value;
+            importerName = element.Element("Importer")?.Value;
+            Importer = PipelineHelper.CreateImporter(Path.GetExtension(FilePath), ref importerName);
 
-            if(Settings != null && element.Element("Settings") != null)
+            processorName = element.Element("Processor")?.Value;
+            if (string.IsNullOrWhiteSpace(processorName))
+                processorName = PipelineHelper.GetProcessor(Name, importerName);
+
+            if (!string.IsNullOrWhiteSpace(processorName) && Importer != null)
+                Processor = PipelineHelper.CreateProcessor(Importer.GetType(), processorName);
+
+            if (Settings != null && element.Element("Settings") != null)
             {
-                string xml = element.Element("Settings")?.ToString();
-                XmlDocument doc = new XmlDocument();
-                doc.LoadXml(xml);
-                Settings.Read(doc.ChildNodes);
+                Settings.Read(element.Element("Settings"));
             }
 
             return this;
@@ -115,18 +119,12 @@ namespace ContentTool.Models
             XElement element = new XElement("ContentFile");
 
             element.Add(new XElement("Name", Name));
-            element.Add(new XElement("Processor", Processor.GetType().Name));
-            element.Add(new XElement("Importer", Importer.GetType().Name));
+            element.Add(new XElement("Processor", Processor?.GetType().Name));
+            element.Add(new XElement("Importer", Importer?.GetType().Name));
 
-            if(Settings != null)
-            {
-                using (MemoryStream stream = new MemoryStream())
-                {
-                    XmlWriter w = XmlWriter.Create(stream);
-                    Settings.Write(w);
-                    element.Add(XElement.Load(stream));
-                }
-            }
+            
+            Settings?.Write(element);
+
 
             return element;
         }

@@ -6,6 +6,7 @@ using System.Threading;
 using ContentTool.old.Items;
 using engenious.Content.Pipeline;
 using engenious.Content.Serialization;
+using System.Linq;
 
 namespace ContentTool.old.Builder
 {
@@ -154,7 +155,7 @@ namespace ContentTool.old.Builder
             if (importerOutput == null)
                 return null;
 
-            cacheInfo.Dependencies.AddRange(importerContext.Dependencies);
+            cacheInfo.Dependencies.AddRange(importerContext.Dependencies.Select(x=>Path.Combine(importDir,x)));
             _cache.AddDependencies(importDir,importerContext.Dependencies);
 
             IContentProcessor processor = contentFile.Processor;
@@ -165,7 +166,7 @@ namespace ContentTool.old.Builder
 
             if (processedData == null)
                 return new Tuple<object, object>(importerOutput, null);
-            cacheInfo.Dependencies.AddRange(processorContext.Dependencies);
+            cacheInfo.Dependencies.AddRange(processorContext.Dependencies.Select(x => Path.Combine(importDir, x)));
             _cache.AddDependencies(importDir,processorContext.Dependencies);
 
             IContentTypeWriter typeWriter = SerializationManager.Instance.GetWriter(processedData.GetType());

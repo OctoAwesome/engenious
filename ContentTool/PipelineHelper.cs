@@ -217,7 +217,7 @@ namespace ContentTool
             {
                 var attribute = (ContentImporterAttribute)type.GetCustomAttributes(typeof(ContentImporterAttribute), true).First();
                 if (attribute.FileExtensions != null && attribute.FileExtensions.Contains(extension) &&
-                    (importerName == null || attribute.DisplayName == importerName))
+                    (string.IsNullOrEmpty(importerName) || attribute.DisplayName == importerName))
                 {
                     importerName = attribute.DisplayName;
                     return (IContentImporter)Activator.CreateInstance(type);

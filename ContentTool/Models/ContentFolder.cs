@@ -28,7 +28,7 @@ namespace ContentTool.Models
                 InternalRaiseChangedEvent(this);
             }
         }
-        private List<ContentItem> content;
+        protected List<ContentItem> content;
 
         /// <summary>
         /// Constructor
@@ -43,14 +43,14 @@ namespace ContentTool.Models
 
         public override ContentItem Deserialize(XElement element)
         {
-            Name = element.Element("Name")?.Value;
+            name = element.Element("Name")?.Value;
 
             foreach(var subElement in element.Element("Contents").Elements())
             {
                 if (subElement.Name == "ContentFile")
-                    Content.Add(new ContentFile("", this).Deserialize(subElement));
+                    content.Add(new ContentFile("", this).Deserialize(subElement));
                 else if (subElement.Name == "ContentFolder")
-                    Content.Add(new ContentFolder("", this).Deserialize(subElement));
+                    content.Add(new ContentFolder("", this).Deserialize(subElement));
             }
 
             return this;

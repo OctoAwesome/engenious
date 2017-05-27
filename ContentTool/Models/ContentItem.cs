@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,12 +22,17 @@ namespace ContentTool.Models
                 InternalRaiseChangedEvent(this);
             }
         }
-        private string name;
+        protected string name;
 
         /// <summary>
         /// The path of the content item
         /// </summary>
         public abstract string FilePath { get; }
+
+        /// <summary>
+        /// The relative Path of the content item
+        /// </summary>
+        public virtual string RelativePath => Path.Combine(Parent.RelativePath, Name);
 
         /// <summary>
         /// The parent item
@@ -39,7 +45,7 @@ namespace ContentTool.Models
                 InternalRaiseChangedEvent(this);
             }
         }
-        private ContentItem parent;
+        protected ContentItem parent;
 
         /// <summary>
         /// Constructor
@@ -48,8 +54,8 @@ namespace ContentTool.Models
         /// <param name="parent">Parent item</param>
         public ContentItem(string name, ContentItem parent)
         {
-            Name = name;
-            Parent = parent;
+            this.name = name;
+            this.parent = parent;
         }
 
         /// <summary>
@@ -62,7 +68,7 @@ namespace ContentTool.Models
         /// </summary>
         public abstract XElement Serialize();
 
-        internal void InternalRaiseChangedEvent(ContentItem changedItem)
+        protected void InternalRaiseChangedEvent(ContentItem changedItem)
         {
             ContentItemChanged?.Invoke(this, changedItem);
             Parent?.InternalRaiseChangedEvent(changedItem);

@@ -25,6 +25,8 @@ namespace ContentTool.Models
         /// </summary>
         public string ContentProjectPath { get; set; }
 
+        public override string RelativePath => "";
+
         /// <summary>
         /// Directory to save the output to
         /// </summary>
@@ -77,8 +79,6 @@ namespace ContentTool.Models
         /// <param name="folderPath">Path of the project directory</param>
         public ContentProject(string name, string contentProjectPath, string folderPath) : base(name, null)
         {
-            Content = new List<ContentItem>();
-
             ContentProjectPath = contentProjectPath;
             filePath = folderPath;
 
@@ -87,24 +87,24 @@ namespace ContentTool.Models
 
         public override ContentItem Deserialize(XElement element)
         {
-            Name = element.Element("Name")?.Value;
-            Configuration = element.Element("Configuration")?.Value;
-            OutputDirectory = element.Element("OutputDir")?.Value;
+            name = element.Element("Name")?.Value;
+            configuration = element.Element("Configuration")?.Value;
+            outputDirectory = element.Element("OutputDir")?.Value;
 
             var refElement = element.Element("References");
 
             if(refElement != null && refElement.HasElements)
             {
                 foreach (var referenceElement in refElement.Elements("Reference"))
-                    References.Add(referenceElement.Value);
+                    references.Add(referenceElement.Value);
             }
 
             foreach(var subElement in element.Element("Contents").Elements())
             {
                 if (subElement.Name == "ContentFile")
-                    Content.Add(new ContentFile("", this).Deserialize(subElement));
+                    content.Add(new ContentFile("", this).Deserialize(subElement));
                 else if (subElement.Name == "ContentFolder")
-                    Content.Add(new ContentFolder("", this).Deserialize(subElement));
+                    content.Add(new ContentFolder("", this).Deserialize(subElement));
             }
 
             return this;

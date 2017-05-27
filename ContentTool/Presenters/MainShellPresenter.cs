@@ -1,5 +1,7 @@
-﻿using ContentTool.Forms;
+﻿using ContentTool.Builder;
+using ContentTool.Forms;
 using ContentTool.Models;
+using ContentTool.Viewer;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -15,6 +17,10 @@ namespace ContentTool.Presenters
     {
         private IMainShell shell;
 
+        private ContentBuilder builder;
+
+        private ViewerManager viewerManager;
+
         public MainShellPresenter(IMainShell shell)
         {
             this.shell = shell;
@@ -24,7 +30,34 @@ namespace ContentTool.Presenters
             shell.ShowInExplorerItemClick += Shell_ShowInExplorerItemClick;
             shell.SaveProjectClick += (i) => SaveProject();
             shell.OpenProjectClick += (s, e) => { if (CloseProject()) OpenProject(); };
+            shell.BuildItemClick += Shell_BuildItemClick;
+            shell.OnItemSelect += Shell_OnItemSelect;
 
+            shell.OnAboutClick += (s, e) => shell.ShowAbout();
+
+            viewerManager = new ViewerManager();
+
+        }
+
+        private void Shell_OnItemSelect(ContentItem item)
+        {
+            if (item is ContentFile)
+                shell.ShowViewer(viewerManager.GetViewer(item as ContentFile));
+            else
+                shell.HideViewer();
+        }
+
+        private void Shell_BuildItemClick(ContentItem item)
+        {
+            if (builder == null)
+            {
+                builder = new ContentBuilder(shell.Project);
+                builder.BuildMessage += (a) => shell.Invoke(((MethodInvoker)(() => shell.WriteLineLog(a.Message))));
+            }
+
+            shell.ShowLog();
+
+            builder.Build(item);
         }
 
         public bool CloseProject()
