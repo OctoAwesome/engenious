@@ -1,15 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Content>
+  <Name>Sample</Name>
   <Configuration>Debug</Configuration>
   <OutputDir>bin/{Configuration}/</OutputDir>
   <Contents>
     <ContentFile>
       <Name>brick.jpg</Name>
-      <Processor>BitmapProcessor</Processor>
-      <Importer>BitmapImporter</Importer>
-      <AutoGenerateMipMaps>True</AutoGenerateMipMaps>
-      <MipMapCount>599</MipMapCount>
-      <Format>1</Format>
+      <Processor />
+      <Importer />
     </ContentFile>
     <ContentFile>
       <Name>test.spritefont</Name>

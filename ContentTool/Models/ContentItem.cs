@@ -24,6 +24,8 @@ namespace ContentTool.Models
         }
         protected string name;
 
+        public ContentErrorType Error { get; set; }
+
         /// <summary>
         /// The path of the content item
         /// </summary>
@@ -77,5 +79,15 @@ namespace ContentTool.Models
         public delegate void ContentItemChangedHandler(ContentItem thisItem, ContentItem changedItem);
         public event ContentItemChangedHandler ContentItemChanged;
 
+    }
+
+    [Flags]
+    public enum ContentErrorType
+    {
+        None = 1,
+        NotFound = 2,
+        ImporterError = 4,
+        ProcessorError = 8,
+        Other = 16
     }
 }

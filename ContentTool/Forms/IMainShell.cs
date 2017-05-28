@@ -34,6 +34,12 @@ namespace ContentTool.Forms
 
         void ShowAbout();
 
+        bool ShowNotFoundDelete();
+
+        void Refresh();
+
+        string ShowFolderSelectDialog();
+
         event ItemActionEventHandler BuildItemClick;
         event ItemActionEventHandler ShowInExplorerItemClick;
         event ItemAddActionEventHandler AddItemClick;

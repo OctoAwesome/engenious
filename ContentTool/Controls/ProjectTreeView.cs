@@ -49,7 +49,7 @@ namespace ContentTool.Controls
             treeView.NodeMouseClick += (s, ev) => { if (ev.Button == MouseButtons.Right) treeView.SelectedNode = ev.Node; };
         }
 
-        protected void RecalculateView()
+        public void RecalculateView()
         {
             treeView.Nodes.Clear();
 
@@ -76,9 +76,18 @@ namespace ContentTool.Controls
             }
 
             node.ContextMenuStrip = GetContextMenu(item);
-            var key = GetIconKey(item);
-            node.ImageKey = key;
-            node.SelectedImageKey = key;
+
+            if (item.Error.HasFlag(ContentErrorType.NotFound))
+            {
+                node.ImageKey = "warning";
+                node.SelectedImageKey = "warning";
+            }
+            else
+            {
+                var key = GetIconKey(item);
+                node.ImageKey = key;
+                node.SelectedImageKey = key;
+            }
 
             return node;
         }
@@ -118,15 +127,25 @@ namespace ContentTool.Controls
             menu.Items.Add(addItem);
 
             menu.Items.Add(CreateToolStripMenuItem("Build", (s, e) => BuildItemClick?.Invoke(SelectedItem)));
+            menu.Items.Add(CreateToolStripMenuItem("Rename", (s, e) => treeView.SelectedNode?.BeginEdit()));
             menu.Items.Add(CreateToolStripMenuItem("Show in Explorer", (s, e) => ShowInExplorerItemClick?.Invoke(SelectedItem)));
 
             if (!(item is ContentProject))
             {
                 menu.Items.Add(new ToolStripSeparator());
-                menu.Items.Add(CreateToolStripMenuItem("Remove", (s, e) => RemoveItemClick?.Invoke(SelectedItem)));
+                menu.Items.Add(CreateToolStripMenuItem("Remove", (s, e) => RemoveItemRequest(item)));
             }
 
             return menu;
+        }
+
+        protected void RemoveItemRequest(ContentItem item)
+        {
+            if (item == null)
+                return;
+
+            if(MessageBox.Show($"Do you really want to remove {item.Name}?", "Remove Item", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
+                RemoveItemClick?.Invoke(SelectedItem);
         }
 
         protected string GetIconKey(ContentItem item)
@@ -169,5 +188,19 @@ namespace ContentTool.Controls
         public event ItemActionEventHandler ShowInExplorerItemClick;
         public event ItemAddActionEventHandler AddItemClick;
         public event ItemActionEventHandler RemoveItemClick;
+
+        private void treeView_AfterLabelEdit(object sender, NodeLabelEditEventArgs e)
+        {
+            if (!string.IsNullOrWhiteSpace(e.Label))
+                ((ContentItem)e.Node.Tag).Name = e.Label;
+
+            e.Node.Text = ((ContentItem)e.Node.Tag).Name;
+        }
+
+        private void treeView_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Delete)
+                RemoveItemRequest(SelectedItem);
+        }
     }
 }

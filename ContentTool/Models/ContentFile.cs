@@ -92,8 +92,15 @@ namespace ContentTool.Models
         public override ContentItem Deserialize(XElement element)
         {
             name = element.Element("Name")?.Value;
+
+            if (!File.Exists(FilePath))
+                Error = ContentErrorType.NotFound;
+
             importerName = element.Element("Importer")?.Value;
             Importer = PipelineHelper.CreateImporter(Path.GetExtension(FilePath), ref importerName);
+
+            if (Importer == null)
+                Error |= ContentErrorType.ImporterError;
 
             processorName = element.Element("Processor")?.Value;
             if (string.IsNullOrWhiteSpace(processorName))
@@ -101,6 +108,9 @@ namespace ContentTool.Models
 
             if (!string.IsNullOrWhiteSpace(processorName) && Importer != null)
                 Processor = PipelineHelper.CreateProcessor(Importer.GetType(), processorName);
+
+            if (Importer == null)
+                Error |= ContentErrorType.ProcessorError;
 
             if (Settings != null && element.Element("Settings") != null)
             {

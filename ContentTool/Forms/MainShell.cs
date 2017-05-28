@@ -60,7 +60,7 @@ namespace ContentTool.Forms
             cleanToolStripMenuItem.Click += (s, e) => CleanClick?.Invoke(this, EventArgs.Empty);
             //toolStripButton_clean.Click += (s,e) => Clea
 
-            aboutToolStripMenuItem1.Click += (s, e) => OnAboutClick?.Invoke(this, EventArgs.Empty);
+            aboutToolStripMenuItem1.Click += (s, e) => { ShowAbout(); OnAboutClick?.Invoke(this, EventArgs.Empty); };
             helpToolStripMenuItem.Click += (s, e) => OnHelpClick?.Invoke(this, EventArgs.Empty);
 
             projectTreeView.SelectedContentItemChanged += (i) => OnItemSelect?.Invoke(i);
@@ -68,10 +68,8 @@ namespace ContentTool.Forms
             alwaysShowLogToolStripMenuItem.CheckedChanged += (s, e) => { if (alwaysShowLogToolStripMenuItem.Checked) splitContainer_right.Panel2Collapsed = false; else splitContainer_right.Panel2Collapsed = true; };
         }
 
-        private void ProjectTreeView_SelectedContentItemChanged(ContentItem newItem)
-        {
-            itemPropertyView.SelectItem(newItem);
-        }
+        private void ProjectTreeView_SelectedContentItemChanged(ContentItem newItem) => itemPropertyView.SelectItem(newItem);
+
 
         public bool ShowCloseWithoutSavingConfirmation()
         {
@@ -133,26 +131,21 @@ namespace ContentTool.Forms
             splitContainer_right.Panel1.Controls.Add(viewer);
         }
 
-        public void HideViewer()
-        {
-            splitContainer_right.Panel1.Controls.Clear();
-        }
+        public void HideViewer() => splitContainer_right.Panel1.Controls.Clear();
 
-        public void ShowLog()
-        {
-            splitContainer_right.Panel2Collapsed = false;
-        }
-
+        public void ShowLog() => splitContainer_right.Panel2Collapsed = false;
         public void HideLog()
         {
             if (alwaysShowLogToolStripMenuItem.Checked == false)
                 splitContainer_right.Panel2Collapsed = true;
         }
 
-        public void ShowAbout()
-        {
-            new AboutBox().ShowDialog();
-        }
+        public void Refresh() => projectTreeView.RecalculateView();
+
+        public void ShowAbout() => new AboutBox().ShowDialog();
+
+        public bool ShowNotFoundDelete()
+            => (MessageBox.Show("This file could not be found. " + Environment.NewLine + "Do you want to remove it from the Project?", "File not found!", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes);
 
         public event Delegates.ItemActionEventHandler BuildItemClick;
         public event Delegates.ItemActionEventHandler ShowInExplorerItemClick;
@@ -173,5 +166,24 @@ namespace ContentTool.Forms
         public event Delegates.ItemActionEventHandler AddExistingItemClick;
         public event EventHandler OnAboutClick;
         public event EventHandler OnHelpClick;
+
+        private void MainShell_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if(Project.HasUnsavedChanges)
+            {
+                if (!ShowCloseWithoutSavingConfirmation())
+                    e.Cancel = true;
+            }
+        }
+
+        public string ShowFolderSelectDialog()
+        {
+            FolderBrowserDialog fbd = new FolderBrowserDialog();
+            fbd.SelectedPath = Project.FilePath;
+            if (fbd.ShowDialog() == DialogResult.OK)
+                return fbd.SelectedPath;
+
+            return null;
+        }
     }
 }

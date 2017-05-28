@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -19,7 +20,7 @@ namespace ContentTool.Models
         /// <summary>
         /// The content of the folder
         /// </summary>
-        public List<ContentItem> Content {
+        public ObservableCollection<ContentItem> Content {
             get => content;
             set
             {
@@ -28,7 +29,8 @@ namespace ContentTool.Models
                 InternalRaiseChangedEvent(this);
             }
         }
-        protected List<ContentItem> content;
+        protected ObservableCollection<ContentItem> content;
+        protected bool supressChangedEvent = false;
 
         /// <summary>
         /// Constructor
@@ -37,21 +39,29 @@ namespace ContentTool.Models
         /// <param name="parent">Parent item</param>
         public ContentFolder(string name, ContentItem parent) : base(name, parent)
         {
-            content = new List<ContentItem>();
-
+            content = new ObservableCollection<ContentItem>();
+            content.CollectionChanged += (s, e) => {
+                if (!supressChangedEvent)
+                    InternalRaiseChangedEvent(this);
+            };
         }
 
         public override ContentItem Deserialize(XElement element)
         {
             name = element.Element("Name")?.Value;
 
-            foreach(var subElement in element.Element("Contents").Elements())
+            if (!Directory.Exists(FilePath))
+                Error = ContentErrorType.NotFound;
+
+            supressChangedEvent = true;
+            foreach (var subElement in element.Element("Contents").Elements())
             {
                 if (subElement.Name == "ContentFile")
                     content.Add(new ContentFile("", this).Deserialize(subElement));
                 else if (subElement.Name == "ContentFolder")
                     content.Add(new ContentFolder("", this).Deserialize(subElement));
             }
+            supressChangedEvent = false;
 
             return this;
         }

@@ -32,15 +32,28 @@ namespace ContentTool.Presenters
             shell.OpenProjectClick += (s, e) => { if (CloseProject()) OpenProject(); };
             shell.BuildItemClick += Shell_BuildItemClick;
             shell.OnItemSelect += Shell_OnItemSelect;
-
-            shell.OnAboutClick += (s, e) => shell.ShowAbout();
+            shell.RemoveItemClick += Shell_RemoveItemClick;
 
             viewerManager = new ViewerManager();
 
         }
 
+        private void Shell_RemoveItemClick(ContentItem item)
+        {
+            var parent = (ContentFolder) item.Parent;
+            parent.Content.Remove(item);
+            shell.Refresh();
+        }
+
         private void Shell_OnItemSelect(ContentItem item)
         {
+            if(item.Error.HasFlag(ContentErrorType.NotFound) && shell.ShowNotFoundDelete())
+            {
+                ContentFolder p = (ContentFolder)item.Parent;
+                p.Content.Remove(item);
+                shell.Refresh();
+            }
+
             if (item is ContentFile)
                 shell.ShowViewer(viewerManager.GetViewer(item as ContentFile));
             else

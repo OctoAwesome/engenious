@@ -99,13 +99,15 @@ namespace ContentTool.Models
                     references.Add(referenceElement.Value);
             }
 
-            foreach(var subElement in element.Element("Contents").Elements())
+            supressChangedEvent = true;
+            foreach (var subElement in element.Element("Contents").Elements())
             {
                 if (subElement.Name == "ContentFile")
                     content.Add(new ContentFile("", this).Deserialize(subElement));
                 else if (subElement.Name == "ContentFolder")
                     content.Add(new ContentFolder("", this).Deserialize(subElement));
             }
+            supressChangedEvent = false;
 
             return this;
         }
@@ -113,6 +115,8 @@ namespace ContentTool.Models
         public override XElement Serialize()
         {
             XElement element = new XElement("Content");
+
+            element.Add(new XElement("Name", Name));
 
             var refElement = new XElement("References");
 
