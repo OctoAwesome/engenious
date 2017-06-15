@@ -1,5 +1,4 @@
-﻿using CommandLine;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,5 +15,6 @@ namespace ContentTool.Commandline
         public string ContentDirectory { get; set; }
 
         public string ConfigurationPath { get; set; }
+
     }
 }

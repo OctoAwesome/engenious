@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -20,17 +19,17 @@ namespace ContentTool.Models
         /// <summary>
         /// The content of the folder
         /// </summary>
-        public ObservableCollection<ContentItem> Content {
+        public ContentItemCollection Content {
             get => content;
             set
             {
                 if (value == content) return;
+                var old = content;
                 content = value;
-                InternalRaiseChangedEvent(this);
+                OnPropertyChanged(old,value);
             }
         }
-        protected ObservableCollection<ContentItem> content;
-        protected bool supressChangedEvent = false;
+        protected ContentItemCollection content;
 
         /// <summary>
         /// Constructor
@@ -39,11 +38,9 @@ namespace ContentTool.Models
         /// <param name="parent">Parent item</param>
         public ContentFolder(string name, ContentItem parent) : base(name, parent)
         {
-            content = new ObservableCollection<ContentItem>();
-            content.CollectionChanged += (s, e) => {
-                if (!supressChangedEvent)
-                    InternalRaiseChangedEvent(this);
-            };
+            content = new ContentItemCollection();
+            content.CollectionChanged += OnCollectionChanged;
+            content.PropertyChanged += OnPropertyChanged;
         }
 
         public override ContentItem Deserialize(XElement element)

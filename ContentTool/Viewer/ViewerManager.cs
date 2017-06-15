@@ -23,11 +23,12 @@ namespace ContentTool.Viewer
 
         private void LoadViewers()
         {
-            var types = Assembly.GetExecutingAssembly().GetTypes().Where(p => typeof(IViewer).IsAssignableFrom(p)).Where(c => c.GetCustomAttributes(typeof(ViewerInfo), true).Length > 0);
+            var types = Assembly.GetExecutingAssembly().GetTypes().Where(p => typeof(IViewer).IsAssignableFrom(p)).Where(c => c.GetCustomAttributes(typeof(ViewerInfo), true).Length > 0);//TODO load from project references as well
 
             foreach(var type in types)
             {
-                foreach(var attr in type.GetCustomAttributes(typeof(ViewerInfo), true))
+                var attr = type.GetCustomAttributes(typeof(ViewerInfo), true).FirstOrDefault();
+                if (attr != null)
                 {
                     ViewerTypes.Add(((ViewerInfo)attr).Extension, type);
                 }

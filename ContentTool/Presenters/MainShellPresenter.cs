@@ -33,6 +33,13 @@ namespace ContentTool.Presenters
             shell.BuildItemClick += Shell_BuildItemClick;
             shell.OnItemSelect += Shell_OnItemSelect;
             shell.RemoveItemClick += Shell_RemoveItemClick;
+            
+            shell.UndoClick += ShellOnUndoClick;
+            shell.RedoClick += ShellOnRedoClick;
+            
+            shell.RemoveItemClick += item => (item?.Parent as ContentFolder)?.Content.Remove(item);
+
+            shell.OnAboutClick += (s, e) => shell.ShowAbout();
 
             viewerManager = new ViewerManager();
 
@@ -43,6 +50,22 @@ namespace ContentTool.Presenters
             var parent = (ContentFolder) item.Parent;
             parent.Content.Remove(item);
             shell.Refresh();
+        }
+
+        private void ShellOnRedoClick(object sender, EventArgs eventArgs)
+        {
+            var history = shell.Project?.History;
+            if (history == null || !history.CanRedo)
+                return;
+            history.Redo();
+        }
+
+        private void ShellOnUndoClick(object sender, EventArgs eventArgs)
+        {
+            var history = shell.Project?.History;
+            if (history == null || !history.CanUndo)
+                return;
+            history.Undo();
         }
 
         private void Shell_OnItemSelect(ContentItem item)

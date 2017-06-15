@@ -63,12 +63,14 @@
     <Compile Include="Controls\FontComboBox.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Controls\ImporterEditor.cs" />
     <Compile Include="Controls\ItemPropertyView.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Controls\ItemPropertyView.Designer.cs">
       <DependentUpon>ItemPropertyView.cs</DependentUpon>
     </Compile>
+    <Compile Include="Controls\ProcessorEditor.cs" />
     <Compile Include="Controls\ProjectTreeView.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -92,7 +94,16 @@
     <Compile Include="Models\ContentFile.cs" />
     <Compile Include="Models\ContentFolder.cs" />
     <Compile Include="Models\ContentItem.cs" />
+    <Compile Include="Models\ContentItemCollection.cs" />
     <Compile Include="Models\ContentProject.cs" />
+    <Compile Include="Models\History\History.cs" />
+    <Compile Include="Models\History\HistoryCollectionChange.cs" />
+    <Compile Include="Models\History\HistoryItem.cs" />
+    <Compile Include="Models\History\HistoryPropertyChange.cs" />
+    <Compile Include="Models\History\IHistoryItem.cs" />
+    <Compile Include="Models\ObservableList.cs" />
+    <Compile Include="Observer\INotifyPropertyValueChanged.cs" />
+    <Compile Include="Observer\NotifyPropertyValueChangedEventArgs.cs" />
     <Compile Include="PipelineHelper.cs" />
     <Compile Include="Presenters\MainShellPresenter.cs" />
     <Compile Include="Program.cs" />
@@ -164,9 +175,8 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="app.config" />
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\ContentPipeline\engenious.Pipeline.csproj">
       <Project>{9771e0fc-d752-4d7a-89e4-4f6fa2ec3c1d}</Project>

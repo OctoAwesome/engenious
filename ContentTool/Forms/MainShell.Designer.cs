@@ -1,4 +1,7 @@
-﻿namespace ContentTool.Forms
+﻿using engenious.Input;
+using Keys = System.Windows.Forms.Keys;
+
+namespace ContentTool.Forms
 {
     partial class MainShell
     {
@@ -123,19 +126,21 @@
             this.exitToolStripMenuItem});
             this.projectToolStripMenuItem.Name = "projectToolStripMenuItem";
             this.projectToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
-            this.projectToolStripMenuItem.Text = "File";
+            this.projectToolStripMenuItem.Text = "&File";
             // 
             // newToolStripMenuItem
             // 
             this.newToolStripMenuItem.Name = "newToolStripMenuItem";
             this.newToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.newToolStripMenuItem.Text = "New Project";
+            this.newToolStripMenuItem.Text = "&New Project";
+            this.newToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.N;
             // 
             // openToolStripMenuItem
             // 
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
             this.openToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.openToolStripMenuItem.Text = "Open Project";
+            this.openToolStripMenuItem.Text = "&Open Project";
+            this.openToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.O;
             // 
             // toolStripMenuItem1
             // 
@@ -146,13 +151,16 @@
             // 
             this.saveProjectToolStripMenuItem.Name = "saveProjectToolStripMenuItem";
             this.saveProjectToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.saveProjectToolStripMenuItem.Text = "Save Project";
+            this.saveProjectToolStripMenuItem.Text = "&Save Project";
+            this.saveProjectToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.S;
             // 
             // saveProjectAsToolStripMenuItem
             // 
             this.saveProjectAsToolStripMenuItem.Name = "saveProjectAsToolStripMenuItem";
             this.saveProjectAsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.saveProjectAsToolStripMenuItem.Text = "Save Project as";
+            this.saveProjectAsToolStripMenuItem.Text = "Save Project &as";
+            this.saveProjectAsToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.Shift | Keys.S;
+
             // 
             // toolStripMenuItem2
             // 
@@ -163,13 +171,13 @@
             // 
             this.closeProjectToolStripMenuItem.Name = "closeProjectToolStripMenuItem";
             this.closeProjectToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.closeProjectToolStripMenuItem.Text = "Close Project";
+            this.closeProjectToolStripMenuItem.Text = "&Close Project";
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
             this.exitToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.exitToolStripMenuItem.Text = "Exit";
+            this.exitToolStripMenuItem.Text = "E&xit";
             // 
             // editToolStripMenuItem
             // 
@@ -182,21 +190,23 @@
             this.removeToolStripMenuItem});
             this.editToolStripMenuItem.Name = "editToolStripMenuItem";
             this.editToolStripMenuItem.Size = new System.Drawing.Size(39, 20);
-            this.editToolStripMenuItem.Text = "Edit";
+            this.editToolStripMenuItem.Text = "&Edit";
             // 
             // undoToolStripMenuItem
             // 
             this.undoToolStripMenuItem.Enabled = false;
             this.undoToolStripMenuItem.Name = "undoToolStripMenuItem";
             this.undoToolStripMenuItem.Size = new System.Drawing.Size(117, 22);
-            this.undoToolStripMenuItem.Text = "Undo";
+            this.undoToolStripMenuItem.Text = "&Undo";
+            this.undoToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.Z;
             // 
             // redoToolStripMenuItem
             // 
             this.redoToolStripMenuItem.Enabled = false;
             this.redoToolStripMenuItem.Name = "redoToolStripMenuItem";
             this.redoToolStripMenuItem.Size = new System.Drawing.Size(117, 22);
-            this.redoToolStripMenuItem.Text = "Redo";
+            this.redoToolStripMenuItem.Text = "&Redo";
+            this.redoToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.Y;
             // 
             // toolStripMenuItem3
             // 

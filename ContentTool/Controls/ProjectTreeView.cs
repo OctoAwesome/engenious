@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using ContentTool.Models;
 using System.Collections;
+using System.Collections.Specialized;
 using ContentTool.Forms;
 using static ContentTool.Delegates;
 using System.IO;
@@ -25,9 +26,17 @@ namespace ContentTool.Controls
                 if (project == value)
                     return;
 
+                if (project != null)
+                    project.CollectionChanged -= ProjectOnCollectionChanged;
                 project = value;
+                project.CollectionChanged += ProjectOnCollectionChanged;
                 RecalculateView();
             }
+        }
+
+        private void ProjectOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs)
+        {
+            RecalculateView();//TODO: use diffs, probably better for keeping the same states(opened subtrees e.g.)
         }
 
         private ContentProject project;

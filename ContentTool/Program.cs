@@ -1,5 +1,4 @@
-﻿using CommandLine;
-using ContentTool.Commandline;
+﻿using ContentTool.Commandline;
 using ContentTool.Forms;
 using ContentTool.Models;
 using ContentTool.Presenters;

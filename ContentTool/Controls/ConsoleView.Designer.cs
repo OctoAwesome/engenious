@@ -45,6 +45,7 @@
             this.richTextBox.Size = new System.Drawing.Size(396, 342);
             this.richTextBox.TabIndex = 0;
             this.richTextBox.Text = "";
+            this.richTextBox.MouseClick += new System.Windows.Forms.MouseEventHandler(this.ConsoleView_MouseClick);
             // 
             // contextMenuStrip
             // 

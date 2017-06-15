@@ -20,10 +20,21 @@ namespace ContentTool.Forms
             {
                 if (project == value)
                     return;
+                
+                if (project != null)
+                    project.History.HistoryChanged -= HistoryOnHistoryChanged;
 
                 project = value;
+                project.History.HistoryChanged += HistoryOnHistoryChanged;
                 projectTreeView.Project = Project;
             }
+        }
+
+        private void HistoryOnHistoryChanged(object sender, EventArgs eventArgs)
+        {
+            undoToolStripMenuItem.Enabled = Project?.History?.CanUndo ?? false;
+            redoToolStripMenuItem.Enabled = Project?.History?.CanRedo ?? false;
+            itemPropertyView.Refresh();
         }
 
         private ContentProject project;
@@ -63,9 +74,20 @@ namespace ContentTool.Forms
             aboutToolStripMenuItem1.Click += (s, e) => { ShowAbout(); OnAboutClick?.Invoke(this, EventArgs.Empty); };
             helpToolStripMenuItem.Click += (s, e) => OnHelpClick?.Invoke(this, EventArgs.Empty);
 
+            //TODO: removeToolStripMenuItem.Click += (s,e) => RemoveItemClick?.Invoke()
+            undoToolStripMenuItem.Click += (s, e) => UndoClick?.Invoke(this, EventArgs.Empty);
+            redoToolStripMenuItem.Click += (s, e) => RedoClick?.Invoke(this, EventArgs.Empty);
+            editToolStripMenuItem.DropDownOpening += EditToolStripMenuItemOnDropDownOpening;
+
             projectTreeView.SelectedContentItemChanged += (i) => OnItemSelect?.Invoke(i);
 
             alwaysShowLogToolStripMenuItem.CheckedChanged += (s, e) => { if (alwaysShowLogToolStripMenuItem.Checked) splitContainer_right.Panel2Collapsed = false; else splitContainer_right.Panel2Collapsed = true; };
+        }
+
+        private void EditToolStripMenuItemOnDropDownOpening(object sender, EventArgs eventArgs)
+        {
+            undoToolStripMenuItem.Enabled = Project?.History?.CanUndo ?? false;
+            redoToolStripMenuItem.Enabled = Project?.History?.CanRedo ?? false;
         }
 
         private void ProjectTreeView_SelectedContentItemChanged(ContentItem newItem) => itemPropertyView.SelectItem(newItem);
@@ -185,5 +207,8 @@ namespace ContentTool.Forms
 
             return null;
         }
+        
+        public event EventHandler UndoClick;
+        public event EventHandler RedoClick;
     }
 }

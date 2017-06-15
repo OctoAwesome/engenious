@@ -1,10 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using ContentTool.Models.History;
+using ContentTool.Observer;
 
 namespace ContentTool.Models
 {
@@ -33,8 +37,9 @@ namespace ContentTool.Models
         public string OutputDirectory { get => outputDirectory; set
             {
                 if (value == outputDirectory) return;
+                var old = outputDirectory;
                 outputDirectory = value;
-                InternalRaiseChangedEvent(this);
+                OnPropertyChanged(old,value);
             }
         }
         private string outputDirectory;
@@ -45,8 +50,9 @@ namespace ContentTool.Models
         public string Configuration { get => configuration; set
             {
                 if (value == configuration) return;
+                var old = configuration;
                 configuration = value;
-                InternalRaiseChangedEvent(this);
+                OnPropertyChanged(old,value);
             }
         }
         private string configuration;
@@ -58,8 +64,9 @@ namespace ContentTool.Models
             set
             {
                 if (value == references) return;
+                var old = references;
                 references = value;
-                InternalRaiseChangedEvent(this);
+                OnPropertyChanged(old,value);
             }
         }
         private List<string> references;
@@ -68,6 +75,8 @@ namespace ContentTool.Models
         /// Tells if the project has unsaved changes
         /// </summary>
         public bool HasUnsavedChanges { get; private set; }
+        
+        public History.History History { get; }
 
         private string filePath;
 
@@ -81,13 +90,39 @@ namespace ContentTool.Models
         {
             ContentProjectPath = contentProjectPath;
             filePath = folderPath;
+            
+            History = new History.History();
+            
 
-            ContentItemChanged += (a, b) => HasUnsavedChanges = true;
+            //ContentItemChanged += (a, b) => HasUnsavedChanges = true;
+            PropertyChanged += OnPropertyChangedT;
+            CollectionChanged += OnCollectionChangedT;
+        }
+
+        private void OnCollectionChangedT(object sender, NotifyCollectionChangedEventArgs args)
+        {
+            //var col = sender as ContentItemCollection;
+            //if (col == null)
+            //    throw new NotSupportedException();
+            var item = HistoryCollectionChange<ContentItem>.CreateInstance(sender, args);
+            if (item == null)
+                throw new NotSupportedException();
+            History.Push(item);
+            
+            //History.Push(new HistoryCollectionChange<ContentItem>(col,args.Action,(IList<ContentItem>)args.OldItems,(IList<ContentItem>)args.NewItems));
+            
+            HasUnsavedChanges = true;
+        }
+
+        private void OnPropertyChangedT(object o, PropertyValueChangedEventArgs args)
+        {
+            History.Push(new HistoryPropertyChange(o,args.PropertyName,args.OldValue,args.NewValue));
+            HasUnsavedChanges = true;
         }
 
         public override ContentItem Deserialize(XElement element)
         {
-            name = element.Element("Name")?.Value;
+            name = element.Element("Name")?.Value ?? "Content";
             configuration = element.Element("Configuration")?.Value;
             outputDirectory = element.Element("OutputDir")?.Value;
 

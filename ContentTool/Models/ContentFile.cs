@@ -1,7 +1,10 @@
-﻿using engenious.Content.Pipeline;
+﻿using System.ComponentModel;
+using System.Drawing.Design;
+using engenious.Content.Pipeline;
 using System.IO;
 using System.Xml;
 using System.Xml.Linq;
+using ContentTool.Controls;
 
 namespace ContentTool.Models
 {
@@ -15,30 +18,37 @@ namespace ContentTool.Models
         /// <summary>
         /// Importer of the file
         /// </summary>
+        [Browsable(false)]
         public IContentImporter Importer { get; private set; }
 
         /// <summary>
         /// Processor of the file
         /// </summary>
+        [Browsable(false)]
         public IContentProcessor Processor { get; private set; }
 
         /// <summary>
         /// Name of the importer
         /// </summary>
+        [RefreshProperties(RefreshProperties.All)]
+        [Editor(typeof(ImporterEditor), typeof(UITypeEditor))]
         public string ImporterName { get => importerName;
             set
             {
                 if (importerName == value) return;
+                var old = importerName;
                 importerName = value;
                 Importer = PipelineHelper.CreateImporter(Path.GetExtension(FilePath), ref importerName);
-                InternalRaiseChangedEvent(this);
+                OnPropertyChanged(old,value);
             }
         }
         private string importerName;
 
         /// <summary>
         /// Name of the processor
-        /// </summary>
+        /// </summary
+        [RefreshProperties(RefreshProperties.All)]
+        [Editor(typeof(ProcessorEditor), typeof(UITypeEditor))]
         public string ProcessorName { get => processorName;
             set
             {
@@ -52,7 +62,7 @@ namespace ContentTool.Models
                 if (old != processorName && !string.IsNullOrWhiteSpace(processorName) && Importer != null)
                     Processor = PipelineHelper.CreateProcessor(Importer.GetType(), processorName);
 
-                InternalRaiseChangedEvent(this);
+                OnPropertyChanged(old,value);
             }
         }
         private string processorName;
@@ -60,13 +70,12 @@ namespace ContentTool.Models
         /// <summary>
         /// Settings for the processor
         /// </summary>
+        [Browsable(false)]
         public ProcessorSettings Settings
         {
             get
             {
-                if (Processor == null)
-                    return null;
-                return Processor.Settings;
+                return Processor?.Settings;
             }
             set
             {

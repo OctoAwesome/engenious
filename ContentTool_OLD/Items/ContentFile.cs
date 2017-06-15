@@ -143,7 +143,7 @@ namespace ContentTool.old.Items
                 case "Settings":
                     if (Settings != null)
                     {
-                        Settings.Read(node.ChildNodes);
+                        //Settings.Read(node.ChildNodes);
                     }
                     break;
             }
@@ -159,7 +159,7 @@ namespace ContentTool.old.Items
             {
                 writer.WriteStartElement("Settings");
 
-                Settings.Write(writer);
+                //Settings.Write(writer);
 
                 writer.WriteEndElement();
             }

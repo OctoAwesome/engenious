@@ -40,6 +40,9 @@ namespace ContentTool.Forms
 
         string ShowFolderSelectDialog();
 
+        event EventHandler UndoClick;
+        event EventHandler RedoClick;
+
         event ItemActionEventHandler BuildItemClick;
         event ItemActionEventHandler ShowInExplorerItemClick;
         event ItemAddActionEventHandler AddItemClick;
