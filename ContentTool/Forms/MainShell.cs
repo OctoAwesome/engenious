@@ -191,7 +191,7 @@ namespace ContentTool.Forms
 
         private void MainShell_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if(Project.HasUnsavedChanges)
+            if(Project != null && Project.HasUnsavedChanges)
             {
                 if (!ShowCloseWithoutSavingConfirmation())
                     e.Cancel = true;

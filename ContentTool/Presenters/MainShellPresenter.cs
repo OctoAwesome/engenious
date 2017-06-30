@@ -89,8 +89,8 @@ namespace ContentTool.Presenters
             {
                 builder = new ContentBuilder(shell.Project);
                 builder.BuildMessage += (a) => shell.Invoke(((MethodInvoker)(() => shell.WriteLineLog(a.Message))));
-            }
-
+     
+       }
             shell.ShowLog();
 
             builder.Build(item);
@@ -127,11 +127,17 @@ namespace ContentTool.Presenters
 
                 shell.Project = proj;
                 shell.WriteLineLog("Opened " + path);
-                shell.HideLoading();
 
 
             }
-            catch(Exception e) { }
+            catch (Exception e)
+            {
+            }
+            finally
+            {
+                shell.HideLoading();
+            }
+                
         }
 
         public void SaveProject(string path = null)

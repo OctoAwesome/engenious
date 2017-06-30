@@ -84,6 +84,10 @@ namespace ContentTool.Builder
             if (IsBuilding)
                 buildThread.Suspend();
         }
+        public void Join()
+        {
+            buildThread.Join();
+        }
 
         protected void BuildThread(ContentItem item)
         {
