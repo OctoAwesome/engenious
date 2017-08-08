@@ -27,11 +27,8 @@ namespace ContentTool.Viewer
 
             foreach(var type in types)
             {
-                var attr = type.GetCustomAttributes(typeof(ViewerInfo), true).FirstOrDefault();
-                if (attr != null)
-                {
+                foreach(var attr in type.GetCustomAttributes(typeof(ViewerInfo), true).Where(x=>x != null))
                     ViewerTypes.Add(((ViewerInfo)attr).Extension, type);
-                }
             }
         }
 
