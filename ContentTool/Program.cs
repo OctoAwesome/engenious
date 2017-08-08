@@ -24,18 +24,18 @@ namespace ContentTool
             var arguments = new Arguments();
             arguments.ParseArguments(args);
             
-            MainShell mainShell = new MainShell();
             if (arguments.Hidden)
             {
                 try
                 {
+                    ContentProject project;
                     if (string.IsNullOrEmpty(arguments.ContentProject)) //TODO perhaps use laodi
-                        mainShell.Project =
+                        project =
                             ContentProject.Load(@"D:\Projects\engenious\Sample\Content\Content.ecp");
                     else
-                        mainShell.Project = ContentProject.Load(arguments.ContentProject);
+                        project = ContentProject.Load(arguments.ContentProject);
 
-                    ContentBuilder builder = new ContentBuilder(mainShell.Project);
+                    ContentBuilder builder = new ContentBuilder(project);
 
                     builder.BuildMessage += eventArgs =>
                     {
@@ -58,9 +58,10 @@ namespace ContentTool
             else
             {
                 //TODO implement CommandLine
-                Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);
+                Application.EnableVisualStyles();
 
+                MainShell mainShell = new MainShell();
                 MainShellPresenter mainShellPresenter = new MainShellPresenter(mainShell);
                 if (string.IsNullOrEmpty(arguments.ContentProject))//TODO perhaps use laodi
                     mainShellPresenter.OpenProject(@"D:\Projects\engenious\Sample\Content\Content.ecp");

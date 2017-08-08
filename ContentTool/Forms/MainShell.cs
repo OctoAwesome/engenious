@@ -32,6 +32,11 @@ namespace ContentTool.Forms
 
         private void HistoryOnHistoryChanged(object sender, EventArgs eventArgs)
         {
+            if (InvokeRequired)
+            {
+                Invoke(new MethodInvoker(()=>HistoryOnHistoryChanged(sender, eventArgs)));
+                return;
+            }
             undoToolStripMenuItem.Enabled = Project?.History?.CanUndo ?? false;
             redoToolStripMenuItem.Enabled = Project?.History?.CanRedo ?? false;
             itemPropertyView.Refresh();

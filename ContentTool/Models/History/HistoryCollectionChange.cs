@@ -24,10 +24,10 @@ namespace ContentTool.Models.History
             var type = reference.GetType();
             if (_cachedCreators.TryGetValue(type, out var lambda))
             {
-                return lambda(reference, args.Action, args.OldItems, args.NewItems,args.OldStartingIndex,args.NewStartingIndex);
+                return lambda(reference, args.Action, args.OldItems, args.NewItems, args.OldStartingIndex, args.NewStartingIndex);
             }
-            type = type.GetInterfaces().FirstOrDefault(t => t.IsGenericType || !type.IsInterface ||
-                                                            type.GetGenericTypeDefinition() != typeof(IList<>));
+            type = type.GetInterfaces().FirstOrDefault(t => t.IsGenericType && t.GetGenericTypeDefinition() == typeof(IList<>));
+        
             if (type == null)
                 return null;
            /* while (() == null)
