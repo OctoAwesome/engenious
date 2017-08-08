@@ -66,7 +66,9 @@ namespace ContentTool.Models
                 if (value == references) return;
                 var old = references;
                 references = value;
+                if (old == null) supressChangedEvent = true;
                 OnPropertyChanged(old,value);
+                supressChangedEvent = false;
             }
         }
         private List<string> references;
@@ -74,8 +76,10 @@ namespace ContentTool.Models
         /// <summary>
         /// Tells if the project has unsaved changes
         /// </summary>
+        [Browsable(false)]
         public bool HasUnsavedChanges { get; private set; }
         
+        [Browsable(false)]
         public History.History History { get; }
 
         private string filePath;

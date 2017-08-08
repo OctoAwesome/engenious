@@ -32,6 +32,8 @@ namespace ContentTool.Forms
 
         private void HistoryOnHistoryChanged(object sender, EventArgs eventArgs)
         {
+            if (IsRenderingSuspended)
+                return;
             if (InvokeRequired)
             {
                 Invoke(new MethodInvoker(()=>HistoryOnHistoryChanged(sender, eventArgs)));
@@ -75,6 +77,10 @@ namespace ContentTool.Forms
             rebuildToolStripMenuItem.Click += (s, e) => RebuildClick?.Invoke(this, EventArgs.Empty);
             cleanToolStripMenuItem.Click += (s, e) => CleanClick?.Invoke(this, EventArgs.Empty);
             //toolStripButton_clean.Click += (s,e) => Clea
+
+            toolStripButton_existingItemAdd.Click += (s, e) => AddExistingItemClick?.Invoke(projectTreeView.SelectedItem);
+            toolStripButton_existingFolderAdd.Click += (s, e) => AddExistingFolderClick?.Invoke(projectTreeView.SelectedItem);
+
 
             aboutToolStripMenuItem1.Click += (s, e) => { ShowAbout(); OnAboutClick?.Invoke(this, EventArgs.Empty); };
             helpToolStripMenuItem.Click += (s, e) => OnHelpClick?.Invoke(this, EventArgs.Empty);
@@ -167,7 +173,11 @@ namespace ContentTool.Forms
                 splitContainer_right.Panel2Collapsed = true;
         }
 
-        public void Refresh() => projectTreeView.RecalculateView();
+        public void Refresh()
+        {
+            if (!IsRenderingSuspended)
+                projectTreeView.RecalculateView();
+        }
 
         public void ShowAbout() => new AboutBox().ShowDialog();
 
@@ -194,6 +204,9 @@ namespace ContentTool.Forms
         public event EventHandler OnAboutClick;
         public event EventHandler OnHelpClick;
 
+        public event EventHandler UndoClick;
+        public event EventHandler RedoClick;
+
         private void MainShell_FormClosing(object sender, FormClosingEventArgs e)
         {
             if(Project != null && Project.HasUnsavedChanges)
@@ -205,15 +218,44 @@ namespace ContentTool.Forms
 
         public string ShowFolderSelectDialog()
         {
-            FolderBrowserDialog fbd = new FolderBrowserDialog();
-            fbd.SelectedPath = Project.FilePath;
-            if (fbd.ShowDialog() == DialogResult.OK)
-                return fbd.SelectedPath;
-
+            using (var fbd = new FolderBrowserDialog())
+            {
+                fbd.SelectedPath = Project.FilePath;
+                if (fbd.ShowDialog() == DialogResult.OK)
+                    return fbd.SelectedPath;
+            }
             return null;
         }
-        
-        public event EventHandler UndoClick;
-        public event EventHandler RedoClick;
+
+        public string[] ShowFileSelectDialog()
+        {
+            using (var ofd = new OpenFileDialog())
+            {
+                ofd.InitialDirectory = Project.FilePath;
+                ofd.Multiselect = true;
+                if (ofd.ShowDialog() == DialogResult.OK)
+                    return ofd.FileNames;
+            }
+            return null;
+        }
+
+        private int _suspendCount;
+        public bool IsRenderingSuspended => _suspendCount > 0;
+
+        public void SuspendRendering()
+        {
+            System.Threading.Interlocked.Increment(ref _suspendCount);
+        }
+
+        public void ResumeRendering()
+        {
+            lock (this)
+            {
+                if (_suspendCount == 0)
+                    return;
+                _suspendCount--;
+            }
+        }
+
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -19,6 +20,7 @@ namespace ContentTool.Models
         /// <summary>
         /// The content of the folder
         /// </summary>
+        [Browsable(false)]
         public ContentItemCollection Content {
             get => content;
             set

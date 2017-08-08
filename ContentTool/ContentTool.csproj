@@ -79,11 +79,18 @@
       <DependentUpon>ProjectTreeView.cs</DependentUpon>
     </Compile>
     <Compile Include="Events\Delegates.cs" />
+    <Compile Include="FileHelper.cs" />
     <Compile Include="Forms\AboutBox.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\AboutBox.Designer.cs">
       <DependentUpon>AboutBox.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Dialogs\OverwriteDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Dialogs\OverwriteDialog.Designer.cs">
+      <DependentUpon>OverwriteDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\IMainShell.cs" />
     <Compile Include="Forms\MainShell.cs">
@@ -141,6 +148,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\AboutBox.resx">
       <DependentUpon>AboutBox.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Dialogs\OverwriteDialog.resx">
+      <DependentUpon>OverwriteDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\MainShell.resx">
       <DependentUpon>MainShell.cs</DependentUpon>

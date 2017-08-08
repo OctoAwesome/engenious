@@ -6,8 +6,11 @@
   <Contents>
     <ContentFile>
       <Name>brick.jpg</Name>
-      <Processor />
-      <Importer />
+      <Processor>BitmapProcessor</Processor>
+      <Importer>BitmapImporter</Importer>
+      <AutoGenerateMipMaps>False</AutoGenerateMipMaps>
+      <MipMapCount>1</MipMapCount>
+      <Format>0</Format>
     </ContentFile>
     <ContentFile>
       <Name>test.spritefont</Name>
@@ -16,14 +19,13 @@
     </ContentFile>
     <ContentFile>
       <Name>simple.glsl</Name>
-      <Processor>EffectProcessor</Processor>
-      <Importer>EffectImporter</Importer>
+      <Processor />
+      <Importer />
     </ContentFile>
     <ContentFile>
-      <Name>blub.ogg</Name>
-      <Processor>AudioProcessor</Processor>
-      <Importer>WaveImporter</Importer>
-      <OutputFormat>0</OutputFormat>
+      <Name>blub_x.ogg</Name>
+      <Processor />
+      <Importer />
     </ContentFile>
   </Contents>
 </Content>

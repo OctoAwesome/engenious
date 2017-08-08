@@ -41,8 +41,41 @@ namespace ContentTool.Presenters
 
             shell.OnAboutClick += (s, e) => shell.ShowAbout();
 
+            shell.AddExistingItemClick += Shell_AddExistingItemClick;
+            shell.AddExistingFolderClick += Shell_AddExistingFolderClick;
+
             viewerManager = new ViewerManager();
 
+        }
+
+        private void Shell_AddExistingFolderClick(ContentItem item)
+        {
+            var fld = (item as ContentFolder) ?? (item?.Parent as ContentFolder) ?? shell.Project;
+
+            var dest = fld.FilePath;
+            var src = shell.ShowFolderSelectDialog();
+            if (src == null)
+                return;
+
+            shell.SuspendRendering();
+            FileHelper.CopyDirectory(src, dest, fld);
+            shell.ResumeRendering();
+        }
+
+       
+        private void Shell_AddExistingItemClick(ContentItem item)
+        {
+            var fld = (item as ContentFolder) ?? (item?.Parent as ContentFolder) ?? shell.Project;
+
+
+            string[] files = shell.ShowFileSelectDialog();
+            if (files == null)
+                return;
+
+            string dir = fld.FilePath;
+            shell.SuspendRendering();
+            FileHelper.CopyFiles(files, dir, fld);
+            shell.ResumeRendering();
         }
 
         private void Shell_RemoveItemClick(ContentItem item)

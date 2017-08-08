@@ -31,6 +31,7 @@ namespace ContentTool.Models
         
         protected bool supressChangedEvent = false;
 
+        [Browsable(false)]
         public ContentErrorType Error { get; set; }
 
         /// <summary>

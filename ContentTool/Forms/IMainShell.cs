@@ -38,7 +38,11 @@ namespace ContentTool.Forms
 
         void Refresh();
 
+        void SuspendRendering();
+        void ResumeRendering();
+
         string ShowFolderSelectDialog();
+        string[] ShowFileSelectDialog();
 
         event EventHandler UndoClick;
         event EventHandler RedoClick;

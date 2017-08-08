@@ -13,6 +13,7 @@ using System.Collections.Specialized;
 using ContentTool.Forms;
 using static ContentTool.Delegates;
 using System.IO;
+using System.Threading;
 
 namespace ContentTool.Controls
 {
