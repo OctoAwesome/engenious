@@ -62,14 +62,10 @@ namespace ContentTool
                 Application.EnableVisualStyles();
 
                 MainShell mainShell = new MainShell();
-                MainShellPresenter mainShellPresenter = new MainShellPresenter(mainShell);
-                if (string.IsNullOrEmpty(arguments.ContentProject))//TODO perhaps use laodi
-                    mainShellPresenter.OpenProject(@"D:\Projects\engenious\Sample\Content\Content.ecp");
-                else
-                    mainShellPresenter.OpenProject(arguments.ContentProject);
-                
-                
+                MainShellPresenter mainShellPresenter = new MainShellPresenter(mainShell, arguments);
                 Application.Run(mainShell);
+                
+                
             }
             return 0;
         }

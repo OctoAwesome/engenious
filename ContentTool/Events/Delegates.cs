@@ -11,7 +11,9 @@ namespace ContentTool
     {
         public delegate void ItemActionEventHandler(ContentItem item);
 
-        public delegate void ItemAddActionEventHandler(ContentItem item, AddType addType);
+        public delegate void FolderAddActionEventHandler(ContentFolder folder);
+
+        public delegate void ItemAddActionEventHandler(ContentFolder folder, AddType addType);
 
         public enum AddType
         {

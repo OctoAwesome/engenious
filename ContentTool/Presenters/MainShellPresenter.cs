@@ -20,10 +20,12 @@ namespace ContentTool.Presenters
         private ContentBuilder builder;
 
         private ViewerManager viewerManager;
+        private Arguments arguments;
 
-        public MainShellPresenter(IMainShell shell)
+        public MainShellPresenter(IMainShell shell, Arguments arguments)
         {
             this.shell = shell;
+            this.arguments = arguments;
 
             shell.CloseProjectClick += (i) => CloseProject();
 
@@ -32,37 +34,96 @@ namespace ContentTool.Presenters
             shell.OpenProjectClick += (s, e) => { if (CloseProject()) OpenProject(); };
             shell.BuildItemClick += Shell_BuildItemClick;
             shell.OnItemSelect += Shell_OnItemSelect;
-            shell.RemoveItemClick += Shell_RemoveItemClick;
-            
+
             shell.UndoClick += ShellOnUndoClick;
             shell.RedoClick += ShellOnRedoClick;
-            
-            shell.RemoveItemClick += item => (item?.Parent as ContentFolder)?.Content.Remove(item);
 
+            shell.RenameItemClick += (i) => shell.RenameItem(i);
+            shell.RemoveItemClick += Shell_RemoveItemClick;
             shell.OnAboutClick += (s, e) => shell.ShowAbout();
 
             shell.AddExistingItemClick += Shell_AddExistingItemClick;
             shell.AddExistingFolderClick += Shell_AddExistingFolderClick;
+            shell.AddNewFolderClick += Shell_AddNewFolderClick;
+
+            shell.OnShellLoad += Shell_OnShellLoad;
 
             viewerManager = new ViewerManager();
 
         }
 
-        private void Shell_AddExistingFolderClick(ContentItem item)
+        private void Shell_RemoveItemClick(ContentItem item)
         {
-            var fld = (item as ContentFolder) ?? (item?.Parent as ContentFolder) ?? shell.Project;
+            var folder = item.Parent as ContentFolder;
+            if (folder != null)
+                folder.Content.Remove(item);
+        }
 
+        private void Shell_OnShellLoad(object sender, EventArgs e)
+        {
+
+            if (string.IsNullOrEmpty(arguments.ContentProject))//TODO perhaps use laodi
+                OpenProject(@"D:\Projects\engenious\Sample\Content\Content.ecp");
+            else
+                OpenProject(arguments.ContentProject);
+        }
+
+        private void Shell_AddNewFolderClick(ContentFolder folder)
+        {
+            if (folder == null)
+                return;
+            var numbers = folder.Content.Where(t => t.Name.StartsWith("New Folder")).Select(t =>
+            {
+                if (t.Name == "New Folder")
+                    return 1;
+
+                var str = t.Name.Substring("New Folder ".Length);
+                if (int.TryParse(str, out var num))
+                    return num;
+                else
+                    return -1;
+            }).ToArray();
+            var max = numbers.Length == 0 ? -1 : numbers.Max();
+            var newFolder = new ContentFolder("New Folder" + (max == -1 ? string.Empty : $" {max + 1}"), folder);
+            Directory.CreateDirectory(newFolder.FilePath);
+            folder.Content.Add(newFolder);
+            shell.Refresh();
+            EventHandler del = (_, d) => { };
+            del = (s, e) =>
+            {
+                shell.RenameItem(newFolder);
+                shell.Refreshed -= del;
+            };
+            shell.Refreshed += del;
+
+        }
+
+
+        private void Shell_AddExistingFolderClick(ContentFolder fld)
+        {
             var dest = fld.FilePath;
             var src = shell.ShowFolderSelectDialog();
             if (src == null)
                 return;
 
+            shell.ShowLoading();
             shell.SuspendRendering();
-            FileHelper.CopyDirectory(src, dest, fld);
-            shell.ResumeRendering();
+
+            var t = new Thread(() =>
+            {
+
+                FileHelper.CopyDirectory(src, dest, fld);
+                shell.Invoke(new MethodInvoker(() =>
+                {
+                    shell.ResumeRendering();
+                    shell.HideLoading();
+                }));
+            });
+            t.Start();
+
         }
 
-       
+
         private void Shell_AddExistingItemClick(ContentItem item)
         {
             var fld = (item as ContentFolder) ?? (item?.Parent as ContentFolder) ?? shell.Project;
@@ -76,13 +137,6 @@ namespace ContentTool.Presenters
             shell.SuspendRendering();
             FileHelper.CopyFiles(files, dir, fld);
             shell.ResumeRendering();
-        }
-
-        private void Shell_RemoveItemClick(ContentItem item)
-        {
-            var parent = (ContentFolder) item.Parent;
-            parent.Content.Remove(item);
-            shell.Refresh();
         }
 
         private void ShellOnRedoClick(object sender, EventArgs eventArgs)
@@ -103,7 +157,7 @@ namespace ContentTool.Presenters
 
         private void Shell_OnItemSelect(ContentItem item)
         {
-            if(item.Error.HasFlag(ContentErrorType.NotFound) && shell.ShowNotFoundDelete())
+            if (item.Error.HasFlag(ContentErrorType.NotFound) && shell.ShowNotFoundDelete())
             {
                 ContentFolder p = (ContentFolder)item.Parent;
                 p.Content.Remove(item);
@@ -122,8 +176,8 @@ namespace ContentTool.Presenters
             {
                 builder = new ContentBuilder(shell.Project);
                 builder.BuildMessage += (a) => shell.Invoke(((MethodInvoker)(() => shell.WriteLineLog(a.Message))));
-     
-       }
+
+            }
             shell.ShowLog();
 
             builder.Build(item);
@@ -152,25 +206,33 @@ namespace ContentTool.Presenters
             if (path == null)
                 return;
 
-            try
+            shell.ShowLoading("Loading Project...");
+
+            var t = new Thread(() =>
             {
-                shell.ShowLoading();
+                try
+                {
+                    ContentProject proj = ContentProject.Load(path);
 
-                ContentProject proj = ContentProject.Load(path);
+                    shell.Invoke(new MethodInvoker(() =>
+                    {
+                        shell.Project = proj;
+                        shell.WriteLineLog("Opened " + path);
+                    }));
 
-                shell.Project = proj;
-                shell.WriteLineLog("Opened " + path);
 
+                }
+                catch (Exception e)
+                {
 
-            }
-            catch (Exception e)
-            {
-            }
-            finally
-            {
-                shell.HideLoading();
-            }
-                
+                }
+                finally
+                {
+                    shell.Invoke(new MethodInvoker(() => shell.HideLoading()));
+                }
+            });
+            t.Start();
+
         }
 
         public void SaveProject(string path = null)

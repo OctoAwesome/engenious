@@ -13,8 +13,10 @@ namespace ContentTool.Forms
     public interface IMainShell
     {
         ContentProject Project { get; set; }
+        bool IsRenderingSuspended { get; }
 
         void Invoke(Delegate d);
+        void BeginInvoke(Delegate d);
 
         bool ShowCloseWithoutSavingConfirmation();
         string ShowOpenDialog();
@@ -26,11 +28,14 @@ namespace ContentTool.Forms
         void ShowLog();
         void HideLog();
 
-        void ShowLoading();
+        void ShowLoading(string title = "Please wait...");
         void HideLoading();
 
         void ShowViewer(Control viewer);
         void HideViewer();
+
+        void RenameItem(ContentItem item);
+        void RemoveItem(ContentItem item);
 
         void ShowAbout();
 
@@ -44,6 +49,8 @@ namespace ContentTool.Forms
         string ShowFolderSelectDialog();
         string[] ShowFileSelectDialog();
 
+        event EventHandler Refreshed;
+
         event EventHandler UndoClick;
         event EventHandler RedoClick;
 
@@ -51,14 +58,17 @@ namespace ContentTool.Forms
         event ItemActionEventHandler ShowInExplorerItemClick;
         event ItemAddActionEventHandler AddItemClick;
         event ItemActionEventHandler RemoveItemClick;
+        event ItemActionEventHandler RenameItemClick;
+
+        event EventHandler OnShellLoad;
 
         event EventHandler RebuildClick;
         event EventHandler CleanClick;
 
-        event ItemActionEventHandler AddExistingFolderClick;
-        event ItemActionEventHandler AddNewFolderClick;
-        event ItemActionEventHandler AddNewItemClick;
-        event ItemActionEventHandler AddExistingItemClick;
+        event FolderAddActionEventHandler AddExistingFolderClick;
+        event FolderAddActionEventHandler AddNewFolderClick;
+        event FolderAddActionEventHandler AddExistingItemClick;
+        event ItemAddActionEventHandler AddNewItemClick;
 
         event EventHandler NewProjectClick;
         event EventHandler OpenProjectClick;
