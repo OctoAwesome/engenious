@@ -16,7 +16,7 @@ namespace ContentTool.Models
         public ContentItemCollection()
         {
             //_contents.PropertyChanged += (sender, args) => PropertyChanged?.Invoke(sender, args);
-            _contents.CollectionChanged += (sender, args) => CollectionChanged?.Invoke(this, args);
+            _contents.CollectionChanged += (sender, args) => CollectionChanged?.Invoke(sender, args);
         }
 
         public ContentItem this[int index]

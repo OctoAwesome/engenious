@@ -101,7 +101,10 @@ namespace ContentTool.Models
         protected virtual void OnCollectionChanged(object sender,NotifyCollectionChangedEventArgs args)
         {
             if (supressChangedEvent) return;
-            CollectionChanged?.Invoke(sender,args);
+            if (sender is ContentItem)
+                CollectionChanged?.Invoke(sender,args);
+            else
+                CollectionChanged?.Invoke(this, args);
         }
         protected virtual void OnCollectionChanged(object sender,NotifyCollectionChangedAction action,object element)
         {

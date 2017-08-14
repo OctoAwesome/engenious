@@ -26,10 +26,23 @@ namespace ContentTool.Controls
             {
                 if (project == value)
                     return;
+                if (project != null)
+                    project.CollectionChanged -= Project_CollectionChanged;
 
                 project = value;
+
+                if (project != null)
+                    project.CollectionChanged += Project_CollectionChanged;
                 RecalculateView();
             }
+        }
+        private List<Tuple<object, NotifyCollectionChangedEventArgs>> _changes = new List<Tuple<object, NotifyCollectionChangedEventArgs>>();
+        private void Project_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            if (IsRenderingSuspended)
+                _changes.Add(new Tuple<object, NotifyCollectionChangedEventArgs>(sender, e));
+            else
+                ResumeRendering(sender, e);
         }
 
         public ContentFolder SelectedFolder => (SelectedItem as ContentFolder) ?? (SelectedItem?.Parent as ContentFolder) ?? Project;
@@ -64,7 +77,7 @@ namespace ContentTool.Controls
                 var nodes = new List<TreeNode>(folder.Content.Count);
                 foreach (var child in folder.Content)
                 {
-                    nodes.Add(GetNode(child, 1, 1));
+                    nodes.Add(CreateNode(child, 1, 1));
                 }
 
                 Shell.Invoke(new MethodInvoker(() =>
@@ -86,6 +99,69 @@ namespace ContentTool.Controls
             treeView.AfterSelect += (s, ev) => SelectedContentItemChanged?.Invoke(SelectedItem);
             treeView.NodeMouseClick += (s, ev) => { if (ev.Button == MouseButtons.Right) treeView.SelectedNode = ev.Node; };
         }
+
+        private int _suspendCount;
+        public bool IsRenderingSuspended => _suspendCount > 0;
+        public void SuspendRendering()
+        {
+            System.Threading.Interlocked.Increment(ref _suspendCount);
+        }
+        private void ResumeRendering(Tuple<object, NotifyCollectionChangedEventArgs> t)
+        {
+            ResumeRendering(t.Item1, t.Item2);
+        }
+        private void ResumeRendering(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            var node = GetNodeFromItem(sender as ContentItem);
+            switch (e.Action)
+            {
+                case NotifyCollectionChangedAction.Add:
+                    var nodes = new List<TreeNode>(e.NewItems.Count);
+                    foreach (var nI in e.NewItems.OfType<ContentItem>())
+                    {
+                        nodes.Add(CreateNode(nI));
+                    }
+                    Invoke(new MethodInvoker(() =>
+                    {
+                        foreach (var n in nodes)
+                        {
+                            node.Nodes.Add(n);
+                            treeView.SelectedNode = n;
+                        }
+                    }));
+                    break;
+                case NotifyCollectionChangedAction.Remove:
+                    Invoke(new MethodInvoker(() =>
+                    {
+                        foreach (var nI in e.OldItems.OfType<ContentItem>())
+                        {
+                            node.Nodes.Remove(GetNodeFromItem(nI as ContentItem));
+                        }
+                    }));
+                    break;
+                case NotifyCollectionChangedAction.Reset:
+                    node.Nodes.Clear();
+                    break;
+                default:
+                    throw new NotImplementedException();
+            }
+        }
+        public void ResumeRendering()
+        {
+            lock (this)
+            {
+                _suspendCount--;
+                if (_suspendCount == 0)
+                {
+                    foreach (var c in _changes)
+                        ResumeRendering(c);
+                    _changes.Clear();
+                    return;
+                }
+
+            }
+        }
+
         private bool _isRecalculatingView;
         public void RecalculateView()
         {
@@ -101,7 +177,7 @@ namespace ContentTool.Controls
 
             var t = new Thread(() =>
             {
-                var projectNode = GetNode(Project);
+                var projectNode = CreateNode(Project);
 
                 Invoke(new MethodInvoker(() =>
                 {
@@ -119,7 +195,8 @@ namespace ContentTool.Controls
             t.Start();
         }
 
-        protected TreeNode GetNode(ContentItem item, int maxDepth = 1, int depth = 0)
+
+        protected TreeNode CreateNode(ContentItem item, int maxDepth = 1, int depth = 0)
         {
             var node = new TreeNode(item.Name) { Tag = item };
 
@@ -129,7 +206,7 @@ namespace ContentTool.Controls
                 if (depth < maxDepth)
                 {
                     foreach (var child in folder.Content)
-                        node.Nodes.Add(GetNode(child, maxDepth, depth + 1));
+                        node.Nodes.Add(CreateNode(child, maxDepth, depth + 1));
                 }
                 else if (folder.Content.Count > 0)
                 {

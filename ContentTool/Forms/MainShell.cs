@@ -56,8 +56,7 @@ namespace ContentTool.Forms
         }
         private void ProjectOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs)
         {
-            if (!IsRenderingSuspended)
-                projectTreeView.RecalculateView();//TODO: use diffs, probably better for keeping the same states(opened subtrees e.g.)
+            
         }
 
         private ContentProject project;
@@ -316,18 +315,19 @@ namespace ContentTool.Forms
         public void SuspendRendering()
         {
             System.Threading.Interlocked.Increment(ref _suspendCount);
+            projectTreeView.SuspendRendering();
         }
 
         public void ResumeRendering()
         {
             lock (this)
             {
+                _suspendCount--;
                 if (_suspendCount == 0)
                 {
-                    projectTreeView.RecalculateView();
+                    projectTreeView.ResumeRendering();
                     return;
                 }
-                _suspendCount--;
             }
         }
 

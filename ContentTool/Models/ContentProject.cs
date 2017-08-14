@@ -108,7 +108,7 @@ namespace ContentTool.Models
             //var col = sender as ContentItemCollection;
             //if (col == null)
             //    throw new NotSupportedException();
-            var item = HistoryCollectionChange<ContentItem>.CreateInstance(sender, args);
+            var item = HistoryCollectionChange<ContentItem>.CreateInstance((sender as ContentFolder)?.Content, args);
             if (item == null)
                 throw new NotSupportedException();
             History.Push(item);

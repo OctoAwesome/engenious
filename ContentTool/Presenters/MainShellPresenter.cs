@@ -87,14 +87,7 @@ namespace ContentTool.Presenters
             var newFolder = new ContentFolder("New Folder" + (max == -1 ? string.Empty : $" {max + 1}"), folder);
             Directory.CreateDirectory(newFolder.FilePath);
             folder.Content.Add(newFolder);
-            shell.Refresh();
-            EventHandler del = (_, d) => { };
-            del = (s, e) =>
-            {
-                shell.RenameItem(newFolder);
-                shell.Refreshed -= del;
-            };
-            shell.Refreshed += del;
+            shell.RenameItem(newFolder);
 
         }
 
@@ -161,7 +154,6 @@ namespace ContentTool.Presenters
             {
                 ContentFolder p = (ContentFolder)item.Parent;
                 p.Content.Remove(item);
-                shell.Refresh();
             }
 
             if (item is ContentFile)
