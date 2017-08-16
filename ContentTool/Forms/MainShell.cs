@@ -121,7 +121,7 @@ namespace ContentTool.Forms
             projectTreeView.SelectedContentItemChanged += (i) => OnItemSelect?.Invoke(i);
             projectTreeView.Refreshed += (s, e) => Refreshed?.Invoke(this, e);
 
-            alwaysShowLogToolStripMenuItem.CheckedChanged += (s, e) => { if (alwaysShowLogToolStripMenuItem.Checked) splitContainer_right.Panel2Collapsed = false; else splitContainer_right.Panel2Collapsed = true; };
+            alwaysShowLogToolStripMenuItem.CheckedChanged += (s, e) => splitContainer_right.Panel2Collapsed = !alwaysShowLogToolStripMenuItem.Checked;
         }
 
         public void ShowItemButtons(bool value)

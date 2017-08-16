@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using ContentTool.Forms;
 using ContentTool.Models;
 using static ContentTool.Delegates;
+using PropertyValueChangedEventArgs = ContentTool.Observer.PropertyValueChangedEventArgs;
 
 namespace ContentTool.Controls
 {
@@ -23,17 +24,34 @@ namespace ContentTool.Controls
                 if (_project == value)
                     return;
                 if (_project != null)
+                {
                     _project.CollectionChanged -= Project_CollectionChanged;
+                    _project.PropertyChanged -= ProjectOnPropertyChanged;
+                }
 
                 _project = value;
 
                 if (_project != null)
+                {
                     _project.CollectionChanged += Project_CollectionChanged;
+                    _project.PropertyChanged += ProjectOnPropertyChanged;
+                }
                 RecalculateView();
             }
         }
 
-        private List<Tuple<object, NotifyCollectionChangedEventArgs>> _changes =
+        private void ProjectOnPropertyChanged(object sender, PropertyValueChangedEventArgs args)
+        {
+            var contentNode = sender as ContentItem;
+            var node = GetNodeFromItem(contentNode);
+
+            if (node == null)
+                return;
+            if (args.PropertyName == "Name")
+                node.Text = args.NewValue.ToString();
+        }
+
+        private readonly List<Tuple<object, NotifyCollectionChangedEventArgs>> _changes =
             new List<Tuple<object, NotifyCollectionChangedEventArgs>>();
 
         private void Project_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -318,17 +336,17 @@ namespace ContentTool.Controls
             if (item == null)
                 return;
 
-            if (MessageBox.Show($"Do you really want to remove {item.Name}?", "Remove Item", MessageBoxButtons.YesNo,
-                    MessageBoxIcon.Warning) == DialogResult.Yes)
-                RemoveItemClick?.Invoke(SelectedItem);
+            RemoveItemClick?.Invoke(SelectedItem);
         }
 
         private TreeNode GetNodeFromItem(ContentItem item)
         {
-            var tmp = new Stack<string>();
+            if (item == null)
+                return null;
+            var tmp = new Stack<ContentItem>();
             while (item != null)
             {
-                tmp.Push(item.Name);
+                tmp.Push(item);
                 item = item.Parent;
             }
 
@@ -336,8 +354,8 @@ namespace ContentTool.Controls
             TreeNode curNode = null;
             while (tmp.Count > 0)
             {
-                var name = tmp.Pop();
-                curNode = nodes.OfType<TreeNode>().FirstOrDefault(x => x.Text == name);
+                var contentItem = tmp.Pop();
+                curNode = nodes.OfType<TreeNode>().FirstOrDefault(x => (x.Tag as ContentItem) == contentItem);
 
                 if (curNode == null)
                     break;
@@ -400,8 +418,6 @@ namespace ContentTool.Controls
 
             if (!string.IsNullOrWhiteSpace(e.Label))
                 ((ContentItem) e.Node.Tag).Name = e.Label;
-
-            e.Node.Text = ((ContentItem) e.Node.Tag).Name;
         }
 
         private void treeView_KeyUp(object sender, KeyEventArgs e)

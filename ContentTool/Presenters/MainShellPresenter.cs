@@ -54,9 +54,15 @@ namespace ContentTool.Presenters
 
         private void Shell_RemoveItemClick(ContentItem item)
         {
+            if (MessageBox.Show($"Do you really want to remove {item.Name}?", "Remove Item", MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Warning) != DialogResult.Yes)
+                return;
             var folder = item.Parent as ContentFolder;
             if (folder != null)
+            {
+                //TODO remove from disk
                 folder.Content.Remove(item);
+            }
         }
 
         private void Shell_OnShellLoad(object sender, EventArgs e)
