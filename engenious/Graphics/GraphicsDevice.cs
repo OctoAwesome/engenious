@@ -69,8 +69,8 @@ namespace engenious.Graphics
         {
             using (Execute.OnUiContext)
             {
-                GL.Clear((OpenTK.Graphics.OpenGL4.ClearBufferMask) mask);
                 GL.ClearColor(color);
+                GL.Clear((OpenTK.Graphics.OpenGL4.ClearBufferMask) mask);
             }
         }
 
@@ -99,8 +99,8 @@ namespace engenious.Graphics
         {
             using (Execute.OnUiContext)
             {
-                GL.Clear(OpenTK.Graphics.OpenGL4.ClearBufferMask.ColorBufferBit | OpenTK.Graphics.OpenGL4.ClearBufferMask.DepthBufferBit);
                 GL.ClearColor(color.R, color.G, color.B, color.A);
+                GL.Clear(OpenTK.Graphics.OpenGL4.ClearBufferMask.ColorBufferBit | OpenTK.Graphics.OpenGL4.ClearBufferMask.DepthBufferBit);
             }
             CheckError();
         }
