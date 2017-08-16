@@ -1,19 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using ContentTool.Models;
 using System.Collections;
+using System.Collections.Generic;
 using System.Collections.Specialized;
-using ContentTool.Forms;
-using static ContentTool.Delegates;
+using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Threading;
+using System.Windows.Forms;
+using ContentTool.Forms;
+using ContentTool.Models;
+using static ContentTool.Delegates;
 
 namespace ContentTool.Controls
 {
@@ -21,22 +17,25 @@ namespace ContentTool.Controls
     {
         public ContentProject Project
         {
-            get => project;
+            get => _project;
             set
             {
-                if (project == value)
+                if (_project == value)
                     return;
-                if (project != null)
-                    project.CollectionChanged -= Project_CollectionChanged;
+                if (_project != null)
+                    _project.CollectionChanged -= Project_CollectionChanged;
 
-                project = value;
+                _project = value;
 
-                if (project != null)
-                    project.CollectionChanged += Project_CollectionChanged;
+                if (_project != null)
+                    _project.CollectionChanged += Project_CollectionChanged;
                 RecalculateView();
             }
         }
-        private List<Tuple<object, NotifyCollectionChangedEventArgs>> _changes = new List<Tuple<object, NotifyCollectionChangedEventArgs>>();
+
+        private List<Tuple<object, NotifyCollectionChangedEventArgs>> _changes =
+            new List<Tuple<object, NotifyCollectionChangedEventArgs>>();
+
         private void Project_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             if (IsRenderingSuspended)
@@ -45,10 +44,11 @@ namespace ContentTool.Controls
                 ResumeRendering(sender, e);
         }
 
-        public ContentFolder SelectedFolder => (SelectedItem as ContentFolder) ?? (SelectedItem?.Parent as ContentFolder) ?? Project;
+        public ContentFolder SelectedFolder =>
+            (SelectedItem as ContentFolder) ?? (SelectedItem?.Parent as ContentFolder) ?? Project;
 
 
-        private ContentProject project;
+        private ContentProject _project;
 
         public ContentItem SelectedItem => treeView.SelectedNode?.Tag as ContentItem;
 
@@ -84,6 +84,7 @@ namespace ContentTool.Controls
                 {
                     foreach (var node in nodes)
                         e.Node.Nodes.Add(node);
+                    
                     Shell.HideLoading();
 
                     e.Node.Expand();
@@ -97,45 +98,60 @@ namespace ContentTool.Controls
             base.OnLoad(e);
             treeView.TreeViewNodeSorter = new TreeSorter();
             treeView.AfterSelect += (s, ev) => SelectedContentItemChanged?.Invoke(SelectedItem);
-            treeView.NodeMouseClick += (s, ev) => { if (ev.Button == MouseButtons.Right) treeView.SelectedNode = ev.Node; };
+            treeView.NodeMouseClick += (s, ev) =>
+            {
+                if (ev.Button == MouseButtons.Right) treeView.SelectedNode = ev.Node;
+            };
         }
 
         private int _suspendCount;
         public bool IsRenderingSuspended => _suspendCount > 0;
+
         public void SuspendRendering()
         {
-            System.Threading.Interlocked.Increment(ref _suspendCount);
+            Interlocked.Increment(ref _suspendCount);
         }
-        private void ResumeRendering(Tuple<object, NotifyCollectionChangedEventArgs> t)
+
+        private void ResumeRendering(Tuple<object, NotifyCollectionChangedEventArgs> t, ContentItem topNode = null)
         {
-            ResumeRendering(t.Item1, t.Item2);
+            ResumeRendering(t.Item1, t.Item2, topNode);
         }
-        private void ResumeRendering(object sender, NotifyCollectionChangedEventArgs e)
+
+        private void ResumeRendering(object sender, NotifyCollectionChangedEventArgs e, ContentItem topNode = null)
         {
-            var node = GetNodeFromItem(sender as ContentItem);
+            var contentNode = sender as ContentItem;
+            if (topNode != null && contentNode != topNode)
+                return;
+            var node = GetNodeFromItem(contentNode);
+            if (node == null)
+                return;
+            
             switch (e.Action)
             {
                 case NotifyCollectionChangedAction.Add:
-                    var nodes = new List<TreeNode>(e.NewItems.Count);
-                    foreach (var nI in e.NewItems.OfType<ContentItem>())
+                    if (node.IsExpanded)
                     {
-                        nodes.Add(CreateNode(nI));
-                    }
-                    Invoke(new MethodInvoker(() =>
-                    {
-                        foreach (var n in nodes)
+                        var nodes = new List<TreeNode>(e.NewItems.Count);
+                        foreach (var nI in e.NewItems.OfType<ContentItem>())
                         {
-                            node.Nodes.Add(n);
-                            treeView.SelectedNode = n;
+                            nodes.Add(CreateNode(nI));
                         }
-                    }));
+                        Invoke(new MethodInvoker(() =>
+                        {
+                            foreach (var n in nodes)
+                            {
+                                node.Nodes.Add(n);
+                                treeView.SelectedNode = n;
+                            }
+                        }));
+                    }
                     break;
                 case NotifyCollectionChangedAction.Remove:
-                    Invoke(new MethodInvoker(() =>
+                    BeginInvoke(new MethodInvoker(() =>
                     {
                         foreach (var nI in e.OldItems.OfType<ContentItem>())
                         {
-                            node.Nodes.Remove(GetNodeFromItem(nI as ContentItem));
+                            node.Nodes.Remove(GetNodeFromItem(nI));
                         }
                     }));
                     break;
@@ -146,6 +162,7 @@ namespace ContentTool.Controls
                     throw new NotImplementedException();
             }
         }
+
         public void ResumeRendering()
         {
             lock (this)
@@ -153,16 +170,16 @@ namespace ContentTool.Controls
                 _suspendCount--;
                 if (_suspendCount == 0)
                 {
+                    var topNode = _changes.FirstOrDefault()?.Item1;
                     foreach (var c in _changes)
-                        ResumeRendering(c);
+                        ResumeRendering(c, topNode as ContentItem);
                     _changes.Clear();
-                    return;
                 }
-
             }
         }
 
         private bool _isRecalculatingView;
+
         public void RecalculateView()
         {
             if (_isRecalculatingView) return;
@@ -172,7 +189,6 @@ namespace ContentTool.Controls
 
             if (Project == null)
                 return;
-
 
 
             var t = new Thread(() =>
@@ -198,7 +214,7 @@ namespace ContentTool.Controls
 
         protected TreeNode CreateNode(ContentItem item, int maxDepth = 1, int depth = 0)
         {
-            var node = new TreeNode(item.Name) { Tag = item };
+            var node = new TreeNode(item.Name) {Tag = item};
 
             var folder = item as ContentFolder;
             if (folder != null)
@@ -210,7 +226,7 @@ namespace ContentTool.Controls
                 }
                 else if (folder.Content.Count > 0)
                 {
-                    node.Nodes.Add(new TreeNode("") { Tag = "DummyNode" });
+                    node.Nodes.Add(new TreeNode("") {Tag = "DummyNode"});
                 }
             }
 
@@ -243,15 +259,16 @@ namespace ContentTool.Controls
 
                 if (a.Tag is ContentFolder && b.Tag is ContentFolder)
                     return 0;
-                else if (a.Tag is ContentFolder && b.Tag is ContentItem)
+                if (a.Tag is ContentFolder && b.Tag is ContentItem)
                     return -1;
-                else if (a.Tag is ContentItem && b.Tag is ContentFolder)
+                if (a.Tag is ContentItem && b.Tag is ContentFolder)
                     return 1;
-                else
-                    return new CaseInsensitiveComparer().Compare(a.Text, b.Text);
+                return new CaseInsensitiveComparer().Compare(a.Text, b.Text);
             }
         }
+
         private ContextMenuStrip _projectContextMenu, _itemContextMenu;
+
         protected ContextMenuStrip GetContextMenu(ContentItem item)
         {
             if (item == null)
@@ -266,14 +283,18 @@ namespace ContentTool.Controls
             var menu = new ContextMenuStrip();
 
             var addItem = new ToolStripMenuItem("Add");
-            addItem.DropDownItems.Add(CreateToolStripMenuItem("Existing Item", (s, e) => AddItemClick?.Invoke(SelectedFolder, AddType.ExistingItem)));
-            addItem.DropDownItems.Add(CreateToolStripMenuItem("Existing Folder", (s, e) => AddItemClick?.Invoke(SelectedFolder, AddType.ExistingFolder)));
-            addItem.DropDownItems.Add(CreateToolStripMenuItem("New Folder", (s, e) => AddItemClick?.Invoke(SelectedFolder, AddType.NewFolder)));
+            addItem.DropDownItems.Add(CreateToolStripMenuItem("Existing Item",
+                (s, e) => AddItemClick?.Invoke(SelectedFolder, AddType.ExistingItem)));
+            addItem.DropDownItems.Add(CreateToolStripMenuItem("Existing Folder",
+                (s, e) => AddItemClick?.Invoke(SelectedFolder, AddType.ExistingFolder)));
+            addItem.DropDownItems.Add(CreateToolStripMenuItem("New Folder",
+                (s, e) => AddItemClick?.Invoke(SelectedFolder, AddType.NewFolder)));
             menu.Items.Add(addItem);
 
             menu.Items.Add(CreateToolStripMenuItem("Build", (s, e) => BuildItemClick?.Invoke(SelectedItem)));
             menu.Items.Add(CreateToolStripMenuItem("Rename", (s, e) => EditItem(SelectedItem)));
-            menu.Items.Add(CreateToolStripMenuItem("Show in Explorer", (s, e) => ShowInExplorerItemClick?.Invoke(SelectedItem)));
+            menu.Items.Add(CreateToolStripMenuItem("Show in Explorer",
+                (s, e) => ShowInExplorerItemClick?.Invoke(SelectedItem)));
 
             if (!(item is ContentProject))
             {
@@ -297,7 +318,8 @@ namespace ContentTool.Controls
             if (item == null)
                 return;
 
-            if (MessageBox.Show($"Do you really want to remove {item.Name}?", "Remove Item", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
+            if (MessageBox.Show($"Do you really want to remove {item.Name}?", "Remove Item", MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Warning) == DialogResult.Yes)
                 RemoveItemClick?.Invoke(SelectedItem);
         }
 
@@ -361,6 +383,7 @@ namespace ContentTool.Controls
         }
 
         public delegate void SelectedContentItemChangedHandler(ContentItem newItem);
+
         public event SelectedContentItemChangedHandler SelectedContentItemChanged;
 
         public event EventHandler Refreshed;
@@ -376,9 +399,9 @@ namespace ContentTool.Controls
                 return;
 
             if (!string.IsNullOrWhiteSpace(e.Label))
-                ((ContentItem)e.Node.Tag).Name = e.Label;
+                ((ContentItem) e.Node.Tag).Name = e.Label;
 
-            e.Node.Text = ((ContentItem)e.Node.Tag).Name;
+            e.Node.Text = ((ContentItem) e.Node.Tag).Name;
         }
 
         private void treeView_KeyUp(object sender, KeyEventArgs e)
