@@ -1,0 +1,162 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{D847088D-1484-469F-88A1-327AB0F8D5FB}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>ContentTool.old</RootNamespace>
+    <AssemblyName>ContentTool</AssemblyName>
+    <StartupObject>ContentTool.old.Program</StartupObject>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineConstants>DEBUG;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <ConsolePause>false</ConsolePause>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>full</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Externalconsole>true</Externalconsole>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'CI|AnyCPU'">
+    <OutputPath>bin\CI\</OutputPath>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Optimize>true</Optimize>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="OpenTK">
+      <HintPath>..\packages\OpenTK.2.0.0\lib\net20\OpenTK.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\SolutionInfo.cs" />
+    <Compile Include="ToolConfiguration.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Commands\AddExistingFolder.cs" />
+    <Compile Include="Commands\AddExistingItem.cs" />
+    <Compile Include="Commands\AddNewFolder.cs" />
+    <Compile Include="Commands\BuildItem.cs" />
+    <Compile Include="Commands\DeleteItem.cs" />
+    <Compile Include="Commands\RenameItem.cs" />
+    <Compile Include="Items\ContentItemCollection.cs" />
+    <Compile Include="Dialog\frmEditReferences.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Dialog\frmEditReferences.Designer.cs">
+      <DependentUpon>frmEditReferences.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Dialog\ImporterEditor.cs" />
+    <Compile Include="Dialog\NewFolderDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Dialog\NewFolderDialog.Designer.cs">
+      <DependentUpon>NewFolderDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Dialog\ProcessorEditor.cs" />
+    <Compile Include="Dialog\ReferenceCollectionEditor.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Items\ContentFile.cs" />
+    <Compile Include="Items\ContentFolder.cs" />
+    <Compile Include="Items\ContentProject.cs" />
+    <Compile Include="Items\ContentItem.cs" />
+    <Compile Include="ObservableList.cs" />
+    <Compile Include="frmMain.Designer.cs">
+      <DependentUpon>frmMain.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PipelineHelper.cs" />
+    <Compile Include="Arguments.cs" />
+    <Compile Include="Builder\ContentBuilder.cs" />
+    <Compile Include="frmMain.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Builder\ItemProgressEventArgs.cs" />
+    <Compile Include="Builder\BuildStep.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Builder\BuildCache.cs" />
+    <Compile Include="Builder\BuildInfo.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <None Include="..\libs\Assimp64.so">
+      <Link>Assimp64.so</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="app.config" />
+    <None Include="OpenTK.dll.config" />
+    <None Include="Resources\Licenses.txt" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ContentPipeline\engenious.Pipeline.csproj">
+      <Project>{9771E0FC-D752-4D7A-89E4-4F6FA2EC3C1D}</Project>
+      <Name>engenious.Pipeline</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\engenious\engenious.csproj">
+      <Project>{E1FF7BDB-D631-4D4D-B5A1-988778AD15B6}</Project>
+      <Name>engenious</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Dialog\frmEditReferences.resx">
+      <DependentUpon>frmEditReferences.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Dialog\NewFolderDialog.resx">
+      <DependentUpon>NewFolderDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmMain.resx">
+      <DependentUpon>frmMain.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <None Include="Resources\folder.png">
+      <LogicalName>folder</LogicalName>
+    </None>
+    <None Include="Resources\project.png">
+      <LogicalName>project</LogicalName>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\libs\Assimp32.dll">
+      <Link>Assimp32.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\libs\Assimp64.dll">
+      <Link>Assimp64.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+</Project>

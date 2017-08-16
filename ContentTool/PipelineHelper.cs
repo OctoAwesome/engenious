@@ -4,9 +4,9 @@ using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using ContentTool.Items;
 using engenious.Content.Pipeline;
 using engenious.Pipeline.Pipeline.Editors;
+using ContentTool.Models;
 
 namespace ContentTool
 {
@@ -28,6 +28,20 @@ namespace ContentTool
             Assemblies.Add(typeof(IContentImporter).Assembly);
             ListImporters();
             ListProcessors();
+        }
+        public static string GetProcessor(string name, string importerName)
+        {
+            var tp = GetImporterType(Path.GetExtension(name), importerName);
+            if (tp != null)
+            {
+                foreach (var attr in tp.GetCustomAttributes(true).Select(x => x as ContentImporterAttribute))
+                {
+                    if (attr == null)
+                        continue;
+                    return attr.DefaultProcessor;
+                }
+            }
+            return "";
         }
         public static void PreBuilt(ContentProject currentProject)
         {
@@ -203,7 +217,7 @@ namespace ContentTool
             {
                 var attribute = (ContentImporterAttribute)type.GetCustomAttributes(typeof(ContentImporterAttribute), true).First();
                 if (attribute.FileExtensions != null && attribute.FileExtensions.Contains(extension) &&
-                    (importerName == null || attribute.DisplayName == importerName))
+                    (string.IsNullOrEmpty(importerName) || attribute.DisplayName == importerName))
                 {
                     importerName = attribute.DisplayName;
                     return (IContentImporter)Activator.CreateInstance(type);

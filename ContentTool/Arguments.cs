@@ -1,5 +1,4 @@
 ﻿using System;
-using ContentTool.Items;
 
 namespace ContentTool
 {
@@ -9,7 +8,7 @@ namespace ContentTool
         public string ContentProject{get;private set;}
         public string ProjectDir { get; private set; }
         public bool Hidden{get;private set;}
-        public Configuration? Configuration{ get; set; }
+        public string Configuration{ get; set; }
         public Arguments()
         {
             Configuration = null;
@@ -53,9 +52,10 @@ namespace ContentTool
                 }
                 else if(arg.StartsWith("/configuration:"))
                 {
-                    Configuration configuration;
-                    if (Enum.TryParse(arg.Substring("/configuration:".Length),out configuration))
-                        Configuration = configuration;
+                    Configuration = arg.Substring("/configuration:".Length);//TODO: back to enum?
+                    //Configuration configuration;
+                    //if (Enum.TryParse(arg.Substring("/configuration:".Length),out configuration))
+                    //    Configuration = configuration;
                 }
             }
         }
