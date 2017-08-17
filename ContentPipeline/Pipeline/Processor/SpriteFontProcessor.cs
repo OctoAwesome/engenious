@@ -2,8 +2,11 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using engenious.Content;
 using engenious.Content.Pipeline;
 using engenious.Graphics;
@@ -14,7 +17,8 @@ namespace engenious.Pipeline
     [ContentProcessor(DisplayName = "Font Processor")]
     public class SpriteFontProcessor : ContentProcessor<SpriteFontContent, CompiledSpriteFont>
     {
-
+        [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        static extern bool SetDllDirectory(string lpPathName);
 
         #region implemented abstract members of ContentProcessor
         public override CompiledSpriteFont Process(SpriteFontContent input, string filename, ContentProcessorContext context)
@@ -30,6 +34,15 @@ namespace engenious.Pipeline
             }
 
             //Initialization
+
+            if (PlatformHelper.RunningPlatform() == Platform.Windows)
+            {
+                string arch = Environment.Is64BitProcess ? "x64" : "x86";
+                string dllPath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), arch);
+                Console.WriteLine("DllPath: " + dllPath);
+                SetDllDirectory(dllPath);
+            }
+
             Library lib = new Library();
             var face = lib.NewFace(fontFile, 0);
             Bitmap dummyBitmap = new Bitmap(1,1);

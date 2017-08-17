@@ -1,12 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="..\packages\SharpFont.4.0.1\build\SharpFont.props" Condition="Exists('..\packages\SharpFont.4.0.1\build\SharpFont.props')" />
-  <ItemGroup>
-    <!-- TODO try and make this smarter, at least pick x86/x64, maybe see which MSVC redist is available -->
-    <Content Include="..\packages\SharpFont.Dependencies.2.6\bin\msvc10\x64\freetype6.dll" Condition="Exists('..\packages\SharpFont.Dependencies.2.6\bin\msvc10\x64\freetype6.dll')">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
+
   <!--<Import Project="..\packages\SharpFont.Dependencies.2.6\build\SharpFont.Dependencies.props" Condition="Exists('..\packages\SharpFont.Dependencies.2.6\build\SharpFont.Dependencies.props')" />-->
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -134,7 +129,13 @@
     <Folder Include="Pipeline\Editors\Controls\" />
   </ItemGroup>
   <Import Project="..\packages\AssimpNet.3.3.1\build\AssimpNet.targets" Condition="Exists('..\packages\AssimpNet.3.3.1\build\AssimpNet.targets')" />
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+  <Target Name="SharpFontDependencies" BeforeTargets="PrepareForBuild">
+    <!-- TODO try and make this smarter, at least pick x86/x64, maybe see which MSVC redist is available -->
+    <Copy SourceFiles="..\packages\SharpFont.Dependencies.2.6\bin\msvc12\x64\freetype6.dll" DestinationFolder="$(OutputPath)\x64" Condition="Exists('..\packages\SharpFont.Dependencies.2.6\bin\msvc12\x64\freetype6.dll')"/>
+    <Copy SourceFiles="..\packages\SharpFont.Dependencies.2.6\bin\msvc12\x86\freetype6.dll" DestinationFolder="$(OutputPath)\x86" Condition="Exists('..\packages\SharpFont.Dependencies.2.6\bin\msvc12\x86\freetype6.dll')"/>
+
+  </Target>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="SharpFontDependencies">
     <PropertyGroup>
       <ErrorText>Dieses Projekt verweist auf mindestens ein NuGet-Paket, das auf diesem Computer fehlt. Verwenden Sie die Wiederherstellung von NuGet-Paketen, um die fehlenden Dateien herunterzuladen. Weitere Informationen finden Sie unter "http://go.microsoft.com/fwlink/?LinkID=322105". Die fehlende Datei ist "{0}".</ErrorText>
     </PropertyGroup>
@@ -142,4 +143,5 @@
     <Error Condition="!Exists('..\packages\SharpFont.Dependencies.2.6\build\SharpFont.Dependencies.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\SharpFont.Dependencies.2.6\build\SharpFont.Dependencies.props'))" />
     <Error Condition="!Exists('..\packages\SharpFont.4.0.1\build\SharpFont.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\SharpFont.4.0.1\build\SharpFont.props'))" />
   </Target>
+
 </Project>

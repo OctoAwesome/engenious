@@ -18,7 +18,10 @@
         <!-- ContentTool -->
         <file src="ContentTool\bin\Release\*" exclude="**\*.pdb;**\*.mdb"  target="tools\net40" />
         <file src="ContentTool/bin/Release/*" exclude="**/*.pdb;**/*.mdb"  target="tools/net40" />
-
+        <file src="ContentTool\bin\Release\x64\*" exclude="**\*.pdb;**\*.mdb"  target="tools\net40\x64" />
+        <file src="ContentTool/bin/Release/x64/*" exclude="**/*.pdb;**/*.mdb"  target="tools/net40/x64" />
+        <file src="ContentTool\bin\Release\x86\*" exclude="**\*.pdb;**\*.mdb"  target="tools\net40\x86" />
+        <file src="ContentTool/bin/Release/x86/*" exclude="**/*.pdb;**/*.mdb"  target="tools/net40/x86" />
         <!-- Targets -->
         <file src="engenious.targets" target="build" />
     </files>
