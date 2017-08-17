@@ -55,6 +55,7 @@ Task("clean")
     {
         CleanDirectories("./output");
         CleanDirectories("./bin");
+        CleanDirectories("./bin/CI");
         CleanDirectories(string.Format("./src/**/obj/{0}", Configuration));
     });
 
@@ -75,7 +76,6 @@ Task("pack")
     {
         var artifacts = Directory("./output/artifacts");
         CreateDirectory(artifacts);
-
         NuGetPack("./engenious.ci.nuspec", new NuGetPackSettings
         {
             Version                 = IsPrerelease ? Version.NuGetVersion : Version.MajorMinorPatch,
