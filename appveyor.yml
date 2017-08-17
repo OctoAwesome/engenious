@@ -2,9 +2,9 @@ init:
   - git config --global core.autocrlf true
 
 version: '{build}'
-
+image: Visual Studio 2017
 build_script:
-  - ps: ./build -Configuration CI
+  - ps: ./build
 
 # Build cache
 cache:

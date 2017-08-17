@@ -227,4 +227,10 @@
     <Content Include="Resources\Warning.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Target Name="SharpFontDependencies" BeforeTargets="PrepareForBuild">
+    <!-- TODO try and make this smarter, at least pick x86/x64, maybe see which MSVC redist is available -->
+    <Copy SourceFiles="..\packages\SharpFont.Dependencies.2.6\bin\msvc12\x64\freetype6.dll" DestinationFolder="$(OutputPath)\x64" Condition="Exists('..\packages\SharpFont.Dependencies.2.6\bin\msvc12\x64\freetype6.dll')"/>
+    <Copy SourceFiles="..\packages\SharpFont.Dependencies.2.6\bin\msvc12\x86\freetype6.dll" DestinationFolder="$(OutputPath)\x86" Condition="Exists('..\packages\SharpFont.Dependencies.2.6\bin\msvc12\x86\freetype6.dll')"/>
+
+  </Target>
 </Project>

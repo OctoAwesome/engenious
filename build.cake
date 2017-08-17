@@ -75,7 +75,6 @@ Task("pack")
     {
         var artifacts = Directory("./output/artifacts");
         CreateDirectory(artifacts);
-
         NuGetPack("./engenious.ci.nuspec", new NuGetPackSettings
         {
             Version                 = IsPrerelease ? Version.NuGetVersion : Version.MajorMinorPatch,
