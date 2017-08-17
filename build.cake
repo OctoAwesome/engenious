@@ -55,7 +55,6 @@ Task("clean")
     {
         CleanDirectories("./output");
         CleanDirectories("./bin");
-        CleanDirectories("./bin/CI");
         CleanDirectories(string.Format("./src/**/obj/{0}", Configuration));
     });
 

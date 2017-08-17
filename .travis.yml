@@ -12,7 +12,7 @@ before_script:
   - "sh -e /etc/init.d/xvfb start || true"
   - sleep 3 # give xvfb some time to start
 script:
-  - ./build.sh -c CI
+  - ./build.sh
 after_failure:
   - "cat ./logs/gitver.log"
 os:
