@@ -6,7 +6,7 @@ namespace engenious
 {
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [System.ComponentModel.TypeConverter(typeof(Vector3Converter))]
-    public struct Vector3:IEquatable<Vector3>
+    public unsafe struct Vector3:IEquatable<Vector3>
     {
         public float X
         {

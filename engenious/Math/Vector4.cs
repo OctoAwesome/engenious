@@ -7,7 +7,7 @@ namespace engenious
 {
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [System.ComponentModel.TypeConverter(typeof(Vector4Converter))]
-    public struct Vector4
+    public unsafe struct Vector4
     {
         public float X
         {

@@ -8,7 +8,7 @@ namespace engenious
 {
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [TypeConverter(typeof(Vector2Converter))]
-    public struct Vector2 : IEquatable<Vector2>
+    public unsafe struct Vector2 : IEquatable<Vector2>
     {
         public float X
         {
