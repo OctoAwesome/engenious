@@ -2,7 +2,7 @@
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
-
+using Fast = System.Numerics;
 namespace engenious
 {
     [StructLayout(LayoutKind.Explicit, Pack = 1)]
@@ -493,7 +493,6 @@ namespace engenious
             res.M41 = x;
             res.M42 = y;
             res.M43 = z;
-            //res = res.Transposed();
             return res;
 
         }
@@ -503,7 +502,7 @@ namespace engenious
             Matrix ret = Identity;
             ret.M22 = ret.M33 = (float)Math.Cos(rot);
             ret.M32 = (float)Math.Sin(rot);
-            ret.M23 = -ret.M32;//TODO: transpose?
+            ret.M23 = -ret.M32;
             return ret;
         }
 
@@ -512,7 +511,7 @@ namespace engenious
             Matrix ret = Identity;
             ret.M11 = ret.M33 = (float)Math.Cos(rot);
             ret.M13 = (float)Math.Sin(rot);
-            ret.M31 = -ret.M13;//TODO: transpose?
+            ret.M31 = -ret.M13;
             return ret;
         }
 
@@ -521,7 +520,7 @@ namespace engenious
             Matrix ret = Identity;
             ret.M11 = ret.M22 = (float)Math.Cos(rot);
             ret.M12 = (float)Math.Sin(rot);
-            ret.M21 = -ret.M12;//TODO: transpose?
+            ret.M21 = -ret.M12;
             return ret;
         }
 
