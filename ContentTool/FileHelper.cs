@@ -14,15 +14,17 @@ namespace ContentTool
         Repeat = 4,
         Skip = 8
     }
+
     class FileHelper
     {
-        public static FileAction CopyDirectory(string src, string dest, ContentFolder fld, FileAction action = FileAction.Ask)
+        public static FileAction CopyDirectory(string src, string dest, ContentFolder fld,
+            FileAction action = FileAction.Ask, Action<int> progress=null)
         {
             var foldername = Path.GetFileName(src);
-            dest = Path.Combine(dest,foldername);
+            dest = Path.Combine(dest, foldername);
             Directory.CreateDirectory(dest);
 
-            var newfld = (ContentFolder)(fld.Content.FirstOrDefault(x => x.Name == foldername && x is ContentFolder));
+            var newfld = (ContentFolder) (fld.Content.FirstOrDefault(x => x.Name == foldername && x is ContentFolder));
             if (newfld == null)
             {
                 newfld = new ContentFolder(foldername, fld);
@@ -31,13 +33,18 @@ namespace ContentTool
             fld = newfld;
 
             action = CopyFiles(Directory.GetFiles(src), dest, fld, action);
-            foreach (var dir in Directory.GetDirectories(src))
+            var dirs = Directory.GetDirectories(src);
+            for (int i = 0; i < dirs.Length; i++)
             {
-                action = CopyDirectory(dir, dest, fld, action);
+                var dir = dirs[i];
+                action = CopyDirectory(dir, dest, fld, action, null);
+                progress?.Invoke((int) (i * 100.0f / dirs.Length));
             }
             return action;
         }
-        public static FileAction CopyFiles(string[] files, string dir, ContentFolder fld, FileAction action = FileAction.Ask)
+
+        public static FileAction CopyFiles(string[] files, string dir, ContentFolder fld,
+            FileAction action = FileAction.Ask)
         {
             foreach (var src in files)
             {
@@ -61,7 +68,7 @@ namespace ContentTool
                                     action = ask.ShowDialog();
                                 }
                             }
-                            switch ((FileAction)((int)action & 0xE))
+                            switch ((FileAction) ((int) action & 0xE))
                             {
                                 case FileAction.Overwrite:
                                     File.Copy(src, dest, true);
@@ -81,10 +88,9 @@ namespace ContentTool
                     }
                     if (next)
                         continue;
-
                 }
 
-                if (!fld.Content.Any(x=>x.Name == filename && x is ContentFile))
+                if (!fld.Content.Any(x => x.Name == filename && x is ContentFile))
                     fld.Content.Add(new ContentFile(filename, fld));
             }
             return action;

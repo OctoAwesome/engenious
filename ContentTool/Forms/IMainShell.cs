@@ -39,6 +39,8 @@ namespace ContentTool.Forms
 
         void ReloadView();
 
+        void WaitProgress(int progress);
+
         void SuspendRendering();
         void ResumeRendering();
 

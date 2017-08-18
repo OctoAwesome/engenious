@@ -31,17 +31,17 @@ namespace ContentTool.Forms.Dialogs
         /// </summary>
         private void InitializeComponent()
         {
-            this.progressBar1 = new System.Windows.Forms.ProgressBar();
+            this.progressBar = new System.Windows.Forms.ProgressBar();
             this.button_cancel = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // progressBar1
             // 
-            this.progressBar1.Location = new System.Drawing.Point(12, 12);
-            this.progressBar1.Name = "progressBar1";
-            this.progressBar1.Size = new System.Drawing.Size(384, 23);
-            this.progressBar1.Style = System.Windows.Forms.ProgressBarStyle.Marquee;
-            this.progressBar1.TabIndex = 0;
+            this.progressBar.Location = new System.Drawing.Point(12, 12);
+            this.progressBar.Name = "progressBar";
+            this.progressBar.Size = new System.Drawing.Size(384, 23);
+            this.progressBar.Style = System.Windows.Forms.ProgressBarStyle.Marquee;
+            this.progressBar.TabIndex = 0;
             // 
             // button_cancel
             // 
@@ -58,7 +58,7 @@ namespace ContentTool.Forms.Dialogs
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(408, 73);
             this.Controls.Add(this.button_cancel);
-            this.Controls.Add(this.progressBar1);
+            this.Controls.Add(this.progressBar);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
@@ -71,7 +71,7 @@ namespace ContentTool.Forms.Dialogs
 
         #endregion
 
-        private ProgressBar progressBar1;
-        private Button button_cancel;
+        private System.Windows.Forms.ProgressBar progressBar;
+        private System.Windows.Forms.Button button_cancel;
     }
 }

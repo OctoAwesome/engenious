@@ -119,8 +119,7 @@ namespace ContentTool.Forms
             projectTreeView.SelectedContentItemChanged += i => OnItemSelect?.Invoke(i);
             projectTreeView.Refreshed += (s, e) => ViewReloaded?.Invoke(this, e);
 
-            alwaysShowLogToolStripMenuItem.CheckedChanged += (s, e) =>
-                splitContainer_right.Panel2Collapsed = !alwaysShowLogToolStripMenuItem.Checked;
+            alwaysShowLogToolStripMenuItem.CheckedChanged += (s, e) => splitContainer_right.Panel2Collapsed = !alwaysShowLogToolStripMenuItem.Checked;
         }
 
         public void ShowItemButtons(bool value)
@@ -150,10 +149,7 @@ namespace ContentTool.Forms
 
         public bool ShowCloseWithoutSavingConfirmation()
         {
-            var result =
-                MessageBox.Show(
-                    $"There are unsaved changes. {Environment.NewLine} Do you want to save the project before closing it?",
-                    "Unsaved changes", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
+            var result = MessageBox.Show($"There are unsaved changes. {Environment.NewLine} Do you want to save the project before closing it?", "Unsaved changes", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
             if (result == DialogResult.Cancel)
                 return false;
             if (result != DialogResult.Yes) return true;
@@ -240,13 +236,21 @@ namespace ContentTool.Forms
                 projectTreeView.RecalculateView();
         }
 
+        public void WaitProgress(int progress)
+        {
+            progress = Math.Min(Math.Max(0, progress), 100);
+            toolStripProgressBar.Style = ProgressBarStyle.Continuous;
+
+            toolStripProgressBar.Value = progress;
+
+            if (_loadingDialog != null)
+                _loadingDialog.Progress = progress;
+        }
+
         public void ShowAbout() => new AboutBox().ShowDialog();
 
         public bool ShowNotFoundDelete()
-            => (MessageBox.Show(
-                    "This file could not be found. " + Environment.NewLine +
-                    "Do you want to remove it from the Project?", "File not found!", MessageBoxButtons.YesNo,
-                    MessageBoxIcon.Warning) == DialogResult.Yes);
+            => (MessageBox.Show("This file could not be found. " + Environment.NewLine + "Do you want to remove it from the Project?", "File not found!", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes);
 
         public event EventHandler ViewReloaded;
 
@@ -309,7 +313,7 @@ namespace ContentTool.Forms
 
         public void SuspendRendering()
         {
-            Interlocked.Increment(ref _suspendCount);
+            System.Threading.Interlocked.Increment(ref _suspendCount);
             projectTreeView.SuspendRendering();
         }
 

@@ -105,10 +105,11 @@ namespace ContentTool.Presenters
             _shell.ShowLoading();
             _shell.SuspendRendering();
 
+            var progress = new Action<int>(i => _shell.WaitProgress(i));
             var t = new Thread(() =>
             {
 
-                FileHelper.CopyDirectory(src, dest, fld);
+                FileHelper.CopyDirectory(src, dest, fld,FileAction.Ask,progress);
                 _shell.Invoke(new MethodInvoker(() =>
                 {
                     _shell.ResumeRendering();
@@ -125,7 +126,7 @@ namespace ContentTool.Presenters
             var fld = (item as ContentFolder) ?? (item?.Parent as ContentFolder) ?? _shell.Project;
 
 
-            var files = _shell.ShowFileSelectDialog();
+            string[] files = _shell.ShowFileSelectDialog();
             if (files == null)
                 return;
 
@@ -235,7 +236,7 @@ namespace ContentTool.Presenters
                 _shell.Project.Save(path);
         }
 
-        private void Shell_ShowInExplorerItemClick(ContentItem item)
+        private void Shell_ShowInExplorerItemClick(Models.ContentItem item)
         {
             var path = item.FilePath;
             if (item is ContentFile)
