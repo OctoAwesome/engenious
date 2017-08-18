@@ -19,7 +19,7 @@ namespace engenious.Audio
             if (State != SoundState.Stopped)
                 return;
             
-            for (int i=0;i<MinimumBufferCheck && BufferNeeded != null;i++)
+            for (var i=0;i<MinimumBufferCheck && BufferNeeded != null;i++)
             {
                 BufferNeeded(this,EventArgs.Empty);
             }
@@ -39,7 +39,7 @@ namespace engenious.Audio
 
             BufferNeeded?.Invoke(this,EventArgs.Empty);
 
-            for (int i = MinimumBufferCheck - _pendingBufferCount;(i > 0) && BufferNeeded != null;i--)
+            for (var i = MinimumBufferCheck - _pendingBufferCount;(i > 0) && BufferNeeded != null;i--)
             {
                 BufferNeeded(this,EventArgs.Empty);
             }

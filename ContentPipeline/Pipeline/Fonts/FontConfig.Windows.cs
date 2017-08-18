@@ -21,8 +21,7 @@ namespace engenious.Pipeline
                 fileName = file;
                 return true;
             }
-            if (File.Exists(fileName)) return true;
-            return false;
+            return File.Exists(fileName);
         }
 		public FontConfigWindows()
 		{

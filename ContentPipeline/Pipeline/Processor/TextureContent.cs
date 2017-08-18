@@ -6,6 +6,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using engenious.Content.Serialization;
 using engenious.Graphics;
+using engenious.Helper;
 using OpenTK.Graphics.OpenGL4;
 
 namespace engenious.Content.Pipeline

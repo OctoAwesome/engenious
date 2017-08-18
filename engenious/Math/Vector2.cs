@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Fast = System.Numerics;
+// ReSharper disable CompareOfFloatsByEqualityOperator
 namespace engenious
 {
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
@@ -33,7 +34,7 @@ namespace engenious
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public float Dot(Vector2 value2)
         {
-            return Vector2.Dot(this,value2);
+            return Dot(this,value2);
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Vector2 Cross()
@@ -41,7 +42,7 @@ namespace engenious
             return new Vector2(X, -Y);
         }
         [Browsable(false)]
-        public unsafe float Length
+        public float Length
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get{return (float)Math.Sqrt(LengthSquared);}
@@ -50,15 +51,15 @@ namespace engenious
         public float LengthSquared
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get{return Vector2.Dot(this,this);}
+            get{return Dot(this,this);}
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public unsafe void Normalize()
+        public void Normalize()
         {
             this /= Length;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public unsafe Vector2 Normalized()
+        public Vector2 Normalized()
         {
             return this / Length;
         }
@@ -100,7 +101,7 @@ namespace engenious
             return value1.X != value2.X || value1.Y != value2.Y;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public unsafe static Vector2 operator +(Vector2 value1, Vector2 value2)
+        public static Vector2 operator +(Vector2 value1, Vector2 value2)
         {
 #if USE_SIMD
             Fast.Vector2 res= (*(Fast.Vector2*)&value1 + *(Fast.Vector2*)&value2);
@@ -112,7 +113,7 @@ namespace engenious
 #endif
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public unsafe static Vector2 operator -(Vector2 value1, Vector2 value2)
+        public static Vector2 operator -(Vector2 value1, Vector2 value2)
         {
 #if USE_SIMD
             Fast.Vector2 res= (*(Fast.Vector2*)&value1 - *(Fast.Vector2*)&value2);
@@ -131,7 +132,7 @@ namespace engenious
             return value;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public unsafe static Vector2 operator *(Vector2 value, float scalar)
+        public static Vector2 operator *(Vector2 value, float scalar)
         {
 #if USE_SIMD
             Fast.Vector2 res= (*(Fast.Vector2*)&value * scalar);
@@ -148,7 +149,7 @@ namespace engenious
             return value * scalar;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public unsafe static Vector2 operator *(Vector2 value1, Vector2 value2)//TODO: ugly as hell
+        public static Vector2 operator *(Vector2 value1, Vector2 value2)//TODO: ugly as hell
         {
 #if USE_SIMD
             Fast.Vector2 res= (*(Fast.Vector2*)&value1 * *(Fast.Vector2*)&value2);
@@ -160,7 +161,7 @@ namespace engenious
 #endif
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public unsafe static Vector2 operator /(Vector2 value, float scalar)
+        public static Vector2 operator /(Vector2 value, float scalar)
         {
 #if USE_SIMD
             Fast.Vector2 res= (*(Fast.Vector2*)&value / scalar);
@@ -172,7 +173,7 @@ namespace engenious
 #endif
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public unsafe static Vector2 operator /(Vector2 value1, Vector2 value2)//TODO: ugly as hell?
+        public static Vector2 operator /(Vector2 value1, Vector2 value2)//TODO: ugly as hell?
         {
 #if USE_SIMD
             Fast.Vector2 res= (*(Fast.Vector2*)&value1 / *(Fast.Vector2*)&value2);
@@ -188,15 +189,15 @@ namespace engenious
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector2 Clamp(Vector2 value, Vector2 min, Vector2 max)
         {
-            return Vector2.Min(Vector2.Max(value,min),max);
+            return Min(Max(value,min),max);
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Clamp(Vector2 value, Vector2 min, Vector2 max, out Vector2 output)
         {
-            output = Vector2.Min(Vector2.Max(value,min),max);
+            output = Min(Max(value,min),max);
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public unsafe static float Dot(Vector2 value1, Vector2 value2)
+        public static float Dot(Vector2 value1, Vector2 value2)
         {
 #if USE_SIMD
             Fast.Vector2 res= (*(Fast.Vector2*)&value1 * *(Fast.Vector2*)&value2);
@@ -223,7 +224,7 @@ namespace engenious
             return value1 + (value2 - value1) * amount;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public unsafe static Vector2 Max(Vector2 value1, Vector2 value2)
+        public static Vector2 Max(Vector2 value1, Vector2 value2)
         {
 #if USE_SIMD
             Fast.Vector2 res = Fast.Vector2.Max(*(Fast.Vector2*)&value1,*(Fast.Vector2*)&value2);
@@ -233,7 +234,7 @@ namespace engenious
 #endif
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public unsafe static Vector2 Min(Vector2 value1, Vector2 value2)
+        public static Vector2 Min(Vector2 value1, Vector2 value2)
         {
 #if USE_SIMD
             Fast.Vector2 res = Fast.Vector2.Min(*(Fast.Vector2*)&value1,*(Fast.Vector2*)&value2);
@@ -265,7 +266,7 @@ namespace engenious
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe void Transform(int count, Vector2* positions, ref Matrix matrix, Vector2* output)
         {
-            for (int i = 0; i < count; i++, positions++, output++)
+            for (var i = 0; i < count; i++, positions++, output++)
             {
                 *output = new Vector2(
                     (float)((*positions).X * (double)matrix.M11 + (*positions).Y * (double)matrix.M12) + matrix.M14,
@@ -276,7 +277,7 @@ namespace engenious
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Transform(Vector2[] positions, ref Matrix matrix, Vector2[] output)
         {
-            int index = 0;
+            var index = 0;
             foreach (var position in positions)//TODO: SIMD
             {
                 output[index++] = new Vector2(position.X * matrix.M11 + position.Y * matrix.M12 + matrix.M14, position.X * matrix.M21 + position.Y * matrix.M22 + matrix.M24);

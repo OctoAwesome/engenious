@@ -1,4 +1,5 @@
 ﻿using System;
+using engenious.Helper;
 using OpenTK;
 using OpenTK.Input;
 
@@ -37,8 +38,8 @@ namespace engenious.Input
         }
         public static unsafe MouseState GetState()
         {
-            OpenTK.Input.MouseState state = OpenTK.Input.Mouse.GetState();
-            MouseState actual = *(MouseState*)(&state);
+            var state = OpenTK.Input.Mouse.GetState();
+            var actual = *(MouseState*)(&state);
             actual.X = _window.Mouse.X;
             actual.Y = _window.Mouse.Y;
             actual.Scroll = new MouseScroll(actual.Scroll.X,_deltaPrecise);//.Y = ;

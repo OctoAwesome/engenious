@@ -102,12 +102,12 @@ namespace engenious.Audio
             float x, y, z;
             AL.GetListener(ALListener3f.Position, out x, out y, out z);
 
-            Vector3 posOffset = emitter.Position - listener.Position;
+            var posOffset = emitter.Position - listener.Position;
             // set up orientation matrix
-            Matrix orientation = Matrix.Identity;
-            Vector3 forward = listener.Forward.Normalized();
-            Vector3 right = Vector3.Cross(forward, listener.Up);
-            Vector3 up = Vector3.Cross(right,forward);
+            var orientation = Matrix.Identity;
+            var forward = listener.Forward.Normalized();
+            var right = Vector3.Cross(forward, listener.Up);
+            var up = Vector3.Cross(right,forward);
             orientation.M11 = right.X;
             orientation.M12 = right.Y;
             orientation.M13 = right.Z;
@@ -119,9 +119,9 @@ namespace engenious.Audio
             orientation.M33 = -forward.Z;
 
             // set up our final position and velocity according to orientation of listener
-            Vector3 finalPos = new Vector3(x + posOffset.X, y + posOffset.Y, z + posOffset.Z);
+            var finalPos = new Vector3(x + posOffset.X, y + posOffset.Y, z + posOffset.Z);
             finalPos = Vector3.Transform(finalPos, orientation);
-            Vector3 finalVel = emitter.Velocity;
+            var finalVel = emitter.Velocity;
             finalVel = Vector3.Transform(finalVel, orientation);
 
             // set the position based on relative positon
@@ -135,7 +135,7 @@ namespace engenious.Audio
             if (Sid==0)
             {
                 Sid = SoundSourceManager.Instance.Dequeue();
-                int bufferId = _effect.Buffer;
+                var bufferId = _effect.Buffer;
                 AL.Source(Sid, ALSourcei.Buffer, bufferId);
             }
 

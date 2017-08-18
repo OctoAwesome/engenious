@@ -174,7 +174,7 @@ namespace engenious
         {
             float minX = float.MaxValue, minY = float.MaxValue, minZ = float.MaxValue;
             float maxX = float.MinValue, maxY = float.MinValue, maxZ = float.MinValue;
-            foreach (Vector3 point in points)
+            foreach (var point in points)
             {
                 minX = Math.Min(minX, point.X);
                 minY = Math.Min(minY, point.Y);
@@ -199,14 +199,14 @@ namespace engenious
 
         public static BoundingBox CreateMerged(params BoundingBox[] boundingBoxes)
         {
-            return CreateMerged(boundingBoxes);
+            return CreateMerged((IEnumerable<BoundingBox>)boundingBoxes);
         }
 
         public static BoundingBox CreateMerged(IEnumerable<BoundingBox> boundingBoxes)
         {
             float minX = float.MaxValue, minY = float.MaxValue, minZ = float.MaxValue;
             float maxX = float.MinValue, maxY = float.MinValue, maxZ = float.MinValue;
-            foreach (BoundingBox box in boundingBoxes)
+            foreach (var box in boundingBoxes)
             {
                 minX = Math.Min(box.Min.X, minX);
                 minY = Math.Min(box.Min.Y, minY);

@@ -1,22 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ContentTool.Builder
 {
-    [Serializable()]
+    [Serializable]
     public class BuildFile
     {
-        public string InputFilePath { get; private set; }
-        public string OutputFilePath { get; private set; }
+        public string InputFilePath { get; }
+        public string OutputFilePath { get; }
 
         public DateTime InputFileModifiedTime { get; private set; }
         public DateTime OutputFileModifiedTime { get; private set; }
 
-        public List<string> Dependencies { get; private set; }
+        public List<string> Dependencies { get; }
 
         public BuildFile(string inputFilePath, string outputFilePath)
         {

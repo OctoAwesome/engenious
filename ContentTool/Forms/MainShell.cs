@@ -1,16 +1,11 @@
-﻿using ContentTool.Forms.Dialogs;
-using ContentTool.Models;
-using ContentTool.Presenters;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Collections.Specialized;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Threading;
 using System.Windows.Forms;
+using ContentTool.Forms.Dialogs;
+using ContentTool.Models;
+using Timer = System.Windows.Forms.Timer;
 
 namespace ContentTool.Forms
 {
@@ -18,23 +13,23 @@ namespace ContentTool.Forms
     {
         public ContentProject Project
         {
-            get => project;
+            get => _project;
             set
             {
-                if (project == value)
+                if (_project == value)
                     return;
 
-                if (project != null)
+                if (_project != null)
                 {
-                    project.History.HistoryChanged -= HistoryOnHistoryChanged;
-                    project.CollectionChanged -= ProjectOnCollectionChanged;
+                    _project.History.HistoryChanged -= HistoryOnHistoryChanged;
+                    _project.CollectionChanged -= ProjectOnCollectionChanged;
                 }
 
-                project = value;
-                if (project != null)
+                _project = value;
+                if (_project != null)
                 {
-                    project.History.HistoryChanged += HistoryOnHistoryChanged;
-                    project.CollectionChanged += ProjectOnCollectionChanged;
+                    _project.History.HistoryChanged += HistoryOnHistoryChanged;
+                    _project.CollectionChanged += ProjectOnCollectionChanged;
                 }
                 projectTreeView.Project = Project;
             }
@@ -54,15 +49,16 @@ namespace ContentTool.Forms
             redoToolStripMenuItem.Enabled = Project?.History?.CanRedo ?? false;
             itemPropertyView.Refresh();
         }
-        private void ProjectOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs)
+
+        private void ProjectOnCollectionChanged(object sender,
+            NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs)
         {
-            
         }
 
-        private ContentProject project;
+        private ContentProject _project;
 
-        private LoadingDialog loadingDialog = new LoadingDialog();
-        private Timer loadingTimer = new Timer();
+        private LoadingDialog _loadingDialog = new LoadingDialog();
+        private readonly Timer _loadingTimer = new Timer();
 
         public MainShell()
         {
@@ -80,9 +76,9 @@ namespace ContentTool.Forms
             projectTreeView.Shell = this;
             projectTreeView.SelectedContentItemChanged += ProjectTreeView_SelectedContentItemChanged;
             projectTreeView.AddItemClick += (i, t) => AddItemClick?.Invoke(i, t);
-            projectTreeView.BuildItemClick += (i) => BuildItemClick?.Invoke(i);
-            projectTreeView.RemoveItemClick += (i) => { RemoveItemClick?.Invoke(i); };
-            projectTreeView.ShowInExplorerItemClick += (i) => ShowInExplorerItemClick?.Invoke(i);
+            projectTreeView.BuildItemClick += i => BuildItemClick?.Invoke(i);
+            projectTreeView.RemoveItemClick += i => { RemoveItemClick?.Invoke(i); };
+            projectTreeView.ShowInExplorerItemClick += i => ShowInExplorerItemClick?.Invoke(i);
 
             newToolStripMenuItem.Click += (s, e) => NewProjectClick?.Invoke(this, EventArgs.Empty);
             openToolStripMenuItem.Click += (s, e) => OpenProjectClick?.Invoke(this, EventArgs.Empty);
@@ -102,8 +98,10 @@ namespace ContentTool.Forms
             cleanToolStripMenuItem.Click += (s, e) => CleanClick?.Invoke(this, EventArgs.Empty);
             //toolStripButton_clean.Click += (s,e) => Clea
 
-            toolStripButton_existingItemAdd.Click += (s, e) => AddExistingItemClick?.Invoke(projectTreeView.SelectedFolder);
-            toolStripButton_existingFolderAdd.Click += (s, e) => AddExistingFolderClick?.Invoke(projectTreeView.SelectedFolder);
+            toolStripButton_existingItemAdd.Click +=
+                (s, e) => AddExistingItemClick?.Invoke(projectTreeView.SelectedFolder);
+            toolStripButton_existingFolderAdd.Click +=
+                (s, e) => AddExistingFolderClick?.Invoke(projectTreeView.SelectedFolder);
             toolStripButton_newFolderAdd.Click += (s, e) => AddNewFolderClick?.Invoke(projectTreeView.SelectedFolder);
             //toolStripButton_newItemAdd.Click += (s, e) => AddNewItemClick?.Invoke(projectTreeView.SelectedFolder, baaah);
 
@@ -118,10 +116,11 @@ namespace ContentTool.Forms
             redoToolStripMenuItem.Click += (s, e) => RedoClick?.Invoke(this, EventArgs.Empty);
             editToolStripMenuItem.DropDownOpening += EditToolStripMenuItemOnDropDownOpening;
 
-            projectTreeView.SelectedContentItemChanged += (i) => OnItemSelect?.Invoke(i);
-            projectTreeView.Refreshed += (s, e) => Refreshed?.Invoke(this, e);
+            projectTreeView.SelectedContentItemChanged += i => OnItemSelect?.Invoke(i);
+            projectTreeView.Refreshed += (s, e) => ViewReloaded?.Invoke(this, e);
 
-            alwaysShowLogToolStripMenuItem.CheckedChanged += (s, e) => splitContainer_right.Panel2Collapsed = !alwaysShowLogToolStripMenuItem.Checked;
+            alwaysShowLogToolStripMenuItem.CheckedChanged += (s, e) =>
+                splitContainer_right.Panel2Collapsed = !alwaysShowLogToolStripMenuItem.Checked;
         }
 
         public void ShowItemButtons(bool value)
@@ -151,25 +150,22 @@ namespace ContentTool.Forms
 
         public bool ShowCloseWithoutSavingConfirmation()
         {
-            var result = MessageBox.Show($"There are unsaved changes. {Environment.NewLine} Do you want to save the project before closing it?", "Unsaved changes", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
+            var result =
+                MessageBox.Show(
+                    $"There are unsaved changes. {Environment.NewLine} Do you want to save the project before closing it?",
+                    "Unsaved changes", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
             if (result == DialogResult.Cancel)
                 return false;
-            else if (result == DialogResult.Yes)
-            {
-                SaveProjectClick?.Invoke(Project);
-                return true;
-            }
-            else
-                return true;
+            if (result != DialogResult.Yes) return true;
+            SaveProjectClick?.Invoke(Project);
+            return true;
         }
 
         public string ShowOpenDialog()
         {
-            OpenFileDialog ofd = new OpenFileDialog();
+            var ofd = new OpenFileDialog();
             ofd.Filter = "Engenious Content Project(.ecp)|*.ecp";
-            if (ofd.ShowDialog() == DialogResult.OK)
-                return ofd.FileName;
-            return null;
+            return ofd.ShowDialog() == DialogResult.OK ? ofd.FileName : null;
         }
 
         public string ShowSaveAsDialog()
@@ -179,9 +175,7 @@ namespace ContentTool.Forms
                 sfd.Filter = "Engenious Content Project(.ecp)|*.ecp";
                 sfd.FileName = Project.ContentProjectPath;
                 sfd.OverwritePrompt = true;
-                if (sfd.ShowDialog() == DialogResult.OK)
-                    return sfd.FileName;
-                return null;
+                return sfd.ShowDialog() == DialogResult.OK ? sfd.FileName : null;
             }
         }
 
@@ -194,28 +188,27 @@ namespace ContentTool.Forms
             toolStripProgressBar.Style = ProgressBarStyle.Marquee;
             toolStripProgressBar.Visible = true;
 
-            loadingDialog = new LoadingDialog();
-            loadingDialog.Title = title;
-            loadingTimer.Tick += (s, e) =>
+            _loadingDialog = new LoadingDialog();
+            _loadingDialog.Title = title;
+            _loadingTimer.Tick += (s, e) =>
             {
-                loadingTimer.Stop();
-                if (loadingDialog.Visible) return;
-                this.Enabled = false;
-                loadingDialog.Show(this);
+                _loadingTimer.Stop();
+                if (_loadingDialog.Visible) return;
+                Enabled = false;
+                _loadingDialog.Show(this);
             };
-            loadingTimer.Interval = 400;
-            loadingTimer.Start();
-
+            _loadingTimer.Interval = 400;
+            _loadingTimer.Start();
         }
 
         public void HideLoading()
         {
             toolStripProgressBar.Visible = false;
-            loadingTimer.Stop();
+            _loadingTimer.Stop();
 
-            loadingDialog.Close();
-            this.Enabled = true;
-            this.Focus();
+            _loadingDialog.Close();
+            Enabled = true;
+            Focus();
         }
 
         void IMainShell.Invoke(Delegate d) => Invoke(d);
@@ -234,13 +227,14 @@ namespace ContentTool.Forms
         public void HideViewer() => splitContainer_right.Panel1.Controls.Clear();
 
         public void ShowLog() => splitContainer_right.Panel2Collapsed = false;
+
         public void HideLog()
         {
             if (alwaysShowLogToolStripMenuItem.Checked == false)
                 splitContainer_right.Panel2Collapsed = true;
         }
 
-        public void Refresh()
+        public void ReloadView()
         {
             if (!IsRenderingSuspended)
                 projectTreeView.RecalculateView();
@@ -249,9 +243,12 @@ namespace ContentTool.Forms
         public void ShowAbout() => new AboutBox().ShowDialog();
 
         public bool ShowNotFoundDelete()
-            => (MessageBox.Show("This file could not be found. " + Environment.NewLine + "Do you want to remove it from the Project?", "File not found!", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes);
+            => (MessageBox.Show(
+                    "This file could not be found. " + Environment.NewLine +
+                    "Do you want to remove it from the Project?", "File not found!", MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Warning) == DialogResult.Yes);
 
-        public event EventHandler Refreshed;
+        public event EventHandler ViewReloaded;
 
         public event Delegates.ItemActionEventHandler BuildItemClick;
         public event Delegates.ItemActionEventHandler ShowInExplorerItemClick;
@@ -279,11 +276,9 @@ namespace ContentTool.Forms
 
         private void MainShell_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (Project != null && Project.HasUnsavedChanges)
-            {
-                if (!ShowCloseWithoutSavingConfirmation())
-                    e.Cancel = true;
-            }
+            if (Project == null || !Project.HasUnsavedChanges) return;
+            if (!ShowCloseWithoutSavingConfirmation())
+                e.Cancel = true;
         }
 
         public string ShowFolderSelectDialog()
@@ -314,7 +309,7 @@ namespace ContentTool.Forms
 
         public void SuspendRendering()
         {
-            System.Threading.Interlocked.Increment(ref _suspendCount);
+            Interlocked.Increment(ref _suspendCount);
             projectTreeView.SuspendRendering();
         }
 
@@ -323,16 +318,12 @@ namespace ContentTool.Forms
             lock (this)
             {
                 _suspendCount--;
-                if (_suspendCount == 0)
-                {
-                    projectTreeView.ResumeRendering();
-                    return;
-                }
+                if (_suspendCount != 0) return;
+                projectTreeView.ResumeRendering();
             }
         }
 
         public void RenameItem(ContentItem item) => projectTreeView.EditItem(item);
         public void RemoveItem(ContentItem item) => projectTreeView.RemoveItemRequest(projectTreeView.SelectedItem);
-
     }
 }

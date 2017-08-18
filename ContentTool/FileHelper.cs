@@ -1,10 +1,8 @@
-﻿using ContentTool.Models;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using ContentTool.Forms.Dialogs;
+using ContentTool.Models;
 
 namespace ContentTool
 {
@@ -57,7 +55,7 @@ namespace ContentTool
                         {
                             if (action.HasFlag(FileAction.Ask))
                             {
-                                using (var ask = new Forms.Dialogs.OverwriteDialog())
+                                using (var ask = new OverwriteDialog())
                                 {
                                     ask.FileName = filename;
                                     action = ask.ShowDialog();

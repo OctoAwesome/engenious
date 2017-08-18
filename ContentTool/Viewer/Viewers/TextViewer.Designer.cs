@@ -1,11 +1,15 @@
-﻿namespace ContentTool.Viewer.Viewers
+﻿using System.ComponentModel;
+using System.Drawing;
+using System.Windows.Forms;
+
+namespace ContentTool.Viewer.Viewers
 {
     partial class TextViewer
     {
         /// <summary> 
         /// Erforderliche Designervariable.
         /// </summary>
-        private System.ComponentModel.IContainer components = null;
+        private IContainer components = null;
 
         /// <summary> 
         /// Verwendete Ressourcen bereinigen.
@@ -28,23 +32,23 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.richTextBox = new System.Windows.Forms.RichTextBox();
+            this.richTextBox = new RichTextBox();
             this.SuspendLayout();
             // 
             // richTextBox
             // 
-            this.richTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.richTextBox.Location = new System.Drawing.Point(0, 0);
+            this.richTextBox.Dock = DockStyle.Fill;
+            this.richTextBox.Location = new Point(0, 0);
             this.richTextBox.Name = "richTextBox";
             this.richTextBox.ReadOnly = true;
-            this.richTextBox.Size = new System.Drawing.Size(150, 150);
+            this.richTextBox.Size = new Size(150, 150);
             this.richTextBox.TabIndex = 0;
             this.richTextBox.Text = "";
             // 
             // TextViewer
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoScaleDimensions = new SizeF(6F, 13F);
+            this.AutoScaleMode = AutoScaleMode.Font;
             this.Controls.Add(this.richTextBox);
             this.Name = "TextViewer";
             this.ResumeLayout(false);
@@ -53,6 +57,6 @@
 
         #endregion
 
-        private System.Windows.Forms.RichTextBox richTextBox;
+        private RichTextBox richTextBox;
     }
 }

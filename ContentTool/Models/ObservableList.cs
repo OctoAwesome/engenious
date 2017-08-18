@@ -99,7 +99,7 @@ namespace ContentTool.Models
 
         public void RemoveAt(int index)
         {
-            T old = _list[index];
+            var old = _list[index];
             _list.RemoveAt(index);
             RemoveChangedEvents(old);
             CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, old));
@@ -113,7 +113,7 @@ namespace ContentTool.Models
             }
             set
             {
-                T old = _list[index];
+                var old = _list[index];
                 _list[index] = value;
                 RemoveChangedEvents(old);
                 AddChangedEvents(value);
@@ -153,7 +153,7 @@ namespace ContentTool.Models
 
         public bool Remove(T item)
         {
-            bool removed = _list.Remove(item);
+            var removed = _list.Remove(item);
             RemoveChangedEvents(item);
             CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, item));
             return removed;

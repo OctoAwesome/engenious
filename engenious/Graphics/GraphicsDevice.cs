@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using engenious.Helper;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL4;
 
@@ -37,9 +38,9 @@ namespace engenious.Graphics
             MinorVersion = GL.GetInteger(GetPName.MinorVersion);
             int count;
             GL.GetInteger(GetPName.NumExtensions,out count);
-            for (int i = 0; i < count; i++)
+            for (var i = 0; i < count; i++)
             {
-                string extension = GL.GetString(StringNameIndexed.Extensions, i);
+                var extension = GL.GetString(StringNameIndexed.Extensions, i);
                 Extensions.Add(extension, true);
             }
 #if DEBUG
@@ -137,7 +138,7 @@ namespace engenious.Graphics
         [Obsolete("Do not use this function")]
         public void DrawUserPrimitives<T>(PrimitiveType primitiveType, T[] vertexData, int vertexOffset, int primitiveCount)where T : struct
         {
-            IVertexType tp = Activator.CreateInstance<T>() as IVertexType;
+            var tp = Activator.CreateInstance<T>() as IVertexType;
             if (tp == null)
                 throw new ArgumentException("must be a vertexType");
             DrawUserPrimitives(primitiveType, vertexData, vertexOffset, primitiveCount, tp.VertexDeclaration);
@@ -147,7 +148,7 @@ namespace engenious.Graphics
         [Obsolete("Do not use this function")]
         public void DrawUserPrimitives<T>(PrimitiveType primitiveType, T[] vertexData, int vertexOffset, int primitiveCount, VertexDeclaration vertexDeclaration)  where T : struct
         {
-            VertexBuffer old = VertexBuffer;
+            var old = VertexBuffer;
             using (Execute.OnUiContext)
             {
                 VertexBuffer current;

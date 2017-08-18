@@ -3,131 +3,143 @@ using OpenTK.Graphics.OpenGL4;
 
 namespace engenious.Graphics
 {
-	[Serializable]
-	public struct VertexElement
-	{
-		public VertexElement (
-			int offset,
-			VertexElementFormat elementFormat,
-			VertexElementUsage elementUsage,
-			int usageIndex
-		)
-		{
-			this.Offset = offset;
-			this.VertexElementFormat = elementFormat;
-			this.VertexElementUsage = elementUsage;
-			this.UsageIndex = usageIndex;
-		}
+    [Serializable]
+    public struct VertexElement
+    {
+        public VertexElement(
+            int offset,
+            VertexElementFormat elementFormat,
+            VertexElementUsage elementUsage,
+            int usageIndex
+        )
+        {
+            Offset = offset;
+            VertexElementFormat = elementFormat;
+            VertexElementUsage = elementUsage;
+            UsageIndex = usageIndex;
+        }
 
-		public int Offset { get; set; }
+        public int Offset { get; set; }
 
-		public VertexElementFormat VertexElementFormat { get; set; }
+        public VertexElementFormat VertexElementFormat { get; set; }
 
-		public int UsageIndex { get; set; }
+        public int UsageIndex { get; set; }
 
-		public VertexElementUsage VertexElementUsage { get; set; }
-		internal bool IsNormalized{
-			get{
-				switch (VertexElementFormat) {
-				case VertexElementFormat.NormalizedShort2:
-				case VertexElementFormat.NormalizedShort4:
-				case VertexElementFormat.Normalized101010:
-					return true;
-				}
-				return false;
-			}
-			}
-		internal VertexAttribPointerType GetGLVertexDataType ()
-		{
-			switch (VertexElementFormat) {
-			case VertexElementFormat.Single:
-			case VertexElementFormat.Vector2:
-			case VertexElementFormat.Vector3:
-			case VertexElementFormat.Vector4:
-			case VertexElementFormat.Color:
-			case VertexElementFormat.Rgba32:
-			case VertexElementFormat.Rg32:
-				return VertexAttribPointerType.Float;
-			case VertexElementFormat.HalfVector2:
-			case VertexElementFormat.HalfVector4:
-				return VertexAttribPointerType.HalfFloat;
-			case VertexElementFormat.Rgba64:
-				return VertexAttribPointerType.Double;
-			case VertexElementFormat.NormalizedShort2:
-			case VertexElementFormat.NormalizedShort4:
-			case VertexElementFormat.Short2:
-			case VertexElementFormat.Short4:
-				return VertexAttribPointerType.Short;
-			case VertexElementFormat.Byte4:
-				return VertexAttribPointerType.Byte;
-			case VertexElementFormat.Normalized101010:
-			case VertexElementFormat.UInt101010:
-				break;//TODO: dunno
-			}
-			throw new NotImplementedException();//TODO: dunno
-		}
+        public VertexElementUsage VertexElementUsage { get; set; }
 
-		internal int GetGlVertexDataTypeSize ()
-		{
-			switch (GetGLVertexDataType()) {
-			case VertexAttribPointerType.Byte:
-			case VertexAttribPointerType.UnsignedByte:
-				return 1;
-			case VertexAttribPointerType.Short:
-			case VertexAttribPointerType.UnsignedShort:
-			case VertexAttribPointerType.HalfFloat:
-				return 2;
-			case VertexAttribPointerType.Int:
-			case VertexAttribPointerType.UnsignedInt:
-			case VertexAttribPointerType.Float:
-				return 4;
-			case VertexAttribPointerType.Double:
-				return 8;
-			}
-			throw new NotImplementedException();//TODO: dunno
-		}
+        internal bool IsNormalized
+        {
+            get
+            {
+                switch (VertexElementFormat)
+                {
+                    case VertexElementFormat.NormalizedShort2:
+                    case VertexElementFormat.NormalizedShort4:
+                    case VertexElementFormat.Normalized101010:
+                        return true;
+                    default:
+                        return false;
+                }
+            }
+        }
 
-		public int ByteCount {
-			get {
-				switch (VertexElementFormat) {
-				case VertexElementFormat.Single:
-					return 4;
-				case VertexElementFormat.Vector2:
-					return 8;
-				case VertexElementFormat.Vector3:
-					return 12;
-				case VertexElementFormat.Vector4:
-					return 16;
-				case VertexElementFormat.HalfVector2:
-					return 4;
-				case VertexElementFormat.HalfVector4:
-					return 8;
-				case VertexElementFormat.Rgba64:
-					return 32;
-				case VertexElementFormat.Color:
-					return 16;
-				case VertexElementFormat.Rgba32:
-					return 16;
-				case VertexElementFormat.Rg32:
-					return 8;
-				case VertexElementFormat.NormalizedShort2:
-					return 4;
-				case VertexElementFormat.NormalizedShort4:
-					return 8;
-				case VertexElementFormat.Normalized101010:
-					return -1;//TODO: dunno
-				case VertexElementFormat.Short2:
-					return 4;
-				case VertexElementFormat.Short4:
-					return 8;
-				case VertexElementFormat.Byte4:
-					return 4;
-				case VertexElementFormat.UInt101010:
-					break;//TODO: dunno
-				}
-				throw new NotImplementedException();//TODO: dunno
-			}
-		}
-	}
+        internal VertexAttribPointerType GetGlVertexDataType()
+        {
+            switch (VertexElementFormat)
+            {
+                case VertexElementFormat.Single:
+                case VertexElementFormat.Vector2:
+                case VertexElementFormat.Vector3:
+                case VertexElementFormat.Vector4:
+                case VertexElementFormat.Color:
+                case VertexElementFormat.Rgba32:
+                case VertexElementFormat.Rg32:
+                    return VertexAttribPointerType.Float;
+                case VertexElementFormat.HalfVector2:
+                case VertexElementFormat.HalfVector4:
+                    return VertexAttribPointerType.HalfFloat;
+                case VertexElementFormat.Rgba64:
+                    return VertexAttribPointerType.Double;
+                case VertexElementFormat.NormalizedShort2:
+                case VertexElementFormat.NormalizedShort4:
+                case VertexElementFormat.Short2:
+                case VertexElementFormat.Short4:
+                    return VertexAttribPointerType.Short;
+                case VertexElementFormat.Byte4:
+                    return VertexAttribPointerType.Byte;
+                //case VertexElementFormat.Normalized101010:
+                //case VertexElementFormat.UInt101010:
+                //    break; //TODO: dunno
+                default:
+                    throw new NotImplementedException(); //TODO: dunno
+            }
+
+        }
+
+        internal int GetGlVertexDataTypeSize()
+        {
+            switch (GetGlVertexDataType())
+            {
+                case VertexAttribPointerType.Byte:
+                case VertexAttribPointerType.UnsignedByte:
+                    return 1;
+                case VertexAttribPointerType.Short:
+                case VertexAttribPointerType.UnsignedShort:
+                case VertexAttribPointerType.HalfFloat:
+                    return 2;
+                case VertexAttribPointerType.Int:
+                case VertexAttribPointerType.UnsignedInt:
+                case VertexAttribPointerType.Float:
+                    return 4;
+                case VertexAttribPointerType.Double:
+                    return 8;
+            }
+            throw new NotImplementedException(); //TODO: dunno
+        }
+
+        public int ByteCount
+        {
+            get
+            {
+                switch (VertexElementFormat)
+                {
+                    case VertexElementFormat.Single:
+                        return 4;
+                    case VertexElementFormat.Vector2:
+                        return 8;
+                    case VertexElementFormat.Vector3:
+                        return 12;
+                    case VertexElementFormat.Vector4:
+                        return 16;
+                    case VertexElementFormat.HalfVector2:
+                        return 4;
+                    case VertexElementFormat.HalfVector4:
+                        return 8;
+                    case VertexElementFormat.Rgba64:
+                        return 32;
+                    case VertexElementFormat.Color:
+                        return 16;
+                    case VertexElementFormat.Rgba32:
+                        return 16;
+                    case VertexElementFormat.Rg32:
+                        return 8;
+                    case VertexElementFormat.NormalizedShort2:
+                        return 4;
+                    case VertexElementFormat.NormalizedShort4:
+                        return 8;
+                    case VertexElementFormat.Normalized101010:
+                        return -1; //TODO: dunno
+                    case VertexElementFormat.Short2:
+                        return 4;
+                    case VertexElementFormat.Short4:
+                        return 8;
+                    case VertexElementFormat.Byte4:
+                        return 4;
+                    case VertexElementFormat.UInt101010:
+                        break; //TODO: dunno
+                }
+                throw new NotImplementedException(); //TODO: dunno
+            }
+        }
+    }
 }
-

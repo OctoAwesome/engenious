@@ -10,7 +10,7 @@ namespace engenious.Graphics
 
         public TextureCollection()
         {
-            int maxTextures = GL.GetInteger(GetPName.MaxTextureImageUnits);
+            var maxTextures = GL.GetInteger(GetPName.MaxTextureImageUnits);
             _textures = new Texture[maxTextures];
         }
 
@@ -41,7 +41,7 @@ namespace engenious.Graphics
 
         public int InsertFree(Texture item)
         {
-            int ind = IndexOf(item);
+            var ind = IndexOf(item);
             if (ind != -1)
                 return ind;
             ind = IndexOf(null);
@@ -53,7 +53,7 @@ namespace engenious.Graphics
 
         public void Add(Texture item)
         {
-            int free = IndexOf(null);
+            var free = IndexOf(null);
             if (free == -1)
                 return;
             this[free] = item;
@@ -61,7 +61,7 @@ namespace engenious.Graphics
 
         public void Clear()
         {
-            for (int i = 0; i < _textures.Length; i++)
+            for (var i = 0; i < _textures.Length; i++)
                 this[i] = null;
         }
 
@@ -72,7 +72,7 @@ namespace engenious.Graphics
 
         public int IndexOf(Texture item)
         {
-            for (int i = 0; i < _textures.Length; i++)
+            for (var i = 0; i < _textures.Length; i++)
                 if (_textures[i] == item)
                     return i;
             return -1;
@@ -85,7 +85,7 @@ namespace engenious.Graphics
 
         public bool Remove(Texture item)
         {
-            int ind = IndexOf(item);
+            var ind = IndexOf(item);
             if (ind == -1)
                 return false;
             this[ind] = null;

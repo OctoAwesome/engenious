@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Design;
+using System.IO;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
 using ContentTool.Models;
@@ -39,16 +40,13 @@ namespace ContentTool.Controls
 
             var file = (ContentFile) context.Instance;
 
-            string ext = System.IO.Path.GetExtension(file.Name);
+            var ext = Path.GetExtension(file.Name);
             _lb.Items.AddRange(PipelineHelper.GetImporters(ext).ToArray());
             _lb.MaximumSize = new Size(_lb.MaximumSize.Width,_lb.ItemHeight*_lb.Items.Count);
             _lb.SelectedItem = value;
 
             _editorService.DropDownControl(_lb);
-            if (_lb.SelectedItem == null)
-                return value;
-
-            return _lb.SelectedItem;
+            return _lb.SelectedItem ?? value;
         }
 
         private void OnListBoxSelectedValueChanged(object sender, EventArgs e)

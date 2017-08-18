@@ -8,14 +8,14 @@ namespace engenious.Content.Serialization
     [ContentTypeWriter]
     public class BitmapTypeWriter : ContentTypeWriter<Bitmap>
     {
-        private bool usePNG = true;
+        private readonly bool _usePng = true;
 
         public override void Write(ContentWriter writer, Bitmap bmp)
         {
-            if (usePNG)
+            if (_usePng)
             {
                 writer.Write((byte)1);
-                using (MemoryStream str = new MemoryStream())
+                using (var str = new MemoryStream())
                 {
                     bmp.Save(str, ImageFormat.Png);
 
@@ -29,8 +29,8 @@ namespace engenious.Content.Serialization
                 writer.Write((byte)0);
                 writer.Write(bmp.Width);
                 writer.Write(bmp.Height);
-                int[] data = new int[bmp.Width * bmp.Height];
-                BitmapData bmpData = bmp.LockBits(new System.Drawing.Rectangle(new System.Drawing.Point(), bmp.Size), ImageLockMode.ReadOnly, bmp.PixelFormat);
+                var data = new int[bmp.Width * bmp.Height];
+                var bmpData = bmp.LockBits(new System.Drawing.Rectangle(new System.Drawing.Point(), bmp.Size), ImageLockMode.ReadOnly, bmp.PixelFormat);
 
                 Marshal.Copy(bmpData.Scan0, data, 0, data.Length);
 

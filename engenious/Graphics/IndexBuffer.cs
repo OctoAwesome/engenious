@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using engenious.Helper;
 using OpenTK.Graphics.OpenGL4;
 
 namespace engenious.Graphics
@@ -74,9 +75,9 @@ namespace engenious.Graphics
 
 
 
-            int elSize = Marshal.SizeOf(typeof(T));
+            var elSize = Marshal.SizeOf(typeof(T));
 
-            GCHandle buffer = GCHandle.Alloc(data, GCHandleType.Pinned);
+            var buffer = GCHandle.Alloc(data, GCHandleType.Pinned);
             using (Execute.OnUiContext)
             {
                 Bind();
@@ -97,9 +98,9 @@ namespace engenious.Graphics
                 return;
 
 
-            int elSize = Marshal.SizeOf(typeof(T));
+            var elSize = Marshal.SizeOf(typeof(T));
 
-            GCHandle buffer = GCHandle.Alloc(data, GCHandleType.Pinned);
+            var buffer = GCHandle.Alloc(data, GCHandleType.Pinned);
             using (Execute.OnUiContext)
             {
                 Bind();

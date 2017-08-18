@@ -39,7 +39,7 @@ namespace engenious.Pipeline
             fileName = null;
             var config = FcInitLoadConfigAndFonts();
 
-            List<string> fontStyles=new List<string>();
+            var fontStyles=new List<string>();
             foreach(var val in Enum.GetValues(typeof(System.Drawing.FontStyle)).OfType<System.Drawing.FontStyle>().Skip(1))
             {
                 if (style.HasFlag(val))

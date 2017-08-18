@@ -5,7 +5,7 @@ using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Platform;
 
-namespace engenious
+namespace engenious.Helper
 {
     internal static class Execute
     {

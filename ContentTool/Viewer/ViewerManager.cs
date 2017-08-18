@@ -1,20 +1,18 @@
-﻿using ContentTool.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+using ContentTool.Models;
 
 namespace ContentTool.Viewer
 {
     public class ViewerManager
     {
 
-        private Dictionary<string, Type> ViewerTypes = new Dictionary<string, Type>();
-        private Dictionary<string, IViewer> Viewers = new Dictionary<string, IViewer>();
+        private readonly Dictionary<string, Type> _viewerTypes = new Dictionary<string, Type>();
+        private readonly Dictionary<string, IViewer> _viewers = new Dictionary<string, IViewer>();
 
         public ViewerManager()
         {
@@ -28,21 +26,19 @@ namespace ContentTool.Viewer
             foreach(var type in types)
             {
                 foreach(var attr in type.GetCustomAttributes(typeof(ViewerInfo), true).Where(x=>x != null))
-                    ViewerTypes.Add(((ViewerInfo)attr).Extension, type);
+                    _viewerTypes.Add(((ViewerInfo)attr).Extension, type);
             }
         }
 
         public Control GetViewer(ContentFile item)
         {
-            if (Viewers.TryGetValue(Path.GetExtension(item.FilePath), out IViewer viewer))
+            if (_viewers.TryGetValue(Path.GetExtension(item.FilePath), out IViewer viewer))
                 return viewer.GetViewer(item);
-            else if(ViewerTypes.TryGetValue(Path.GetExtension(item.FilePath), out Type type))
-            {
-                var view = (IViewer)Activator.CreateInstance(type);
-                Viewers.Add(Path.GetExtension(item.FilePath), view);
-                return view.GetViewer(item);
-            }
-            return null;
+            if (!_viewerTypes.TryGetValue(Path.GetExtension(item.FilePath), out Type type))
+                return null;
+            var view = (IViewer)Activator.CreateInstance(type);
+            _viewers.Add(Path.GetExtension(item.FilePath), view);
+            return view.GetViewer(item);
         }
 
 

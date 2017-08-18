@@ -26,9 +26,9 @@ namespace engenious.Content
 
         public object Load(ContentManager manager, Stream stream,Type type)
         {
-            ContentReader reader = new ContentReader(stream);
-            string readName = reader.ReadString();
-            IContentTypeReader tp = manager.GetReaderByOutput(type.FullName);
+            var reader = new ContentReader(stream);
+            var readName = reader.ReadString();
+            var tp = manager.GetReaderByOutput(type.FullName);
             if (tp == null)
                 tp = manager.GetReader(readName);
             return tp.Read(manager, reader);

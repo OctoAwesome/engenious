@@ -10,7 +10,7 @@ namespace engenious.Graphics
         static VertexPositionColor()
         {
             VertexElement[] elements = { new VertexElement(0, VertexElementFormat.Vector3, VertexElementUsage.Position, 0), new VertexElement(12, VertexElementFormat.Color, VertexElementUsage.Color, 0) };
-            VertexDeclaration declaration = new VertexDeclaration(elements);
+            var declaration = new VertexDeclaration(elements);
             VertexDeclaration = declaration;
         }
 

@@ -1,10 +1,9 @@
 ﻿using System.ComponentModel;
 using System.Drawing.Design;
-using engenious.Content.Pipeline;
 using System.IO;
-using System.Xml;
 using System.Xml.Linq;
 using ContentTool.Controls;
+using engenious.Content.Pipeline;
 
 namespace ContentTool.Models
 {
@@ -53,7 +52,7 @@ namespace ContentTool.Models
             set
             {
                 if (value == processorName) return;
-                string old = processorName;
+                var old = processorName;
                 processorName = value;
 
                 if (string.IsNullOrWhiteSpace(processorName))
@@ -100,7 +99,8 @@ namespace ContentTool.Models
         /// <param name="element">XMLElement</param>
         public override ContentItem Deserialize(XElement element)
         {
-            name = element.Element("Name")?.Value;
+            SupressChangedEvent = true;
+            Name = element.Element("Name")?.Value;
 
             if (!File.Exists(FilePath))
                 Error = ContentErrorType.NotFound;
@@ -125,7 +125,7 @@ namespace ContentTool.Models
             {
                 Settings.Read(element.Element("Settings"));
             }
-
+            SupressChangedEvent = false;
             return this;
         }
 
@@ -135,7 +135,7 @@ namespace ContentTool.Models
         /// <returns></returns>
         public override XElement Serialize()
         {
-            XElement element = new XElement("ContentFile");
+            var element = new XElement("ContentFile");
 
             element.Add(new XElement("Name", Name));
             element.Add(new XElement("Processor", Processor?.GetType().Name));

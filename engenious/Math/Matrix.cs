@@ -233,7 +233,7 @@ namespace engenious
 
         public static unsafe bool operator==(Matrix value1, Matrix value2)
         {
-            for (int i = 0; i < 16; i++)
+            for (var i = 0; i < 16; i++)
             {
                 // ReSharper disable once CompareOfFloatsByEqualityOperator
                 if (value1.items[i] != value2.items[i])
@@ -244,7 +244,7 @@ namespace engenious
 
         public static unsafe bool operator!=(Matrix value1, Matrix value2)
         {
-            for (int i = 0; i < 16; i++)
+            for (var i = 0; i < 16; i++)
             {
                 // ReSharper disable once CompareOfFloatsByEqualityOperator
                 if (value1.items[i] != value2.items[i])
@@ -255,7 +255,7 @@ namespace engenious
 
         public static unsafe Matrix operator+(Matrix value1, Matrix value2)
         {
-            for (int i = 0; i < 16; i++)
+            for (var i = 0; i < 16; i++)
             {
                 value1.items[i] += value2.items[i];
             }
@@ -264,7 +264,7 @@ namespace engenious
 
         public static unsafe Matrix operator-(Matrix value1, Matrix value2)
         {
-            for (int i = 0; i < 16; i++)
+            for (var i = 0; i < 16; i++)
             {
                 value1.items[i] -= value2.items[i];
             }
@@ -273,7 +273,7 @@ namespace engenious
 
         public static unsafe Matrix operator*(float scalar, Matrix value)
         {
-            for (int i = 0; i < 16; i++)
+            for (var i = 0; i < 16; i++)
             {
                 value.items[i] *= scalar;
             }
@@ -287,13 +287,13 @@ namespace engenious
 
         public static unsafe Matrix operator*(Matrix value1, Matrix value2)
         {
-            Matrix multiply = new Matrix();
-            for (int i = 0; i < 4; i++)
+            var multiply = new Matrix();
+            for (var i = 0; i < 4; i++)
             {
-                for (int j = 0; j < 4; j++)
+                for (var j = 0; j < 4; j++)
                 {
                     float sum = 0;
-                    for (int k = 0; k < 4; k++)
+                    for (var k = 0; k < 4; k++)
                     {
                         sum = sum + value1.items[i + k * 4] * value2.items[k + j * 4];
                     }
@@ -329,9 +329,9 @@ namespace engenious
         public static void CreatePerspectiveFieldOfView(float fovY, float aspect, float near, float far, out Matrix result)
         {
 
-            float tangent = (float)Math.Tan(fovY / 2/* * DEG2RAD*/); // tangent of half fovY
-            float height = near * tangent;         // half height of near plane
-            float width = height * aspect;          // half width of near plane
+            var tangent = (float)Math.Tan(fovY / 2/* * DEG2RAD*/); // tangent of half fovY
+            var height = near * tangent;         // half height of near plane
+            var width = height * aspect;          // half width of near plane
 
             // params: left, right, bottom, top, near, far
             CreatePerspectiveOffCenter(-width, width, height, -height, near, far, out result);
@@ -340,9 +340,9 @@ namespace engenious
 
         public static Matrix CreatePerspectiveFieldOfView(float fovY, float aspect, float near, float far)
         {
-            float tangent = (float)Math.Tan(fovY / 2/* * DEG2RAD*/); // tangent of half fovY
-            float height = near * tangent;         // half height of near plane
-            float width = height * aspect;          // half width of near plane
+            var tangent = (float)Math.Tan(fovY / 2/* * DEG2RAD*/); // tangent of half fovY
+            var height = near * tangent;         // half height of near plane
+            var width = height * aspect;          // half width of near plane
 
             // params: left, right, bottom, top, near, far
             Matrix result;
@@ -359,7 +359,7 @@ namespace engenious
                 throw new ArgumentOutOfRangeException($"{nameof(bottom)} or {nameof(top)}");
             if (near == far)
                 throw new ArgumentOutOfRangeException($"{nameof(near)} or {nameof(far)}");
-            Matrix m = Identity;
+            var m = Identity;
             m.items[0] = 2.0f * near / (right - left);
             m.items[5] = 2.0f * near / (top - bottom);
             m.items[8] = (right + left) / (right - left);
@@ -375,7 +375,7 @@ namespace engenious
 
         public static unsafe Matrix CreateOrthographic(float width, float height, float near, float far)
         {
-            Matrix res = Identity;
+            var res = Identity;
             res.items[0] = 2f / width;
             res.items[5] = -2f / height;
             res.items[10] = 1f / (near - far);
@@ -389,7 +389,7 @@ namespace engenious
         {
 
 
-            Matrix res = Identity;
+            var res = Identity;
             res.items[0] = 2.0f / (right - left);
             res.items[5] = 2.0f / (top - bottom);
             res.items[10] = -2.0f / (far - near);
@@ -408,14 +408,14 @@ namespace engenious
         {
 
 
-            Vector3 forward = (lookAt - eyePos).Normalized();
+            var forward = (lookAt - eyePos).Normalized();
             up = up.Normalized();
-            Vector3 side = forward.Cross(up).Normalized();
+            var side = forward.Cross(up).Normalized();
 
 
-            Vector3 newUp = side.Cross(forward).Normalized();
+            var newUp = side.Cross(forward).Normalized();
 
-            Matrix m = new Matrix();
+            var m = new Matrix();
             m.items[0] = side.X;
             m.items[4] = side.Y;
             m.items[8] = side.Z;
@@ -447,6 +447,7 @@ namespace engenious
         public static Matrix CreateFromQuaternion(float x, float y, float z, float w)
         {
             var n = w * w + x * x + y * y + z * z;
+            // ReSharper disable once CompareOfFloatsByEqualityOperator
             var s = n == 0 ? 0 : 2 / n;
 
             var sw = s * w;
@@ -489,7 +490,7 @@ namespace engenious
 
         public static Matrix CreateTranslation(float x, float y, float z)
         {
-            Matrix res = Identity;
+            var res = Identity;
             res.M41 = x;
             res.M42 = y;
             res.M43 = z;
@@ -499,7 +500,7 @@ namespace engenious
 
         public static Matrix CreateRotationX(float rot)
         {
-            Matrix ret = Identity;
+            var ret = Identity;
             ret.M22 = ret.M33 = (float)Math.Cos(rot);
             ret.M32 = (float)Math.Sin(rot);
             ret.M23 = -ret.M32;
@@ -508,7 +509,7 @@ namespace engenious
 
         public static Matrix CreateRotationY(float rot)
         {
-            Matrix ret = Identity;
+            var ret = Identity;
             ret.M11 = ret.M33 = (float)Math.Cos(rot);
             ret.M13 = (float)Math.Sin(rot);
             ret.M31 = -ret.M13;
@@ -517,7 +518,7 @@ namespace engenious
 
         public static Matrix CreateRotationZ(float rot)
         {
-            Matrix ret = Identity;
+            var ret = Identity;
             ret.M11 = ret.M22 = (float)Math.Cos(rot);
             ret.M12 = (float)Math.Sin(rot);
             ret.M21 = -ret.M12;
@@ -526,8 +527,8 @@ namespace engenious
 
         public static unsafe Matrix Lerp(Matrix val1, Matrix val2, float amount)
         {
-            Matrix res = new Matrix();
-            for (int i = 0; i < 16; i++)
+            var res = new Matrix();
+            for (var i = 0; i < 16; i++)
             {
                 res.items[i] = val1.items[i] + (val2.items[i] - val1.items[i]) * amount;
             }
@@ -537,7 +538,7 @@ namespace engenious
         public static Matrix Invert(Matrix m)
         {
             float det;
-            Matrix inv = new Matrix();
+            var inv = new Matrix();
             inv[0] = m[5] * m[10] * m[15] -
             m[5] * m[11] * m[14] -
             m[9] * m[6] * m[15] +
@@ -635,12 +636,13 @@ namespace engenious
             m[8] * m[1] * m[6] -
             m[8] * m[2] * m[5];
             det = m[0] * inv[0] + m[1] * inv[4] + m[2] * inv[8] + m[3] * inv[12];
+            // ReSharper disable once CompareOfFloatsByEqualityOperator
             if (det == 0)
                 throw new ArgumentException("Not invertible",nameof(m));
 
             det = 1.0f / det;
 
-            for (int i = 0; i < 16; i++)
+            for (var i = 0; i < 16; i++)
                 inv[i] = inv[i] * det;
             return inv;
         }

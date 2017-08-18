@@ -1,11 +1,14 @@
-﻿namespace ContentTool.Forms.Dialogs
+﻿using System.ComponentModel;
+using System.Windows.Forms;
+
+namespace ContentTool.Forms.Dialogs
 {
     partial class OverwriteDialog
     {
         /// <summary>
         /// Required designer variable.
         /// </summary>
-        private System.ComponentModel.IContainer components = null;
+        private IContainer components = null;
 
         /// <summary>
         /// Clean up any resources being used.
@@ -113,10 +116,10 @@
 
         #endregion
 
-        private System.Windows.Forms.Button button_overwrite;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Button button_skip;
-        private System.Windows.Forms.Button button_repeat;
-        private System.Windows.Forms.CheckBox checkBox;
+        private Button button_overwrite;
+        private Label label1;
+        private Button button_skip;
+        private Button button_repeat;
+        private CheckBox checkBox;
     }
 }

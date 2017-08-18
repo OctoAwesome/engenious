@@ -10,7 +10,7 @@ namespace engenious
         internal SamplerStateCollection(GraphicsDevice graphicsDevice)
             : base(graphicsDevice)
         {
-            int maxTextures = GL.GetInteger(GetPName.MaxTextureImageUnits);
+            var maxTextures = GL.GetInteger(GetPName.MaxTextureImageUnits);
             _samplerStates = new SamplerState[maxTextures];
         }
 

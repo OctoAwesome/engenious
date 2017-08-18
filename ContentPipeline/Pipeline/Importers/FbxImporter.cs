@@ -4,6 +4,7 @@ using System.Reflection;
 using Assimp;
 using Assimp.Unmanaged;
 using engenious.Content.Pipeline;
+using engenious.Helper;
 
 namespace engenious.Pipeline
 {

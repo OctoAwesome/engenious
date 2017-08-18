@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using engenious.Helper;
 using OpenTK.Graphics.OpenGL4;
 
 namespace engenious.Graphics
@@ -29,25 +30,25 @@ namespace engenious.Graphics
 
         internal void CacheParameters()
         {
-            int total = -1;
+            var total = -1;
             using (Execute.OnUiContext)
             {
                 GL.GetProgram(Program, GetProgramParameterName.ActiveUniforms, out total);
-                for (int i = 0; i < total; ++i)
+                for (var i = 0; i < total; ++i)
                 {
                     int size;
                     ActiveUniformType type;
-                    string name = GL.GetActiveUniform(Program, i, out size, out type);
-                    int location = GetUniformLocation(name);
+                    var name = GL.GetActiveUniform(Program, i, out size, out type);
+                    var location = GetUniformLocation(name);
                     Parameters.Add(new EffectPassParameter(this, name, location));
                 }
                 GL.GetProgram(Program, GetProgramParameterName.ActiveUniformBlocks, out total);
-                for (int i = 0; i < total; ++i)
+                for (var i = 0; i < total; ++i)
                 {
                     int size;
-                    StringBuilder sb = new StringBuilder(512);
+                    var sb = new StringBuilder(512);
                     GL.GetActiveUniformBlockName(Program, i, 512, out size, sb);
-                    string name = sb.ToString();
+                    var name = sb.ToString();
                     var location = GL.GetUniformBlockIndex(Program, name);
                     Parameters.Add(new EffectPassParameter(this, name, location));
                 }
@@ -67,7 +68,7 @@ namespace engenious.Graphics
         {
             using (Execute.OnUiContext)
             {
-                foreach (Shader shader in shaders)
+                foreach (var shader in shaders)
                 {
                     AttachShader(shader);
                 }
@@ -93,12 +94,12 @@ namespace engenious.Graphics
                 GL.GetProgram(Program, GetProgramParameterName.LinkStatus, out linked);
                 if (linked != 1)
                 {
-                    string error = GL.GetProgramInfoLog(Program);
+                    var error = GL.GetProgramInfoLog(Program);
                     if (string.IsNullOrEmpty(error))
                         throw new Exception("Unknown error occured");
                     throw new Exception(error);
                 }
-                foreach (Shader shader in Attached)
+                foreach (var shader in Attached)
                 {
                     GL.DetachShader(Program, shader.BaseShader);
                 }

@@ -28,6 +28,7 @@
 #endregion
 
 using System;
+// ReSharper disable CompareOfFloatsByEqualityOperator
 
 namespace engenious.Input
 {
@@ -39,8 +40,8 @@ namespace engenious.Input
         #region Public Members
         public MouseScroll(float x,float y)
         {
-            this.X = x;
-            this.Y = y;
+            X = x;
+            Y = y;
         }
         /// <summary>
         /// Gets the absolute horizontal offset of the wheel,

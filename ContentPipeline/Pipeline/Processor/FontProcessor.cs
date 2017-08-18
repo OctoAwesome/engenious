@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
+using engenious.Content.Serialization;
 using engenious.Graphics;
 
 namespace engenious.Content.Pipeline

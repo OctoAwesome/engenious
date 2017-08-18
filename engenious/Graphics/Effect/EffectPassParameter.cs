@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using engenious.Graphics;
 using OpenTK.Graphics.OpenGL4;
 
 namespace engenious.Graphics
@@ -70,8 +69,8 @@ namespace engenious.Graphics
 
         public void SetValue(Texture value)
         {
-            GraphicsDevice dev = value.GraphicsDevice;
-            int val = dev.Textures.InsertFree(value);
+            var dev = value.GraphicsDevice;
+            var val = dev.Textures.InsertFree(value);
             if (val == -1)
                 throw new Exception("Out of textures");
             GL.Uniform1(Location, val);

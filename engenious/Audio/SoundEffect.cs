@@ -20,7 +20,7 @@ namespace engenious.Audio
         internal int Buffer;
         public SoundEffect(string fileName)
         {
-            using (FileStream fs = new FileStream(fileName, FileMode.Open, FileAccess.Read))
+            using (var fs = new FileStream(fileName, FileMode.Open, FileAccess.Read))
             {
                 LoadStream(fs);
             }
@@ -53,7 +53,7 @@ namespace engenious.Audio
             switch (format)
             {
                 case AudioFormat.Wav:
-                    using (BinaryReader reader = new BinaryReader(stream))
+                    using (var reader = new BinaryReader(stream))
                     {
                         ALFormat alFormat;
                         int size, frequency;
@@ -62,12 +62,12 @@ namespace engenious.Audio
                     }
                     break;
                 case AudioFormat.Ogg:
-                    using (OggStream ogg = new OggStream(stream))
+                    using (var ogg = new OggStream(stream))
                     {
-                        int bitsPerSample = 16;
-                        ALFormat alFormat = GetSoundFormat(ogg.Reader.Channels, bitsPerSample);
-                        int frequency = ogg.Reader.SampleRate;
-                        int samples = (int)(((long)ogg.Reader.TotalTime.TotalMilliseconds * ogg.Reader.SampleRate * ogg.Reader.Channels)/1000);
+                        var bitsPerSample = 16;
+                        var alFormat = GetSoundFormat(ogg.Reader.Channels, bitsPerSample);
+                        var frequency = ogg.Reader.SampleRate;
+                        var samples = (int)(((long)ogg.Reader.TotalTime.TotalMilliseconds * ogg.Reader.SampleRate * ogg.Reader.Channels)/1000);
 
                         var conversionBuffer = new float[samples];
                         var buffer = new byte[samples*bitsPerSample/8];
@@ -77,8 +77,8 @@ namespace engenious.Audio
                         {
                             fixed (byte* ptr = buffer)
                             {
-                                byte* ptr2 = ptr;
-                                for (int i = 0; i < samples; i++,ptr2+=(bitsPerSample/8))
+                                var ptr2 = ptr;
+                                for (var i = 0; i < samples; i++,ptr2+=(bitsPerSample/8))
                                 {
                                     ConvertShit(conversionBuffer[i],ptr2);
                                 }
@@ -96,7 +96,7 @@ namespace engenious.Audio
             val += 1;
             val = (val * ushort.MaxValue / 2) + short.MinValue;
 
-            short tmp = (short) val;
+            var tmp = (short) val;
             *ptr++ = (byte)(tmp & 0xFF);
             *ptr = (byte) (tmp >> 8);
         }
@@ -104,7 +104,7 @@ namespace engenious.Audio
         {
             if (stream.CanSeek)
             {
-                byte[] magic = new byte[4];
+                var magic = new byte[4];
                 stream.Read(magic, 0, magic.Length);
 
                 AudioFormat format;
@@ -142,7 +142,7 @@ namespace engenious.Audio
             byte[] audioData;
 
             //header
-            string signature = new string(reader.ReadChars(4));
+            var signature = new string(reader.ReadChars(4));
             if (signature != "RIFF")
             {
                 throw new NotSupportedException("Specified stream is not a wave file.");
@@ -150,26 +150,26 @@ namespace engenious.Audio
 
             reader.ReadInt32(); // riff_chunck_size
 
-            string wformat = new string(reader.ReadChars(4));
+            var wformat = new string(reader.ReadChars(4));
             if (wformat != "WAVE")
             {
                 throw new NotSupportedException("Specified stream is not a wave file.");
             }
 
             // WAVE header
-            string formatSignature = new string(reader.ReadChars(4));
+            var formatSignature = new string(reader.ReadChars(4));
             while (formatSignature != "fmt ")
             {
                 reader.ReadBytes(reader.ReadInt32());
                 formatSignature = new string(reader.ReadChars(4));
             }
 
-            int formatChunkSize = reader.ReadInt32();
+            var formatChunkSize = reader.ReadInt32();
 
             // total bytes read: tbp
             int audioFormat = reader.ReadInt16(); // 2
             int numChannels = reader.ReadInt16(); // 4
-            int sampleRate = reader.ReadInt32(); // 8
+            var sampleRate = reader.ReadInt32(); // 8
             reader.ReadInt32(); // 12, byte_rate
             reader.ReadInt16(); // 14, block_align
             int bitsPerSample = reader.ReadInt16(); // 16
@@ -183,7 +183,7 @@ namespace engenious.Audio
             if (formatChunkSize > 16)
                 reader.ReadBytes(formatChunkSize - 16);
 
-            string dataSignature = new string(reader.ReadChars(4));
+            var dataSignature = new string(reader.ReadChars(4));
 
             while (dataSignature.ToLowerInvariant() != "data")
             {
@@ -196,7 +196,7 @@ namespace engenious.Audio
                 throw new NotSupportedException("Specified wave file is not supported.");
             }
 
-            int dataChunkSize = reader.ReadInt32();
+            var dataChunkSize = reader.ReadInt32();
 
             frequency = sampleRate;
             format = GetSoundFormat(numChannels, bitsPerSample);

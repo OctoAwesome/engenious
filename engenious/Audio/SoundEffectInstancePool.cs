@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 
 namespace engenious.Audio
 {
@@ -14,7 +13,7 @@ namespace engenious.Audio
 
         public SoundEffectInstancePool()
         {
-            for (int i = 0; i < InstanceCount; i++)
+            for (var i = 0; i < InstanceCount; i++)
             {
                 _stack.Push(new PooledSoundEffectInstance());
             }

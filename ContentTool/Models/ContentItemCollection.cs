@@ -1,17 +1,13 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.ComponentModel;
-using System.Windows.Forms;
 using ContentTool.Observer;
-using PropertyValueChangedEventArgs = ContentTool.Observer.PropertyValueChangedEventArgs;
 
 namespace ContentTool.Models
 {
     public class ContentItemCollection : INotifyCollectionChanged, IList<ContentItem>, INotifyPropertyValueChanged
     {
-        readonly ObservableList<ContentItem> _contents = new ObservableList<ContentItem>();
+        private readonly ObservableList<ContentItem> _contents = new ObservableList<ContentItem>();
 
         public ContentItemCollection()
         {
@@ -33,21 +29,20 @@ namespace ContentTool.Models
 
         public void Add(ContentItem item)
         {
-            if (!_contents.Contains(item))
-            {
-                item.PropertyChanged += IOnPropertyChanged;
-                _contents.Add(item);
-            }
+            if (_contents.Contains(item))
+                return;
+            item.PropertyChanged += OnPropertyChanged;
+            _contents.Add(item);
         }
 
         public void Clear()
         {
             foreach(var i in _contents)
-                i.PropertyChanged -= IOnPropertyChanged;
+                i.PropertyChanged -= OnPropertyChanged;
             _contents.Clear();
         }
 
-        private void IOnPropertyChanged(object o, PropertyValueChangedEventArgs propertyValueChangedEventArgs)
+        private void OnPropertyChanged(object o, PropertyValueChangedEventArgs propertyValueChangedEventArgs)
         {
             PropertyChanged?.Invoke(o,propertyValueChangedEventArgs);
         }
@@ -74,22 +69,21 @@ namespace ContentTool.Models
 
         public void Insert(int index, ContentItem item)
         {
-            if (!_contents.Contains(item))
-            {
-                item.PropertyChanged += IOnPropertyChanged;
-                _contents.Insert(index, item);
-            }
+            if (_contents.Contains(item))
+                return;
+            item.PropertyChanged += OnPropertyChanged;
+            _contents.Insert(index, item);
         }
 
         public bool Remove(ContentItem item)
         {
-            item.PropertyChanged -= IOnPropertyChanged;
+            item.PropertyChanged -= OnPropertyChanged;
             return _contents.Remove(item);
         }
 
         public void RemoveAt(int index)
         {
-            _contents[index].PropertyChanged += IOnPropertyChanged;
+            _contents[index].PropertyChanged += OnPropertyChanged;
             _contents.RemoveAt(index);
         }
 

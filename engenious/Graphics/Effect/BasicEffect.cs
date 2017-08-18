@@ -1,4 +1,6 @@
-﻿namespace engenious.Graphics
+﻿using engenious.Helper;
+
+namespace engenious.Graphics
 {
     public class BasicEffect : Effect,IModelEffect
     {
@@ -52,9 +54,9 @@ void main(void)
                     new Shader(ShaderType.FragmentShader, PixelShader)
                 };
 
-                foreach (Shader shader in shaders)
+                foreach (var shader in shaders)
                     shader.Compile();
-                EffectPass pass = new EffectPass("Basic");
+                var pass = new EffectPass("Basic");
                 pass.AttachShaders(shaders);
                 pass.BindAttribute(VertexElementUsage.Color, "color");
                 pass.BindAttribute(VertexElementUsage.TextureCoordinate, "textureCoordinate");

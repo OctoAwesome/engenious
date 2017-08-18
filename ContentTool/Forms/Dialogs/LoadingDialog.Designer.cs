@@ -1,11 +1,14 @@
-﻿namespace ContentTool.Forms.Dialogs
+﻿using System.ComponentModel;
+using System.Windows.Forms;
+
+namespace ContentTool.Forms.Dialogs
 {
     partial class LoadingDialog
     {
         /// <summary>
         /// Required designer variable.
         /// </summary>
-        private System.ComponentModel.IContainer components = null;
+        private IContainer components = null;
 
         /// <summary>
         /// Clean up any resources being used.
@@ -68,7 +71,7 @@
 
         #endregion
 
-        private System.Windows.Forms.ProgressBar progressBar1;
-        private System.Windows.Forms.Button button_cancel;
+        private ProgressBar progressBar1;
+        private Button button_cancel;
     }
 }

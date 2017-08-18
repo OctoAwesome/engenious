@@ -38,7 +38,7 @@ namespace engenious
         {
             if (obj is Point)
             {
-                Point sec = (Point)obj;
+                var sec = (Point)obj;
                 return X == sec.X && Y == sec.Y;
             }
             return false;

@@ -16,7 +16,7 @@ namespace engenious.Content.Pipeline
                 {
                     lines[i] = lines[i].Substring("ERROR: 0:".Length);
                     int eInd = lines[i].IndexOf(':');
-                    string errorLoc = "";
+                    string errorLoc = string.Empty;
                     if (eInd != -1)
                     {
                         errorLoc = "(" + lines[i].Substring(0, eInd) + ")";

@@ -1,11 +1,15 @@
-﻿namespace ContentTool.Controls
+﻿using System.ComponentModel;
+using System.Drawing;
+using System.Windows.Forms;
+
+namespace ContentTool.Controls
 {
     partial class ItemPropertyView
     {
         /// <summary> 
         /// Erforderliche Designervariable.
         /// </summary>
-        private System.ComponentModel.IContainer components = null;
+        private IContainer components = null;
 
         /// <summary> 
         /// Verwendete Ressourcen bereinigen.
@@ -28,22 +32,22 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.propertyGrid = new System.Windows.Forms.PropertyGrid();
+            this.propertyGrid = new PropertyGrid();
             this.SuspendLayout();
             // 
             // propertyGrid
             // 
-            this.propertyGrid.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.propertyGrid.LineColor = System.Drawing.SystemColors.ControlDark;
-            this.propertyGrid.Location = new System.Drawing.Point(0, 0);
+            this.propertyGrid.Dock = DockStyle.Fill;
+            this.propertyGrid.LineColor = SystemColors.ControlDark;
+            this.propertyGrid.Location = new Point(0, 0);
             this.propertyGrid.Name = "propertyGrid";
-            this.propertyGrid.Size = new System.Drawing.Size(150, 150);
+            this.propertyGrid.Size = new Size(150, 150);
             this.propertyGrid.TabIndex = 0;
             // 
             // ItemPropertyView
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoScaleDimensions = new SizeF(6F, 13F);
+            this.AutoScaleMode = AutoScaleMode.Font;
             this.Controls.Add(this.propertyGrid);
             this.Name = "ItemPropertyView";
             this.ResumeLayout(false);
@@ -52,6 +56,6 @@
 
         #endregion
 
-        private System.Windows.Forms.PropertyGrid propertyGrid;
+        private PropertyGrid propertyGrid;
     }
 }

@@ -11,7 +11,7 @@ namespace engenious.Content.Serialization
         {
             if (reader.ReadBoolean())
                 return null;
-            RasterizerState state = new RasterizerState();
+            var state = new RasterizerState();
             state.CullMode = (CullMode)reader.ReadUInt16();
             state.FillMode = (PolygonMode)reader.ReadUInt16();
             state.MultiSampleAntiAlias = reader.ReadBoolean();
@@ -31,7 +31,7 @@ namespace engenious.Content.Serialization
         {
             if (reader.ReadBoolean())
                 return null;
-            DepthStencilState state = new DepthStencilState();
+            var state = new DepthStencilState();
             state.DepthBufferEnable = reader.ReadBoolean();
             state.DepthBufferWriteEnable = reader.ReadBoolean();
             state.StencilEnable = reader.ReadBoolean();
@@ -59,7 +59,7 @@ namespace engenious.Content.Serialization
         {
             if (reader.ReadBoolean())
                 return null;
-            BlendState state = new BlendState();
+            var state = new BlendState();
             state.AlphaBlendFunction = (BlendEquationMode)reader.ReadUInt16();
             state.AlphaDestinationBlend = (BlendingFactorDest)reader.ReadUInt16();
             state.AlphaSourceBlend = (BlendingFactorSrc)reader.ReadUInt16();
