@@ -1,5 +1,6 @@
-﻿using engenious.Input;
-using Keys = System.Windows.Forms.Keys;
+﻿using System.ComponentModel;
+using System.Windows.Forms;
+using ContentTool.Controls;
 
 namespace ContentTool.Forms
 {
@@ -8,7 +9,7 @@ namespace ContentTool.Forms
         /// <summary>
         /// Required designer variable.
         /// </summary>
-        private System.ComponentModel.IContainer components = null;
+        private IContainer components = null;
 
         /// <summary>
         /// Clean up any resources being used.
@@ -589,57 +590,57 @@ namespace ContentTool.Forms
 
         #endregion
 
-        private System.Windows.Forms.MenuStrip menuStrip_main;
-        private System.Windows.Forms.ToolStripMenuItem projectToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem editToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem buildToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
-        private System.Windows.Forms.ToolStrip toolStrip_main;
-        private System.Windows.Forms.SplitContainer splitContainer_main;
-        private System.Windows.Forms.SplitContainer splitContainer_left;
-        private System.Windows.Forms.SplitContainer splitContainer_right;
-        private Controls.ProjectTreeView projectTreeView;
-        private Controls.ItemPropertyView itemPropertyView;
-        private Controls.ConsoleView consoleView;
-        private System.Windows.Forms.ToolStripMenuItem newToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem openToolStripMenuItem;
-        private System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
-        private System.Windows.Forms.ToolStripMenuItem saveProjectToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem saveProjectAsToolStripMenuItem;
-        private System.Windows.Forms.ToolStripSeparator toolStripMenuItem2;
-        private System.Windows.Forms.ToolStripMenuItem closeProjectToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem undoToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem redoToolStripMenuItem;
-        private System.Windows.Forms.ToolStripSeparator toolStripMenuItem3;
-        private System.Windows.Forms.ToolStripMenuItem addToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem existingItemToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem existingFolderToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem newFolderToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem renameToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem removeToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem buildToolStripMenuItem1;
-        private System.Windows.Forms.ToolStripMenuItem cleanToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem rebuildToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
-        private System.Windows.Forms.ToolStripSeparator toolStripMenuItem4;
-        private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem1;
-        private System.Windows.Forms.ToolStripButton toolStripButton_new;
-        private System.Windows.Forms.ToolStripButton toolStripButton_open;
-        private System.Windows.Forms.ToolStripButton toolStripButton_save;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
-        private System.Windows.Forms.ToolStripButton toolStripButton_build;
-        private System.Windows.Forms.ToolStripButton toolStripButton_clean;
-        private System.Windows.Forms.StatusStrip statusStrip1;
-        private System.Windows.Forms.Panel main_panel;
-        private System.Windows.Forms.ToolStripSeparator toolStripMenuItem5;
-        private System.Windows.Forms.ToolStripMenuItem alwaysShowLogToolStripMenuItem;
-        private System.Windows.Forms.ToolStripProgressBar toolStripProgressBar;
-        private System.Windows.Forms.ToolStripButton toolStripButton_newItemAdd;
-        private System.Windows.Forms.ToolStripButton toolStripButton_existingItemAdd;
-        private System.Windows.Forms.ToolStripButton toolStripButton_newFolderAdd;
-        private System.Windows.Forms.ToolStripButton toolStripButton_existingFolderAdd;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
-        private System.Windows.Forms.ToolStripMenuItem newItemToolStripMenuItem;
+        private MenuStrip menuStrip_main;
+        private ToolStripMenuItem projectToolStripMenuItem;
+        private ToolStripMenuItem editToolStripMenuItem;
+        private ToolStripMenuItem buildToolStripMenuItem;
+        private ToolStripMenuItem aboutToolStripMenuItem;
+        private ToolStrip toolStrip_main;
+        private SplitContainer splitContainer_main;
+        private SplitContainer splitContainer_left;
+        private SplitContainer splitContainer_right;
+        private ProjectTreeView projectTreeView;
+        private ItemPropertyView itemPropertyView;
+        private ConsoleView consoleView;
+        private ToolStripMenuItem newToolStripMenuItem;
+        private ToolStripMenuItem openToolStripMenuItem;
+        private ToolStripSeparator toolStripMenuItem1;
+        private ToolStripMenuItem saveProjectToolStripMenuItem;
+        private ToolStripMenuItem saveProjectAsToolStripMenuItem;
+        private ToolStripSeparator toolStripMenuItem2;
+        private ToolStripMenuItem closeProjectToolStripMenuItem;
+        private ToolStripMenuItem exitToolStripMenuItem;
+        private ToolStripMenuItem undoToolStripMenuItem;
+        private ToolStripMenuItem redoToolStripMenuItem;
+        private ToolStripSeparator toolStripMenuItem3;
+        private ToolStripMenuItem addToolStripMenuItem;
+        private ToolStripMenuItem existingItemToolStripMenuItem;
+        private ToolStripMenuItem existingFolderToolStripMenuItem;
+        private ToolStripMenuItem newFolderToolStripMenuItem;
+        private ToolStripMenuItem renameToolStripMenuItem;
+        private ToolStripMenuItem removeToolStripMenuItem;
+        private ToolStripMenuItem buildToolStripMenuItem1;
+        private ToolStripMenuItem cleanToolStripMenuItem;
+        private ToolStripMenuItem rebuildToolStripMenuItem;
+        private ToolStripMenuItem helpToolStripMenuItem;
+        private ToolStripSeparator toolStripMenuItem4;
+        private ToolStripMenuItem aboutToolStripMenuItem1;
+        private ToolStripButton toolStripButton_new;
+        private ToolStripButton toolStripButton_open;
+        private ToolStripButton toolStripButton_save;
+        private ToolStripSeparator toolStripSeparator1;
+        private ToolStripButton toolStripButton_build;
+        private ToolStripButton toolStripButton_clean;
+        private StatusStrip statusStrip1;
+        private Panel main_panel;
+        private ToolStripSeparator toolStripMenuItem5;
+        private ToolStripMenuItem alwaysShowLogToolStripMenuItem;
+        private ToolStripProgressBar toolStripProgressBar;
+        private ToolStripButton toolStripButton_newItemAdd;
+        private ToolStripButton toolStripButton_existingItemAdd;
+        private ToolStripButton toolStripButton_newFolderAdd;
+        private ToolStripButton toolStripButton_existingFolderAdd;
+        private ToolStripSeparator toolStripSeparator2;
+        private ToolStripMenuItem newItemToolStripMenuItem;
     }
 }

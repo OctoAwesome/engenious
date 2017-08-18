@@ -14,7 +14,7 @@ namespace engenious.Graphics
 
             public BatchItemPool()
             {
-                for (int i = 0; i < BatchCount; i++)
+                for (var i = 0; i < BatchCount; i++)
                 {
                     _batchItems.Push(new BatchItem());
                 }
@@ -83,14 +83,14 @@ namespace engenious.Graphics
 
                 if (rotation != 0.0f || ((rotation = rotation % (float)(Math.PI * 2)) != 0.0f))
                 {
-                    float cosR = (float)Math.Cos(rotation);//TODO: correct rotation
-                    float sinR = (float)Math.Sin(rotation);
-                    for (int i = 0; i < Positions.Length; i++)
+                    var cosR = (float)Math.Cos(rotation);//TODO: correct rotation
+                    var sinR = (float)Math.Sin(rotation);
+                    for (var i = 0; i < Positions.Length; i++)
                     {
                         Positions[i] = new Vector3(Positions[i].X * cosR - Positions[i].Y * sinR, Positions[i].Y * cosR + Positions[i].X * sinR, Positions[i].Z);
                     }
                 }
-                for (int i = 0; i < Positions.Length; i++)
+                for (var i = 0; i < Positions.Length; i++)
                 {
                     Positions[i] += new Vector3(origin.X + position.X, origin.Y + position.Y);
                 }
@@ -156,7 +156,7 @@ namespace engenious.Graphics
 
         public void Begin(SpriteBatch.SpriteSortMode sortMode)
         {
-            foreach (BatchItem t in _batches)
+            foreach (var t in _batches)
                 BatchPool.ReleaseBatch(t);
 
             _batches.Clear();
@@ -180,7 +180,7 @@ namespace engenious.Graphics
             _graphicsDevice.IndexBuffer = _indexBuffer;
             _graphicsDevice.Textures[0] = texture;
             //graphicsDevice.SamplerStates[0] = samplerState;
-            foreach (EffectPass pass in effect.CurrentTechnique.Passes.PassesList)
+            foreach (var pass in effect.CurrentTechnique.Passes.PassesList)
             {
                 pass.Apply();
                 _graphicsDevice.DrawIndexedPrimitives(PrimitiveType.Triangles, 0, 0, batchCount * 4, 0, batchCount * 2);
@@ -201,7 +201,7 @@ namespace engenious.Graphics
             {
                 _batches.Sort((x, y) =>
                     {
-                        int first = y.SortingKey.CompareTo(x.SortingKey);
+                        var first = y.SortingKey.CompareTo(x.SortingKey);
                         return first;
                     });
             }
@@ -213,7 +213,7 @@ namespace engenious.Graphics
 
             ushort bufferIndex = 0;
             ushort indicesIndex = 0;
-            foreach (BatchItem item in _batches)
+            foreach (var item in _batches)
             {
                 if (item.Texture != currentTexture || batchCount == MaxBatch)
                 {

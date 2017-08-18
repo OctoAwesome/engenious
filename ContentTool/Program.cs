@@ -1,18 +1,14 @@
-﻿using ContentTool.Commandline;
+﻿using System;
+using System.Windows.Forms;
+using ContentTool.Builder;
 using ContentTool.Forms;
 using ContentTool.Models;
 using ContentTool.Presenters;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using ContentTool.Builder;
 using engenious.Content.Pipeline;
 
 namespace ContentTool
 {
-    static class Program
+    internal static class Program
     {
         [STAThread]
         static int Main(string[] args)
@@ -28,14 +24,9 @@ namespace ContentTool
             {
                 try
                 {
-                    ContentProject project;
-                    if (string.IsNullOrEmpty(arguments.ContentProject)) //TODO perhaps use laodi
-                        project =
-                            ContentProject.Load(@"D:\Projects\engenious\Sample\Content\Content.ecp");
-                    else
-                        project = ContentProject.Load(arguments.ContentProject);
+                    var project = ContentProject.Load(string.IsNullOrEmpty(arguments.ContentProject) ? @"D:\Projects\engenious\Sample\Content\Content.ecp" : arguments.ContentProject);
 
-                    ContentBuilder builder = new ContentBuilder(project);
+                    var builder = new ContentBuilder(project);
 
                     builder.BuildMessage += eventArgs =>
                     {
@@ -55,18 +46,13 @@ namespace ContentTool
                     return -1;
                 }
             }
-            else
-            {
-                //TODO implement CommandLine
-                Application.SetCompatibleTextRenderingDefault(false);
-                Application.EnableVisualStyles();
+            //TODO implement CommandLine
+            Application.SetCompatibleTextRenderingDefault(false);
+            Application.EnableVisualStyles();
 
-                MainShell mainShell = new MainShell();
-                MainShellPresenter mainShellPresenter = new MainShellPresenter(mainShell, arguments);
-                Application.Run(mainShell);
-                
-                
-            }
+            var mainShell = new MainShell();
+            var mainShellPresenter = new MainShellPresenter(mainShell, arguments);
+            Application.Run(mainShell);
             return 0;
         }
     }

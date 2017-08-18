@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using engenious.Helper;
 
 namespace engenious.Graphics
 {
@@ -16,13 +17,13 @@ namespace engenious.Graphics
 		        _parameters = new Dictionary<string, EffectParameter>();
 		        ParameterList = new List<EffectParameter>();
 
-		        foreach (EffectTechnique technique in techniques.TechniqueList)
+		        foreach (var technique in techniques.TechniqueList)
 		        {
-		            foreach (EffectPass pass in technique.Passes.PassesList)
+		            foreach (var pass in technique.Passes.PassesList)
 		            {
 		                pass.CacheParameters();
 
-		                foreach (EffectPassParameter param in pass.Parameters.ParameterList)
+		                foreach (var param in pass.Parameters.ParameterList)
 		                {
 		                    EffectParameter current;
 		                    if (!_parameters.TryGetValue(param.Name, out current))

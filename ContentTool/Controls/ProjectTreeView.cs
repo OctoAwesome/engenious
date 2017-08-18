@@ -186,13 +186,12 @@ namespace ContentTool.Controls
             lock (this)
             {
                 _suspendCount--;
-                if (_suspendCount == 0)
-                {
-                    var topNode = _changes.FirstOrDefault()?.Item1;
-                    foreach (var c in _changes)
-                        ResumeRendering(c, topNode as ContentItem);
-                    _changes.Clear();
-                }
+                if (_suspendCount != 0)
+                    return;
+                var topNode = _changes.FirstOrDefault()?.Item1;
+                foreach (var c in _changes)
+                    ResumeRendering(c, topNode as ContentItem);
+                _changes.Clear();
             }
         }
 
@@ -244,7 +243,7 @@ namespace ContentTool.Controls
                 }
                 else if (folder.Content.Count > 0)
                 {
-                    node.Nodes.Add(new TreeNode("") {Tag = "DummyNode"});
+                    node.Nodes.Add(new TreeNode(string.Empty) {Tag = "DummyNode"});
                 }
             }
 
@@ -271,8 +270,7 @@ namespace ContentTool.Controls
             {
                 var a = x as TreeNode;
                 var b = y as TreeNode;
-
-                if (x == null || y == null)
+                if (a == null || b == null)
                     return 0;
 
                 if (a.Tag is ContentFolder && b.Tag is ContentFolder)
@@ -367,7 +365,7 @@ namespace ContentTool.Controls
 
         protected string GetIconKey(ContentItem item)
         {
-            string key = "file";
+            string key;
 
             if (item is ContentProject)
             {
@@ -380,14 +378,13 @@ namespace ContentTool.Controls
             else
             {
                 key = Path.GetExtension(item.FilePath);
-                if (!treeView.ImageList.Images.ContainsKey(key))
-                {
-                    Icon ico = Icon.ExtractAssociatedIcon(Path.GetFullPath(item.FilePath));
-                    if (ico != null)
-                        Invoke(new MethodInvoker(() => treeView.ImageList.Images.Add(key, ico)));
-                    else
-                        key = "file";
-                }
+                if (treeView.ImageList.Images.ContainsKey(key))
+                    return key;
+                var ico = Icon.ExtractAssociatedIcon(Path.GetFullPath(item.FilePath));
+                if (ico != null)
+                    Invoke(new MethodInvoker(() => treeView.ImageList.Images.Add(key, ico)));
+                else
+                    key = "file";
             }
 
             return key;

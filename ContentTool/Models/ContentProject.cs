@@ -3,9 +3,6 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml.Linq;
 using ContentTool.Models.History;
 using ContentTool.Observer;
@@ -17,7 +14,7 @@ namespace ContentTool.Models
         /// <summary>
         /// The path of the ContentFolder
         /// </summary>
-        public override string FilePath => filePath;
+        public override string FilePath { get; }
 
         /// <summary>
         /// The parent item - always null for projects
@@ -29,60 +26,69 @@ namespace ContentTool.Models
         /// </summary>
         public string ContentProjectPath { get; set; }
 
-        public override string RelativePath => "";
+        public override string RelativePath => string.Empty;
 
         /// <summary>
         /// Directory to save the output to
         /// </summary>
-        public string OutputDirectory { get => outputDirectory; set
+        public string OutputDirectory
+        {
+            get => _outputDirectory;
+            set
             {
-                if (value == outputDirectory) return;
-                var old = outputDirectory;
-                outputDirectory = value;
-                OnPropertyChanged(old,value);
+                if (value == _outputDirectory) return;
+                var old = _outputDirectory;
+                _outputDirectory = value;
+                OnPropertyChanged(old, value);
             }
         }
-        private string outputDirectory;
+
+        private string _outputDirectory;
 
         /// <summary>
         /// The configuration of the project
         /// </summary>
-        public string Configuration { get => configuration; set
+        public string Configuration
+        {
+            get => _configuration;
+            set
             {
-                if (value == configuration) return;
-                var old = configuration;
-                configuration = value;
-                OnPropertyChanged(old,value);
+                if (value == _configuration) return;
+                var old = _configuration;
+                _configuration = value;
+                OnPropertyChanged(old, value);
             }
         }
-        private string configuration;
+
+        private string _configuration;
 
         /// <summary>
         /// References of the project
         /// </summary>
-        public List<string> References { get => references;
+        public List<string> References
+        {
+            get => _references;
             set
             {
-                if (value == references) return;
-                var old = references;
-                references = value;
-                if (old == null) supressChangedEvent = true;
-                OnPropertyChanged(old,value);
-                supressChangedEvent = false;
+                if (value == _references) return;
+                var old = _references;
+                _references = value;
+                if (old == null) SupressChangedEvent = true;
+                OnPropertyChanged(old, value);
+                SupressChangedEvent = false;
             }
         }
-        private List<string> references;
+
+        private List<string> _references;
 
         /// <summary>
         /// Tells if the project has unsaved changes
         /// </summary>
         [Browsable(false)]
         public bool HasUnsavedChanges { get; private set; }
-        
+
         [Browsable(false)]
         public History.History History { get; }
-
-        private string filePath;
 
         /// <summary>
         /// Constructor
@@ -93,10 +99,10 @@ namespace ContentTool.Models
         public ContentProject(string name, string contentProjectPath, string folderPath) : base(name, null)
         {
             ContentProjectPath = contentProjectPath;
-            filePath = folderPath;
-            
+            FilePath = folderPath;
+
             History = new History.History();
-            
+
 
             //ContentItemChanged += (a, b) => HasUnsavedChanges = true;
             PropertyChanged += OnPropertyChangedT;
@@ -112,54 +118,58 @@ namespace ContentTool.Models
             if (item == null)
                 throw new NotSupportedException();
             History.Push(item);
-            
+
             //History.Push(new HistoryCollectionChange<ContentItem>(col,args.Action,(IList<ContentItem>)args.OldItems,(IList<ContentItem>)args.NewItems));
-            
+
             HasUnsavedChanges = true;
         }
 
         private void OnPropertyChangedT(object o, PropertyValueChangedEventArgs args)
         {
-            History.Push(new HistoryPropertyChange(o,args.PropertyName,args.OldValue,args.NewValue));
+            History.Push(new HistoryPropertyChange(o, args.PropertyName, args.OldValue, args.NewValue));
             HasUnsavedChanges = true;
         }
 
         public override ContentItem Deserialize(XElement element)
         {
-            name = element.Element("Name")?.Value ?? "Content";
-            configuration = element.Element("Configuration")?.Value;
-            outputDirectory = element.Element("OutputDir")?.Value;
+            
+            SupressChangedEvent = true;
+            Name = element.Element("Name")?.Value ?? "Content";
+            _configuration = element.Element("Configuration")?.Value;
+            _outputDirectory = element.Element("OutputDir")?.Value;
 
             var refElement = element.Element("References");
 
-            if(refElement != null && refElement.HasElements)
+            if (refElement != null && refElement.HasElements)
             {
                 foreach (var referenceElement in refElement.Elements("Reference"))
-                    references.Add(referenceElement.Value);
+                    _references.Add(referenceElement.Value);
             }
+            var xElement = element.Element("Contents");
+            if (xElement == null)
+                return this;
 
-            supressChangedEvent = true;
-            foreach (var subElement in element.Element("Contents").Elements())
+            foreach (var subElement in xElement.Elements())
             {
                 if (subElement.Name == "ContentFile")
-                    content.Add(new ContentFile("", this).Deserialize(subElement));
+                    Content.Add(new ContentFile(string.Empty, this).Deserialize(subElement));
                 else if (subElement.Name == "ContentFolder")
-                    content.Add(new ContentFolder("", this).Deserialize(subElement));
+                    Content.Add(new ContentFolder(string.Empty, this).Deserialize(subElement));
             }
-            supressChangedEvent = false;
+            SupressChangedEvent = false;
 
             return this;
         }
 
         public override XElement Serialize()
         {
-            XElement element = new XElement("Content");
+            var element = new XElement("Content");
 
             element.Add(new XElement("Name", Name));
 
             var refElement = new XElement("References");
 
-            if(References != null)
+            if (References != null)
             {
                 foreach (var reference in References)
                     refElement.Add(new XElement("Reference", reference));
@@ -183,9 +193,9 @@ namespace ContentTool.Models
 
         public static ContentProject Load(string path, string contentFolderPath)
         {
-            XElement element = XElement.Load(path);
+            var element = XElement.Load(path);
 
-            ContentProject project = new ContentProject("", path, contentFolderPath);
+            var project = new ContentProject(string.Empty, path, contentFolderPath);
 
             project.Deserialize(element);
 
@@ -199,7 +209,7 @@ namespace ContentTool.Models
 
         public void Save(string path)
         {
-            var xelement = this.Serialize();
+            var xelement = Serialize();
             xelement.Save(path);
             ContentProjectPath = path;
             HasUnsavedChanges = false;

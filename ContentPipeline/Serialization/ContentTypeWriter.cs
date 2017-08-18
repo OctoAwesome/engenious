@@ -13,12 +13,7 @@ namespace engenious.Content.Serialization
 
 		public abstract string RuntimeReaderName{ get; }
 
-		public Type RuntimeType { 
-			get {
-				return typeof(T);
-			}
-		
-		}
+		public Type RuntimeType => typeof(T);
 	}
 }
 

@@ -28,7 +28,7 @@ namespace ContentTool.Models.History
 
         public void Undo()
         {
-            IHistoryItem item = _undo.Pop();
+            var item = _undo.Pop();
             _isWorking = true;
             item.Undo();
             _isWorking = false;
@@ -39,7 +39,7 @@ namespace ContentTool.Models.History
 
         public void Redo()
         {
-            IHistoryItem item = _redo.Pop();
+            var item = _redo.Pop();
             _isWorking = true;
             item.Redo();
             _isWorking = false;

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace engenious
+namespace engenious.Helper
 {
     internal enum Platform
     {

@@ -10,7 +10,7 @@ namespace engenious.Graphics
         static VertexPosition()
         {
             VertexElement[] elements = { new VertexElement(0, VertexElementFormat.Vector3, VertexElementUsage.Position, 0) };
-            VertexDeclaration declaration = new VertexDeclaration(elements);
+            var declaration = new VertexDeclaration(elements);
             VertexDeclaration = declaration;
         }
 

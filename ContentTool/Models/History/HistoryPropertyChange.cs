@@ -6,13 +6,12 @@ namespace ContentTool.Models.History
 {
     public class HistoryPropertyChange : IHistoryItem
     {
-        private readonly object _reference,_oldValue,_newValue;
+        private readonly object _oldValue,_newValue;
 
         private readonly Action<object> _setter;
         
         public HistoryPropertyChange(object reference,string propertyName,object oldValue,object newValue)
         {
-            _reference = reference;
             _oldValue = oldValue;
             _newValue = newValue;
 
@@ -23,7 +22,7 @@ namespace ContentTool.Models.History
                 return;
 
             var p = Expression.Parameter(typeof(object));
-            var call = Expression.Call(Expression.Constant(_reference), mi,Expression.Convert(p,prop.PropertyType));
+            var call = Expression.Call(Expression.Constant(reference), mi,Expression.Convert(p,prop.PropertyType));
             _setter = Expression.Lambda<Action<object>>(call,p).Compile();
         }
         

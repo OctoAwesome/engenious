@@ -32,7 +32,7 @@
         {
             if (obj is Size)
             {
-                Size sec = (Size)obj;
+                var sec = (Size)obj;
                 return Width == sec.Width && Height == sec.Height;
             }
             return false;

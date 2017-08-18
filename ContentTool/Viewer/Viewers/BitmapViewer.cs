@@ -1,11 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using ContentTool.Models;
 
@@ -16,7 +10,7 @@ namespace ContentTool.Viewer.Viewers
     [ViewerInfo(".jpg", false)]
     public partial class BitmapViewer : UserControl, IViewer
     {
-        Image img;
+        private Image _img;
 
         public BitmapViewer()
         {
@@ -25,14 +19,14 @@ namespace ContentTool.Viewer.Viewers
 
         public Control GetViewer(ContentFile file)
         {
-            img = Image.FromFile(file.FilePath);
+            _img = Image.FromFile(file.FilePath);
 
-            if (img.Height > this.Height || img.Width > Width)
+            if (_img.Height > Height || _img.Width > Width)
                 pictureBox.SizeMode = PictureBoxSizeMode.Zoom;
             else
                 pictureBox.SizeMode = PictureBoxSizeMode.CenterImage;
 
-            pictureBox.Image = img;
+            pictureBox.Image = _img;
 
             return this;
         }
@@ -44,7 +38,7 @@ namespace ContentTool.Viewer.Viewers
             if (Parent == null)
                 return;
 
-            if (img.Height > this.Height || img.Width > Width)
+            if (_img.Height > Height || _img.Width > Width)
                 pictureBox.SizeMode = PictureBoxSizeMode.Zoom;
             else
                 pictureBox.SizeMode = PictureBoxSizeMode.CenterImage;

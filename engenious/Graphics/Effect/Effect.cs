@@ -31,7 +31,7 @@
 
 		protected internal virtual void OnApply ()
 		{
-			foreach (EffectPass pass in CurrentTechnique.Passes.PassesList) {
+			foreach (var pass in CurrentTechnique.Passes.PassesList) {
 				pass.Apply ();
 			}
 		}

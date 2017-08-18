@@ -278,9 +278,8 @@ namespace engenious.Input
         /// <returns>A <see cref="System.String"/> that represents the current <see cref="OpenTK.Input.MouseState"/>.</returns>
         public override string ToString()
         {
-            string b = Convert.ToString(_buttons, 2).PadLeft(10, '0');
-            return String.Format("[X={0}, Y={1}, Scroll={2}, Buttons={3}, IsConnected={4}]",
-                X, Y, Scroll, b, IsConnected);
+            var b = Convert.ToString(_buttons, 2).PadLeft(10, '0');
+            return $"[X={X}, Y={Y}, Scroll={Scroll}, Buttons={b}, IsConnected={IsConnected}]";
         }
 
         #endregion

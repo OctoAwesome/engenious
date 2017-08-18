@@ -1,36 +1,34 @@
-﻿using ContentTool.Builder;
+﻿using System;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Threading;
+using System.Windows.Forms;
+using ContentTool.Builder;
 using ContentTool.Forms;
 using ContentTool.Models;
 using ContentTool.Viewer;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace ContentTool.Presenters
 {
-    class MainShellPresenter
+    internal class MainShellPresenter
     {
-        private IMainShell shell;
+        private readonly IMainShell _shell;
 
-        private ContentBuilder builder;
+        private ContentBuilder _builder;
 
-        private ViewerManager viewerManager;
-        private Arguments arguments;
+        private readonly ViewerManager _viewerManager;
+        private readonly Arguments _arguments;
 
         public MainShellPresenter(IMainShell shell, Arguments arguments)
         {
-            this.shell = shell;
-            this.arguments = arguments;
+            _shell = shell;
+            _arguments = arguments;
 
-            shell.CloseProjectClick += (i) => CloseProject();
+            shell.CloseProjectClick += i => CloseProject();
 
             shell.ShowInExplorerItemClick += Shell_ShowInExplorerItemClick;
-            shell.SaveProjectClick += (i) => SaveProject();
+            shell.SaveProjectClick += i => SaveProject();
             shell.OpenProjectClick += (s, e) => { if (CloseProject()) OpenProject(); };
             shell.BuildItemClick += Shell_BuildItemClick;
             shell.OnItemSelect += Shell_OnItemSelect;
@@ -38,7 +36,7 @@ namespace ContentTool.Presenters
             shell.UndoClick += ShellOnUndoClick;
             shell.RedoClick += ShellOnRedoClick;
 
-            shell.RenameItemClick += (i) => shell.RenameItem(i);
+            shell.RenameItemClick += i => shell.RenameItem(i);
             shell.RemoveItemClick += Shell_RemoveItemClick;
             shell.OnAboutClick += (s, e) => shell.ShowAbout();
 
@@ -48,7 +46,7 @@ namespace ContentTool.Presenters
 
             shell.OnShellLoad += Shell_OnShellLoad;
 
-            viewerManager = new ViewerManager();
+            _viewerManager = new ViewerManager();
 
         }
 
@@ -68,10 +66,10 @@ namespace ContentTool.Presenters
         private void Shell_OnShellLoad(object sender, EventArgs e)
         {
 
-            if (string.IsNullOrEmpty(arguments.ContentProject))//TODO perhaps use laodi
+            if (string.IsNullOrEmpty(_arguments.ContentProject))//TODO perhaps use laodi
                 OpenProject(@"D:\Projects\engenious\Sample\Content\Content.ecp");
             else
-                OpenProject(arguments.ContentProject);
+                OpenProject(_arguments.ContentProject);
         }
 
         private void Shell_AddNewFolderClick(ContentFolder folder)
@@ -86,14 +84,13 @@ namespace ContentTool.Presenters
                 var str = t.Name.Substring("New Folder ".Length);
                 if (int.TryParse(str, out var num))
                     return num;
-                else
-                    return -1;
+                return -1;
             }).ToArray();
             var max = numbers.Length == 0 ? -1 : numbers.Max();
             var newFolder = new ContentFolder("New Folder" + (max == -1 ? string.Empty : $" {max + 1}"), folder);
             Directory.CreateDirectory(newFolder.FilePath);
             folder.Content.Add(newFolder);
-            shell.RenameItem(newFolder);
+            _shell.RenameItem(newFolder);
 
         }
 
@@ -101,21 +98,21 @@ namespace ContentTool.Presenters
         private void Shell_AddExistingFolderClick(ContentFolder fld)
         {
             var dest = fld.FilePath;
-            var src = shell.ShowFolderSelectDialog();
+            var src = _shell.ShowFolderSelectDialog();
             if (src == null)
                 return;
 
-            shell.ShowLoading();
-            shell.SuspendRendering();
+            _shell.ShowLoading();
+            _shell.SuspendRendering();
 
             var t = new Thread(() =>
             {
 
                 FileHelper.CopyDirectory(src, dest, fld);
-                shell.Invoke(new MethodInvoker(() =>
+                _shell.Invoke(new MethodInvoker(() =>
                 {
-                    shell.ResumeRendering();
-                    shell.HideLoading();
+                    _shell.ResumeRendering();
+                    _shell.HideLoading();
                 }));
             });
             t.Start();
@@ -125,22 +122,22 @@ namespace ContentTool.Presenters
 
         private void Shell_AddExistingItemClick(ContentItem item)
         {
-            var fld = (item as ContentFolder) ?? (item?.Parent as ContentFolder) ?? shell.Project;
+            var fld = (item as ContentFolder) ?? (item?.Parent as ContentFolder) ?? _shell.Project;
 
 
-            string[] files = shell.ShowFileSelectDialog();
+            var files = _shell.ShowFileSelectDialog();
             if (files == null)
                 return;
 
-            string dir = fld.FilePath;
-            shell.SuspendRendering();
+            var dir = fld.FilePath;
+            _shell.SuspendRendering();
             FileHelper.CopyFiles(files, dir, fld);
-            shell.ResumeRendering();
+            _shell.ResumeRendering();
         }
 
         private void ShellOnRedoClick(object sender, EventArgs eventArgs)
         {
-            var history = shell.Project?.History;
+            var history = _shell.Project?.History;
             if (history == null || !history.CanRedo)
                 return;
             history.Redo();
@@ -148,7 +145,7 @@ namespace ContentTool.Presenters
 
         private void ShellOnUndoClick(object sender, EventArgs eventArgs)
         {
-            var history = shell.Project?.History;
+            var history = _shell.Project?.History;
             if (history == null || !history.CanUndo)
                 return;
             history.Undo();
@@ -156,77 +153,74 @@ namespace ContentTool.Presenters
 
         private void Shell_OnItemSelect(ContentItem item)
         {
-            if (item.Error.HasFlag(ContentErrorType.NotFound) && shell.ShowNotFoundDelete())
+            if (item.Error.HasFlag(ContentErrorType.NotFound) && _shell.ShowNotFoundDelete())
             {
-                ContentFolder p = (ContentFolder)item.Parent;
+                var p = (ContentFolder)item.Parent;
                 p.Content.Remove(item);
             }
 
-            if (item is ContentFile)
-                shell.ShowViewer(viewerManager.GetViewer(item as ContentFile));
+            var file = item as ContentFile;
+            if (file != null)
+                _shell.ShowViewer(_viewerManager.GetViewer(file));
             else
-                shell.HideViewer();
+                _shell.HideViewer();
         }
 
         private void Shell_BuildItemClick(ContentItem item)
         {
-            if (builder == null)
+            if (_builder == null)
             {
-                builder = new ContentBuilder(shell.Project);
-                builder.BuildMessage += (a) => shell.Invoke(((MethodInvoker)(() => shell.WriteLineLog(a.Message))));
+                _builder = new ContentBuilder(_shell.Project);
+                _builder.BuildMessage += a => _shell.Invoke(((MethodInvoker)(() => _shell.WriteLineLog(a.Message))));
 
             }
-            shell.ShowLog();
+            _shell.ShowLog();
 
-            builder.Build(item);
+            _builder.Build(item);
         }
 
         public bool CloseProject()
         {
-            if (shell.Project == null)
+            if (_shell.Project == null)
                 return true;
 
-            if (shell.Project.HasUnsavedChanges)
+            if (_shell.Project.HasUnsavedChanges)
             {
-                if (!shell.ShowCloseWithoutSavingConfirmation())
+                if (!_shell.ShowCloseWithoutSavingConfirmation())
                     return false;
             }
 
-            shell.Project = null;
-            shell.ClearLog();
+            _shell.Project = null;
+            _shell.ClearLog();
             return true;
         }
 
-        public async void OpenProject(string path = null)
+        public void OpenProject(string path = null)
         {
             if (path == null)
-                path = shell.ShowOpenDialog();
+                path = _shell.ShowOpenDialog();
             if (path == null)
                 return;
 
-            shell.ShowLoading("Loading Project...");
+            _shell.ShowLoading("Loading Project...");
 
             var t = new Thread(() =>
             {
                 try
                 {
-                    ContentProject proj = ContentProject.Load(path);
+                    var proj = ContentProject.Load(path);
 
-                    shell.Invoke(new MethodInvoker(() =>
+                    _shell.Invoke(new MethodInvoker(() =>
                     {
-                        shell.Project = proj;
-                        shell.WriteLineLog("Opened " + path);
+                        _shell.Project = proj;
+                        _shell.WriteLineLog("Opened " + path);
                     }));
 
 
                 }
-                catch (Exception e)
-                {
-
-                }
                 finally
                 {
-                    shell.Invoke(new MethodInvoker(() => shell.HideLoading()));
+                    _shell.Invoke(new MethodInvoker(() => _shell.HideLoading()));
                 }
             });
             t.Start();
@@ -236,17 +230,17 @@ namespace ContentTool.Presenters
         public void SaveProject(string path = null)
         {
             if (path == null)
-                shell.Project.Save();
+                _shell.Project.Save();
             else
-                shell.Project.Save(path);
+                _shell.Project.Save(path);
         }
 
-        private void Shell_ShowInExplorerItemClick(Models.ContentItem item)
+        private void Shell_ShowInExplorerItemClick(ContentItem item)
         {
             var path = item.FilePath;
             if (item is ContentFile)
                 path = Path.GetDirectoryName(path);
-            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo()
+            Process.Start(new ProcessStartInfo
             {
                 FileName = path,
                 UseShellExecute = true,
@@ -254,7 +248,7 @@ namespace ContentTool.Presenters
             });
         }
 
-        private void Shell_CloseProjectClick(Models.ContentItem item)
+        private void Shell_CloseProjectClick(ContentItem item)
         {
             CloseProject();
         }

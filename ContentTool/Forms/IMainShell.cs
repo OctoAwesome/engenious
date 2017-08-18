@@ -1,11 +1,7 @@
-﻿using ContentTool.Models;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+using ContentTool.Models;
 using static ContentTool.Delegates;
 
 namespace ContentTool.Forms
@@ -41,7 +37,7 @@ namespace ContentTool.Forms
 
         bool ShowNotFoundDelete();
 
-        void Refresh();
+        void ReloadView();
 
         void SuspendRendering();
         void ResumeRendering();
@@ -49,7 +45,7 @@ namespace ContentTool.Forms
         string ShowFolderSelectDialog();
         string[] ShowFileSelectDialog();
 
-        event EventHandler Refreshed;
+        event EventHandler ViewReloaded;
 
         event EventHandler UndoClick;
         event EventHandler RedoClick;

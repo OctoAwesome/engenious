@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using engenious.Helper;
 using OpenTK.Graphics.OpenGL4;
 
 namespace engenious.Graphics
@@ -20,7 +21,7 @@ namespace engenious.Graphics
 
         private static void ExchangeVao(object that)
         {
-            VertexBuffer vb = (VertexBuffer) that;
+            var vb = (VertexBuffer) that;
             vb.Vao = new VertexAttributes();
             vb.Vao.Vbo = vb.Vbo;
             vb.Vao.Bind();
@@ -32,7 +33,7 @@ namespace engenious.Graphics
         public VertexBuffer(GraphicsDevice graphicsDevice, Type vertexType, int vertexCount, BufferUsageHint usage = BufferUsageHint.StaticDraw)
             : this(graphicsDevice, vertexCount, usage)
         {
-            IVertexType tp = Activator.CreateInstance(vertexType) as IVertexType;
+            var tp = Activator.CreateInstance(vertexType) as IVertexType;
             if (tp == null)
                 throw new ArgumentException("must be a vertexType");
 			
@@ -79,7 +80,7 @@ namespace engenious.Graphics
             using (Execute.OnUiContext)
             {
                 GL.BindVertexArray(0);
-                int tempVbo = GL.GenBuffer();
+                var tempVbo = GL.GenBuffer();
                 GL.BindBuffer(BufferTarget.ArrayBuffer, tempVbo);
                 GL.BufferData(
                     BufferTarget.ArrayBuffer,
@@ -130,7 +131,7 @@ namespace engenious.Graphics
             {
                 GL.BindBuffer(BufferTarget.ArrayBuffer, Vbo);
 
-                GCHandle buffer = GCHandle.Alloc(data, GCHandleType.Pinned);
+                var buffer = GCHandle.Alloc(data, GCHandleType.Pinned);
                 GL.BufferSubData(BufferTarget.ArrayBuffer, IntPtr.Zero, new IntPtr(data.Length * VertexDeclaration.VertexStride), buffer.AddrOfPinnedObject());
                     //TODO use bufferusage
                 buffer.Free();
@@ -144,7 +145,7 @@ namespace engenious.Graphics
             {
                 GL.BindBuffer(BufferTarget.ArrayBuffer, Vbo);
 
-                GCHandle buffer = GCHandle.Alloc(data, GCHandleType.Pinned);
+                var buffer = GCHandle.Alloc(data, GCHandleType.Pinned);
                 GL.BufferSubData(
                     BufferTarget.ArrayBuffer,
                     IntPtr.Zero,
@@ -163,7 +164,7 @@ namespace engenious.Graphics
                 //vao.Bind();//TODO: verify
                 GL.BindBuffer(BufferTarget.ArrayBuffer, Vbo);
 
-                GCHandle buffer = GCHandle.Alloc(data, GCHandleType.Pinned);
+                var buffer = GCHandle.Alloc(data, GCHandleType.Pinned);
                 GL.BufferSubData(
                     BufferTarget.ArrayBuffer,
                     new IntPtr(offsetInBytes),

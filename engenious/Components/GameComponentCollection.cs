@@ -7,34 +7,34 @@ namespace engenious
     {
         private readonly UpdateComparer _updateComparer;
         private readonly DrawComparer _drawComparer;
-        private readonly List<IDrawable> _drawables;
-        private readonly List<IUpdateable> _updateables;
         private readonly List<GameComponent> _components;
 
         public GameComponentCollection()
         {
-            _drawables = new List<IDrawable>();
-            _updateables = new List<IUpdateable>();
+            Drawables = new List<IDrawable>();
+            Updatables = new List<IUpdateable>();
             _components = new List<GameComponent>();
             _updateComparer = new UpdateComparer();
             _drawComparer = new DrawComparer();
         }
 
-        internal List<IUpdateable> Updatables => _updateables;
+        internal List<IUpdateable> Updatables { get; }
 
-        internal List<IDrawable> Drawables => _drawables;
+        internal List<IDrawable> Drawables { get; }
 
 
         internal void Sort()
         {
-            _updateables.Sort(_updateComparer);
-            _drawables.Sort(_drawComparer);
+            Updatables.Sort(_updateComparer);
+            Drawables.Sort(_drawComparer);
         }
 
         private class UpdateComparer : IComparer<IUpdateable>
         {
             public int Compare(IUpdateable x,IUpdateable y)
             {
+                if (x == null || y == null)
+                    return 0;
                 if (x.Enabled && y.Enabled)
                     return x.UpdateOrder.CompareTo(y.UpdateOrder);
                 return -x.Enabled.CompareTo(y.Enabled);
@@ -44,6 +44,8 @@ namespace engenious
         {
             public int Compare(IDrawable x,IDrawable y)
             {
+                if (x == null || y == null)
+                    return 0;
                 if (x.Visible && y.Visible)
                     return x.DrawOrder.CompareTo(y.DrawOrder);
                 return -x.Visible.CompareTo(y.Visible);
@@ -54,19 +56,19 @@ namespace engenious
 
         public void Add(GameComponent item)
         {
-            IDrawable drawable = item as IDrawable;
+            var drawable = item as IDrawable;
             if (drawable != null)
-                _drawables.Add(drawable);
+                Drawables.Add(drawable);
             IUpdateable updateable = item;
             if (updateable != null)
-                _updateables.Add(updateable);
+                Updatables.Add(updateable);
             _components.Add(item);
         }
 
         public void Clear()
         {
-            _drawables.Clear();
-            _updateables.Clear();
+            Drawables.Clear();
+            Updatables.Clear();
             _components.Clear();
         }
 
@@ -83,31 +85,19 @@ namespace engenious
         public bool Remove(GameComponent item)
         {
 
-            IDrawable drawable = item as IDrawable;
+            var drawable = item as IDrawable;
             if (drawable != null)
-                _drawables.Remove(drawable);
+                Drawables.Remove(drawable);
             IUpdateable updateable = item;
             if (updateable != null)
-                _updateables.Remove(updateable);
+                Updatables.Remove(updateable);
             
             return _components.Remove(item);
         }
 
-        public int Count
-        {
-            get
-            {
-                return _components.Count;
-            }
-        }
+        public int Count => _components.Count;
 
-        public bool IsReadOnly
-        {
-            get
-            {
-                return false;
-            }
-        }
+        public bool IsReadOnly => false;
 
         #endregion
 

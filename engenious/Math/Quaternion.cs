@@ -1,11 +1,35 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+// ReSharper disable CompareOfFloatsByEqualityOperator
 
 namespace engenious
 {
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct Quaternion
     {
+        public bool Equals(Quaternion other)
+        {
+            return X.Equals(other.X) && Y.Equals(other.Y) && Z.Equals(other.Z) && W.Equals(other.W);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            return obj is Quaternion && Equals((Quaternion) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hashCode = X.GetHashCode();
+                hashCode = (hashCode * 397) ^ Y.GetHashCode();
+                hashCode = (hashCode * 397) ^ Z.GetHashCode();
+                hashCode = (hashCode * 397) ^ W.GetHashCode();
+                return hashCode;
+            }
+        }
+
         public float X;
         public float Y;
         public float Z;
@@ -14,12 +38,11 @@ namespace engenious
         public Quaternion(Matrix matrix)
         {
             //matrix.Transpose();
-            //TODO: transpose?
-            float tr = matrix.M11 + matrix.M22 + matrix.M33;
+            var tr = matrix.M11 + matrix.M22 + matrix.M33;
 
             if (tr > 0)
             { 
-                float s = (float)(Math.Sqrt(tr + 1.0f) * 2); // S=4*qw
+                var s = (float)(Math.Sqrt(tr + 1.0f) * 2); // S=4*qw
                 W = 0.25f * s;
                 X = (matrix.M32 - matrix.M23) / s;
                 Y = (matrix.M13 - matrix.M31) / s;
@@ -27,7 +50,7 @@ namespace engenious
             }
             else if ((matrix.M11 > matrix.M22) & (matrix.M11 > matrix.M33))
             { 
-                float s = (float)(Math.Sqrt(1.0f + matrix.M11 - matrix.M22 - matrix.M33) * 2); // S=4*qx
+                var s = (float)(Math.Sqrt(1.0f + matrix.M11 - matrix.M22 - matrix.M33) * 2); // S=4*qx
                 W = (matrix.M32 - matrix.M23) / s;
                 X = 0.25f * s;
                 Y = (matrix.M12 + matrix.M21) / s;
@@ -35,7 +58,7 @@ namespace engenious
             }
             else if (matrix.M22 > matrix.M33)
             { 
-                float s = (float)(Math.Sqrt(1.0f + matrix.M22 - matrix.M11 - matrix.M33) * 2); // S=4*qy
+                var s = (float)(Math.Sqrt(1.0f + matrix.M22 - matrix.M11 - matrix.M33) * 2); // S=4*qy
                 W = (matrix.M13 - matrix.M31) / s;
                 X = (matrix.M12 + matrix.M21) / s;
                 Y = 0.25f * s;
@@ -43,7 +66,7 @@ namespace engenious
             }
             else
             { 
-                float s = (float)(Math.Sqrt(1.0f + matrix.M33 - matrix.M11 - matrix.M22) * 2); // S=4*qz
+                var s = (float)(Math.Sqrt(1.0f + matrix.M33 - matrix.M11 - matrix.M22) * 2); // S=4*qz
                 W = (matrix.M21 - matrix.M12) / s;
                 X = (matrix.M13 + matrix.M31) / s;
                 Y = (matrix.M23 + matrix.M32) / s;
@@ -80,10 +103,10 @@ namespace engenious
 
         public static Quaternion Lerp(Quaternion quaternion1, Quaternion quaternion2, float amount)//copied from MonoGame
         {
-            float num = amount;
-            float num2 = 1f - num;
-            Quaternion quaternion = new Quaternion();
-            float num5 = (((quaternion1.X * quaternion2.X) + (quaternion1.Y * quaternion2.Y)) + (quaternion1.Z * quaternion2.Z)) + (quaternion1.W * quaternion2.W);
+            var num = amount;
+            var num2 = 1f - num;
+            var quaternion = new Quaternion();
+            var num5 = (((quaternion1.X * quaternion2.X) + (quaternion1.Y * quaternion2.Y)) + (quaternion1.Z * quaternion2.Z)) + (quaternion1.W * quaternion2.W);
             if (num5 >= 0f)
             {
                 quaternion.X = (num2 * quaternion1.X) + (num * quaternion2.X);
@@ -98,10 +121,10 @@ namespace engenious
                 quaternion.Z = (num2 * quaternion1.Z) - (num * quaternion2.Z);
                 quaternion.W = (num2 * quaternion1.W) - (num * quaternion2.W);
             }
-            float num4 = (((quaternion.X * quaternion.X) + (quaternion.Y * quaternion.Y)) + (quaternion.Z * quaternion.Z)) + (quaternion.W * quaternion.W);
+            var num4 = (((quaternion.X * quaternion.X) + (quaternion.Y * quaternion.Y)) + (quaternion.Z * quaternion.Z)) + (quaternion.W * quaternion.W);
             if (num4 == 0)
                 return quaternion;
-            float num3 = (float)(1.0 / Math.Sqrt(num4));
+            var num3 = (float)(1.0 / Math.Sqrt(num4));
             quaternion.X *= num3;
             quaternion.Y *= num3;
             quaternion.Z *= num3;
@@ -111,20 +134,20 @@ namespace engenious
 
         public Matrix ToMatrix()
         {
-            Matrix m=new Matrix();
+            var m=new Matrix();
 
-            float x2 = 2*X*X;
-            float y2 = 2*Y*Y;
-            float z2 = 2*Z*Z;
+            var x2 = 2*X*X;
+            var y2 = 2*Y*Y;
+            var z2 = 2*Z*Z;
 
-            float xy = 2*X*Y;
-            float xz = 2*X*Z;
-            float xw = 2*X*W;
+            var xy = 2*X*Y;
+            var xz = 2*X*Z;
+            var xw = 2*X*W;
 
-            float yz = 2*Y*Z;
-            float yw = 2*Y*W;
+            var yz = 2*Y*Z;
+            var yw = 2*Y*W;
 
-            float zw = 2*Z*W;
+            var zw = 2*Z*W;
 
 
             m.M11 = 1 - y2-z2;
@@ -144,7 +167,8 @@ namespace engenious
 
         public override string ToString()
         {
-            return string.Format("[{0}, {1}, {2}, {3}]", X.ToString(System.Globalization.NumberFormatInfo.InvariantInfo), Y.ToString(System.Globalization.NumberFormatInfo.InvariantInfo), Z.ToString(System.Globalization.NumberFormatInfo.InvariantInfo), W.ToString(System.Globalization.NumberFormatInfo.InvariantInfo));
+            return
+                $"[{X.ToString(System.Globalization.NumberFormatInfo.InvariantInfo)}, {Y.ToString(System.Globalization.NumberFormatInfo.InvariantInfo)}, {Z.ToString(System.Globalization.NumberFormatInfo.InvariantInfo)}, {W.ToString(System.Globalization.NumberFormatInfo.InvariantInfo)}]";
         }
 
         public static bool operator ==(Quaternion q1, Quaternion q2)

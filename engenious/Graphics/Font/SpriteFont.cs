@@ -43,10 +43,10 @@ namespace engenious.Graphics
 
         public Vector2 MeasureString(string text)
         {
-            float width = 0.0f;
-            for (int i = 0; i < text.Length; i++)
+            var width = 0.0f;
+            for (var i = 0; i < text.Length; i++)
             {
-                char c = text[i];
+                var c = text[i];
                 FontCharacter fontChar;
                 if (!CharacterMap.TryGetValue(c, out fontChar))
                 {

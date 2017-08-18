@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ContentTool.Commandline
+﻿namespace ContentTool.Commandline
 {
-    class Options
+    internal class Options
     {
         public bool Hidden { get; set; }
 

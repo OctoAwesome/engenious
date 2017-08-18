@@ -40,12 +40,12 @@ namespace engenious
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public float Dot(Vector3 value2)
         {
-            return Vector3.Dot(this,value2);
+            return Dot(this,value2);
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Vector3 Cross(Vector3 value2)
         {
-            return Vector3.Cross(this,value2);
+            return Cross(this,value2);
         }
         [System.ComponentModel.Browsable(false)]
         public float Length
@@ -55,10 +55,7 @@ namespace engenious
         }
 
         [System.ComponentModel.Browsable(false)]
-        public float LengthSquared
-        {
-            get{return Vector3.Dot(this,this);}
-        }
+        public float LengthSquared => Dot(this,this);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Normalize()
@@ -110,7 +107,7 @@ namespace engenious
             return value1.X != value2.X || value1.Y != value2.Y || value1.Z != value2.Z;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public unsafe static Vector3 operator +(Vector3 value1, Vector3 value2)
+        public static Vector3 operator +(Vector3 value1, Vector3 value2)
         {
 #if USE_SIMD
             Fast.Vector3 res= (*(Fast.Vector3*)&value1 + *(Fast.Vector3*)&value2);
@@ -123,7 +120,7 @@ namespace engenious
 #endif
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public unsafe static Vector3 operator -(Vector3 value1, Vector3 value2)
+        public static Vector3 operator -(Vector3 value1, Vector3 value2)
         {
 #if USE_SIMD
             Fast.Vector3 res= (*(Fast.Vector3*)&value1 - *(Fast.Vector3*)&value2);
@@ -136,7 +133,7 @@ namespace engenious
 #endif
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public unsafe static Vector3 operator -(Vector3 value)
+        public static Vector3 operator -(Vector3 value)
         {
 #if USE_SIMD
             Fast.Vector3 res= (-*(Fast.Vector3*)&value);
@@ -150,7 +147,7 @@ namespace engenious
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public unsafe static Vector3 operator *(Vector3 value, float scalar)
+        public static Vector3 operator *(Vector3 value, float scalar)
         {
 #if USE_SIMD
             Fast.Vector3 res= (scalar * *(Fast.Vector3*)&value);
@@ -168,7 +165,7 @@ namespace engenious
             return value * scalar;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public unsafe static Vector3 operator *(Vector3 value1, Vector3 value2)//TODO: ugly as hell
+        public static Vector3 operator *(Vector3 value1, Vector3 value2)//TODO: ugly as hell
         {
 #if USE_SIMD
             Fast.Vector3 res= (*(Fast.Vector3*)&value1 * *(Fast.Vector3*)&value2);
@@ -181,7 +178,7 @@ namespace engenious
 #endif
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public unsafe static Vector3 operator /(Vector3 value, float scalar)
+        public static Vector3 operator /(Vector3 value, float scalar)
         {
 #if USE_SIMD
             Fast.Vector3 res= (*(Fast.Vector3*)&value / scalar);
@@ -194,7 +191,7 @@ namespace engenious
 #endif
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public unsafe static Vector3 operator /(Vector3 value1, Vector3 value2)//TODO: ugly as hell?
+        public static Vector3 operator /(Vector3 value1, Vector3 value2)//TODO: ugly as hell?
         {
 #if USE_SIMD
             Fast.Vector3 res= (*(Fast.Vector3*)&value1 / *(Fast.Vector3*)&value2);
@@ -208,7 +205,7 @@ namespace engenious
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public unsafe static Vector3 Cross(Vector3 value1, Vector3 value2)
+        public static Vector3 Cross(Vector3 value1, Vector3 value2)
         {
 #if USE_SIMD
             Fast.Vector3 a1 = new Fast.Vector3(value1.Y,value1.Z,value1.X);
@@ -225,19 +222,19 @@ namespace engenious
 #endif
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public unsafe static Vector3 Clamp(Vector3 value, Vector3 min, Vector3 max)
+        public static Vector3 Clamp(Vector3 value, Vector3 min, Vector3 max)
         {
-            return Vector3.Min(Vector3.Max(min,value),max);
+            return Min(Max(min,value),max);
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public unsafe static void Clamp(Vector3 value, Vector3 min, Vector3 max, out Vector3 output)
+        public static void Clamp(Vector3 value, Vector3 min, Vector3 max, out Vector3 output)
         {
-            output = Vector3.Min(Vector3.Max(min,value),max);
+            output = Min(Max(min,value),max);
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float Dot(Vector3 value1, Vector3 value2)
         {
-            Vector3 res = value1*value2;
+            var res = value1*value2;
             return res.X+res.Y+res.Z;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -256,7 +253,7 @@ namespace engenious
             return value1 + (value2 - value1) * amount;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public unsafe static Vector3 Max(Vector3 value1, Vector3 value2)
+        public static Vector3 Max(Vector3 value1, Vector3 value2)
         {
 #if USE_SIMD
             Fast.Vector3 res= Fast.Vector3.Max(*(Fast.Vector3*)&value1,*(Fast.Vector3*)&value2);
@@ -266,7 +263,7 @@ namespace engenious
 #endif
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public unsafe static Vector3 Min(Vector3 value1, Vector3 value2)
+        public static Vector3 Min(Vector3 value1, Vector3 value2)
         {
 #if USE_SIMD
             Fast.Vector3 res = Fast.Vector3.Min(*(Fast.Vector3*)&value1,*(Fast.Vector3*)&value2);
@@ -291,7 +288,7 @@ namespace engenious
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector3 Transform(Vector3 position,Quaternion quaternion)
         {
-            return Vector3.Transform(position,Matrix.CreateFromQuaternion(quaternion));
+            return Transform(position,Matrix.CreateFromQuaternion(quaternion));
         }
 
         public static readonly Vector3 One = new Vector3(1, 1, 1);

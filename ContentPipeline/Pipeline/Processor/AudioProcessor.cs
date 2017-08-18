@@ -14,8 +14,8 @@ namespace engenious.Pipeline
         {
             try
             {
-                FFmpeg ff = new FFmpeg(context.SyncContext);
-                string args = "";
+                var ff = new FFmpeg(context.SyncContext);
+                string args = string.Empty;
                 switch (settings.OutputFormat)
                 {
                     case SoundEffect.AudioFormat.Ogg:

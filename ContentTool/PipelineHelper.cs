@@ -4,9 +4,9 @@ using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using ContentTool.Models;
 using engenious.Content.Pipeline;
 using engenious.Pipeline.Pipeline.Editors;
-using ContentTool.Models;
 
 namespace ContentTool
 {
@@ -32,16 +32,14 @@ namespace ContentTool
         public static string GetProcessor(string name, string importerName)
         {
             var tp = GetImporterType(Path.GetExtension(name), importerName);
-            if (tp != null)
+            if (tp == null) return string.Empty;
+            foreach (var attr in tp.GetCustomAttributes(true).Select(x => x as ContentImporterAttribute))
             {
-                foreach (var attr in tp.GetCustomAttributes(true).Select(x => x as ContentImporterAttribute))
-                {
-                    if (attr == null)
-                        continue;
-                    return attr.DefaultProcessor;
-                }
+                if (attr == null)
+                    continue;
+                return attr.DefaultProcessor;
             }
-            return "";
+            return string.Empty;
         }
         public static void PreBuilt(ContentProject currentProject)
         {
@@ -52,7 +50,7 @@ namespace ContentTool
             Assemblies.Add(typeof(IContentImporter).Assembly);
             if (currentProject.References == null)
                 currentProject.References = new List<string>();
-            foreach (string reference in currentProject.References)
+            foreach (var reference in currentProject.References)
             {
                 try
                 {
@@ -75,7 +73,7 @@ namespace ContentTool
         }
         public static List<string> GetProcessors(Type tp)
         {
-            List<string> fitting = new List<string>();
+            var fitting = new List<string>();
             foreach (var pair in ProcessorsByType)
             {
                 if (pair.Key.IsAssignableFrom(tp))
@@ -88,7 +86,7 @@ namespace ContentTool
 
         public static List<string> GetImporters(string extension)
         {
-            List<string> fitting = new List<string>();
+            var fitting = new List<string>();
             foreach (var type in _importers)
             {
                 var attribute =
@@ -101,11 +99,11 @@ namespace ContentTool
 
         public static ContentEditorWrapper GetContentEditor(string extension, Type inputType, Type outputType)
         {
-            string key = extension + "$" + inputType.FullName + "$" + outputType.FullName;
+            var key = extension + "$" + inputType.FullName + "$" + outputType.FullName;
             ContentEditorWrapper editorWrap;
             if (EditorsByType.TryGetValue(key, out editorWrap))
                 return editorWrap;
-            Type genericType = typeof(IContentEditor<,>).MakeGenericType(inputType, outputType);
+            var genericType = typeof(IContentEditor<,>).MakeGenericType(inputType, outputType);
 
             foreach (var type in Editors)
             {
@@ -115,7 +113,7 @@ namespace ContentTool
                     continue;
                 if (attribute.SupportedFileExtensions.Contains(extension) && genericType.IsAssignableFrom(type))
                 {
-                    IContentEditor editor = (IContentEditor)Activator.CreateInstance(type);
+                    var editor = (IContentEditor)Activator.CreateInstance(type);
                     if (editor == null)
                         continue;
                     var methodInfo = genericType.GetMethod("Open");
@@ -163,9 +161,9 @@ namespace ContentTool
         {
             Processors.Clear();
             ProcessorsByType.Clear();
-            foreach (Assembly assembly in Assemblies)
+            foreach (var assembly in Assemblies)
             {
-                foreach (Type type in assembly.GetTypes())
+                foreach (var type in assembly.GetTypes())
                 {
 
                     if (typeof(IContentProcessor).IsAssignableFrom(type) && !(type.IsAbstract || type.IsInterface))
@@ -173,7 +171,7 @@ namespace ContentTool
                         if (!Processors.ContainsKey(type.Name))
                             Processors.Add(type.Name, type);
 
-                        Type baseType = GetProcessorInputType(type);
+                        var baseType = GetProcessorInputType(type);
                         ProcessorsByType.Add(new KeyValuePair<Type, string>(baseType, type.Name));
                     }
                 }
@@ -213,6 +211,7 @@ namespace ContentTool
         {
             if (_importers == null)
                 DefaultInit();
+            // ReSharper disable once PossibleNullReferenceException
             foreach (var type in _importers)
             {
                 var attribute = (ContentImporterAttribute)type.GetCustomAttributes(typeof(ContentImporterAttribute), true).First();
@@ -253,31 +252,24 @@ namespace ContentTool
             var att = type.GetCustomAttributes(
                           typeof(TAttribute), true
                       ).FirstOrDefault() as TAttribute;
-            if (att != null)
-            {
-                return valueSelector(att);
-            }
-            return default(TValue);
+            return att != null ? valueSelector(att) : default(TValue);
         }
 
         private static IEnumerable<Type> EnumerateImporters()
         {
-            foreach (Assembly assembly in Assemblies)
+            foreach (var assembly in Assemblies)
             {
-                foreach (Type type in assembly.GetTypes())
+                foreach (var type in assembly.GetTypes())
                 {
-                    if (typeof(IContentImporter).IsAssignableFrom(type))
-                    {
-                        if (type.IsValueType || type.IsInterface || type.IsAbstract || type.ContainsGenericParameters || type.GetConstructor(
-                                BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
-                                null, Type.EmptyTypes, null) == null)
-                            continue;
+                    if (!typeof(IContentImporter).IsAssignableFrom(type) || type.IsValueType || type.IsInterface || type.IsAbstract || type.ContainsGenericParameters || type.GetConstructor(
+                            BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
+                            null, Type.EmptyTypes, null) == null)
+                        continue;
 
-                        var importerAttribute = (ContentImporterAttribute)Attribute.GetCustomAttributes(type, typeof(ContentImporterAttribute)).FirstOrDefault();
-                        if (importerAttribute != null)
-                        {
-                            yield return type;
-                        }
+                    var importerAttribute = (ContentImporterAttribute)Attribute.GetCustomAttributes(type, typeof(ContentImporterAttribute)).FirstOrDefault();
+                    if (importerAttribute != null)
+                    {
+                        yield return type;
                     }
                 }
             }

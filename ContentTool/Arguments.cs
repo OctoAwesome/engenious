@@ -29,7 +29,7 @@ namespace ContentTool
         }
         public void ParseArguments(string[] args)
         {
-            foreach(string arg in args)
+            foreach(var arg in args)
             {
                 if (arg.StartsWith("/hidden:"))
                 {
@@ -38,16 +38,16 @@ namespace ContentTool
                         Hidden = hidden;
                 }else if(arg.StartsWith("/outputDir:"))
                 {
-                    string dir = arg.Substring("/outputDir:".Length).Trim();
+                    var dir = arg.Substring("/outputDir:".Length).Trim();
                     OutputDirectory = ParsePath(dir);
                 }else if(arg.StartsWith("/@:"))
                 {
-                    string dir = arg.Substring("/@:".Length).Trim();
+                    var dir = arg.Substring("/@:".Length).Trim();
                     ContentProject = ParsePath(dir);
                 }
                 else if (arg.StartsWith("/projectDir:"))
                 {
-                    string dir = arg.Substring("/projectDir:".Length).Trim();
+                    var dir = arg.Substring("/projectDir:".Length).Trim();
                     ProjectDir = ParsePath(dir);
                 }
                 else if(arg.StartsWith("/configuration:"))

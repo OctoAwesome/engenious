@@ -26,7 +26,7 @@ namespace engenious.Pipeline
         public SpriteFontContent(string fileName)
         {
             CharacterRegions = new List<CharacterRegion>();
-            XmlDocument doc = new XmlDocument();
+            var doc = new XmlDocument();
             doc.Load(fileName);
             XmlElement rootNode = null;
             foreach (var node in doc.ChildNodes.OfType<XmlElement>())

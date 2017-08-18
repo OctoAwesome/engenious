@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ContentTool.Builder
 {
@@ -13,7 +10,7 @@ namespace ContentTool.Builder
     {
         public string CacheFilePath { get; private set; }
 
-        public Dictionary<string, BuildFile> Files { get; private set; } = new Dictionary<string, BuildFile>();
+        public Dictionary<string, BuildFile> Files { get; } = new Dictionary<string, BuildFile>();
 
         protected BuildCache(string cacheFilePath)
         {
@@ -88,9 +85,9 @@ namespace ContentTool.Builder
             Directory.CreateDirectory(Path.GetDirectoryName(path));
             try
             {
-                using (FileStream fs = new FileStream(path, FileMode.Create, FileAccess.Write))
+                using (var fs = new FileStream(path, FileMode.Create, FileAccess.Write))
                 {
-                    BinaryFormatter formatter = new BinaryFormatter();
+                    var formatter = new BinaryFormatter();
                     formatter.Serialize(fs, this);
                 }
                 CacheFilePath = path;
@@ -117,9 +114,9 @@ namespace ContentTool.Builder
 
             try
             {
-                using (FileStream fs = new FileStream(cacheFilePath, FileMode.Open, FileAccess.Read))
+                using (var fs = new FileStream(cacheFilePath, FileMode.Open, FileAccess.Read))
                 {
-                    BinaryFormatter formatter = new BinaryFormatter();
+                    var formatter = new BinaryFormatter();
                     return (BuildCache)formatter.Deserialize(fs);
                 }
             }
@@ -129,7 +126,10 @@ namespace ContentTool.Builder
                 {
                     File.Delete(cacheFilePath);
                 }
-                catch{}
+                catch
+                {
+                    // ignored
+                }
                 return Load(cacheFilePath);
             }
         }

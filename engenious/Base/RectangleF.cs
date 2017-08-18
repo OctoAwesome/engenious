@@ -79,10 +79,10 @@ namespace engenious
 
         public void Intersect(RectangleF rect)
         {
-            float x = Math.Max(X, rect.X);
-            float y = Math.Max(Y, rect.Y);
-            float right = Math.Max(Right, rect.Right);
-            float bottom = Math.Max(Bottom, rect.Bottom);
+            var x = Math.Max(X, rect.X);
+            var y = Math.Max(Y, rect.Y);
+            var right = Math.Max(Right, rect.Right);
+            var bottom = Math.Max(Bottom, rect.Bottom);
             X = x;
             Y = y;
 
@@ -121,7 +121,7 @@ namespace engenious
         {
             if (obj is RectangleF)
             {
-                RectangleF sec = (RectangleF)obj;
+                var sec = (RectangleF)obj;
                 return X == sec.X && Y == sec.Y && Width == sec.Width && Height == sec.Height;
             }
             return false;
@@ -151,10 +151,10 @@ namespace engenious
 
         public static RectangleF Intersect(RectangleF a, RectangleF b)
         {
-            float x = Math.Max(a.X, b.X);
-            float y = Math.Max(a.Y, b.Y);
-            float right = Math.Max(a.Right, b.Right);
-            float bottom = Math.Max(a.Bottom, b.Bottom);
+            var x = Math.Max(a.X, b.X);
+            var y = Math.Max(a.Y, b.Y);
+            var right = Math.Max(a.Right, b.Right);
+            var bottom = Math.Max(a.Bottom, b.Bottom);
             return FromLTRB(x, y, right, bottom);
         }
 

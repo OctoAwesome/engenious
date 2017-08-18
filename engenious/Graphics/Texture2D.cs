@@ -4,6 +4,8 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Runtime.InteropServices;
 using engenious.Content;
+using engenious.Content.Serialization;
+using engenious.Helper;
 using OpenTK.Graphics.OpenGL4;
 
 namespace engenious.Graphics
@@ -27,7 +29,7 @@ namespace engenious.Graphics
 
                 Bind();
                 SetDefaultTextureParameters();
-                bool isDepthTarget = ((int) internalFormat >= (int) PixelInternalFormat.DepthComponent16 &&
+                var isDepthTarget = ((int) internalFormat >= (int) PixelInternalFormat.DepthComponent16 &&
                                       (int) internalFormat <= (int) PixelInternalFormat.DepthComponent32Sgix);
                 if (isDepthTarget)
                     GL.TexImage2D(
@@ -105,7 +107,7 @@ namespace engenious.Graphics
         internal void SetData<T>(T[] data, int level,OpenTK.Graphics.OpenGL4.PixelFormat format)
             where T : struct //ValueType
         {
-            bool hwCompressed =
+            var hwCompressed =
                 format == (OpenTK.Graphics.OpenGL4.PixelFormat) TextureContentFormat.DXT1 ||
                 format == (OpenTK.Graphics.OpenGL4.PixelFormat) TextureContentFormat.DXT3 || format ==
                 (OpenTK.Graphics.OpenGL4.PixelFormat) TextureContentFormat.DXT5;
@@ -113,28 +115,28 @@ namespace engenious.Graphics
                 throw new ArgumentException("Not enough pixel data");
 
             int width = Width, height = Height;
-            for (int i = 0; i < level; i++)
+            for (var i = 0; i < level; i++)
             {
                 width /= 2;
                 height /= 2;
                 if (width == 0 || height == 0)
                     return;
             }
-            GCHandle handle = GCHandle.Alloc(data, GCHandleType.Pinned);
+            var handle = GCHandle.Alloc(data, GCHandleType.Pinned);
             using (Execute.OnUiContext)
             {
                 Bind();
-                PixelType pxType = PixelType.UnsignedByte;
+                var pxType = PixelType.UnsignedByte;
                 if (typeof(T) == typeof(Color))
                     pxType = PixelType.Float;
                 if (hwCompressed)
                 {
-                    int blockSize = (format ==
+                    var blockSize = (format ==
                                      (OpenTK.Graphics.OpenGL4.PixelFormat) TextureContentFormat
                                          .DXT1)
                         ? 8
                         : 16;
-                    int mipSize = ((width + 3) / 4) * ((height + 3) / 4) * blockSize;
+                    var mipSize = ((width + 3) / 4) * ((height + 3) / 4) * blockSize;
                     GL.CompressedTexSubImage2D(TextureTarget.Texture2D, level, 0, 0, width, height,
                         format, mipSize, handle.AddrOfPinnedObject());
                 }
@@ -171,7 +173,7 @@ namespace engenious.Graphics
                 /*if (glFormat == All.CompressedTextureFormats) {
             throw new NotImplementedException ();
         } else {*/
-                int level = 0;
+                var level = 0;
                 /*Rectangle? rect = new Rectangle?(); //new Rectangle? (new Rectangle (0, 0, Width, Height));
                 if (rect.HasValue)
                 {
@@ -215,9 +217,9 @@ namespace engenious.Graphics
                         PixelType.UnsignedByte, temp);
                     int z = 0, w = 0;
 
-                    for (int y = rect.Value.Y; y < rect.Value.Y + rect.Value.Height; ++y)
+                    for (var y = rect.Value.Y; y < rect.Value.Y + rect.Value.Height; ++y)
                     {
-                        for (int x = rect.Value.X; x < rect.Value.X + rect.Value.Width; ++x)
+                        for (var x = rect.Value.X; x < rect.Value.X + rect.Value.Width; ++x)
                         {
                             data[z * rect.Value.Width + w] = temp[(y * Width) + x];
                             ++w;
@@ -236,7 +238,7 @@ namespace engenious.Graphics
 
         public static Texture2D FromStream(GraphicsDevice graphicsDevice, Stream stream)
         {
-            using (Bitmap bmp = new Bitmap(stream))
+            using (var bmp = new Bitmap(stream))
             {
                 return FromBitmap(graphicsDevice, bmp);
             }
@@ -246,7 +248,7 @@ namespace engenious.Graphics
         {
             Texture2D text;
             text = new Texture2D(graphicsDevice, bmp.Width, bmp.Height, mipMaps);
-            BitmapData bmpData = bmp.LockBits(new System.Drawing.Rectangle(0, 0, text.Width, text.Height),
+            var bmpData = bmp.LockBits(new System.Drawing.Rectangle(0, 0, text.Width, text.Height),
                 ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
             using (Execute.OnUiContext)
             {
@@ -262,8 +264,8 @@ namespace engenious.Graphics
 
         public static Bitmap ToBitmap(Texture2D text)
         {
-            Bitmap bmp = new Bitmap(text.Width, text.Height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-            BitmapData bmpData = bmp.LockBits(new System.Drawing.Rectangle(0, 0, text.Width, text.Height),
+            var bmp = new Bitmap(text.Width, text.Height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+            var bmpData = bmp.LockBits(new System.Drawing.Rectangle(0, 0, text.Width, text.Height),
                 ImageLockMode.WriteOnly, bmp.PixelFormat);
             using (Execute.OnUiContext)
             {
@@ -284,9 +286,9 @@ namespace engenious.Graphics
             bool zoom)
         {
             //TODO:implement correct
-            using (Bitmap bmp = new Bitmap(stream))
+            using (var bmp = new Bitmap(stream))
             {
-                using (Bitmap scaled = new Bitmap(bmp, width, height))
+                using (var scaled = new Bitmap(bmp, width, height))
                 {
                     //TODO: zoom?
                     return FromBitmap(graphicsDevice, scaled);

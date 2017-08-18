@@ -1,4 +1,5 @@
 ﻿using System;
+using engenious.Helper;
 using OpenTK.Graphics.OpenGL4;
 
 
@@ -37,7 +38,7 @@ namespace engenious.Graphics
                 GL.GetShader(BaseShader, ShaderParameter.CompileStatus, out compiled);
                 if (compiled != 1)
                 {
-                    string error = GL.GetShaderInfoLog(BaseShader);
+                    var error = GL.GetShaderInfoLog(BaseShader);
                     throw new Exception(error);
                 }
             }

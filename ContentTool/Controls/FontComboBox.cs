@@ -30,7 +30,6 @@ namespace ContentTool.Controls
             PreviewFontSize = 12;
 
 
-
             CalculateLayout();
             CreateStringFormat();
         }
@@ -50,7 +49,7 @@ namespace ContentTool.Controls
             base.OnSelectedValueChanged(e);
             if (SelectedItem == null)
                 return;
-            var fnt = (Font)GetFont(SelectedItem.ToString())?.Clone();
+            var fnt = (Font) GetFont(SelectedItem.ToString())?.Clone();
             if (fnt != null)
             {
                 Font = fnt;
@@ -78,7 +77,7 @@ namespace ContentTool.Controls
                 if ((e.State & DrawItemState.Focus) == DrawItemState.Focus)
                     e.DrawFocusRectangle();
 
-                using (SolidBrush textBrush = new SolidBrush(e.ForeColor))
+                using (var textBrush = new SolidBrush(e.ForeColor))
                 {
                     string fontFamilyName;
 
@@ -146,7 +145,7 @@ namespace ContentTool.Controls
             {
                 Cursor.Current = Cursors.WaitCursor;
 
-                foreach (FontFamily fontFamily in FontFamily.Families)
+                foreach (var fontFamily in FontFamily.Families)
                     Items.Add(fontFamily.Name);
 
                 Cursor.Current = Cursors.Default;
@@ -177,6 +176,7 @@ namespace ContentTool.Controls
                 OnPreviewFontSizeChanged(EventArgs.Empty);
             }
         }
+
         [Category("Appearance"), DefaultValue(FontStyle.Regular)]
         public FontStyle FontStyle
         {
@@ -205,7 +205,7 @@ namespace ContentTool.Controls
         {
             ClearFontCache();
 
-            using (Font font = new Font(Font.FontFamily, PreviewFontSize))
+            using (var font = new Font(Font.FontFamily, PreviewFontSize))
             {
                 Size textSize;
 
@@ -236,13 +236,13 @@ namespace ContentTool.Controls
         {
             if (_fontCache != null)
             {
-                foreach (string key in _fontCache.Keys)
+                foreach (var key in _fontCache.Keys)
                     _fontCache[key].Dispose();
                 _fontCache.Clear();
             }
         }
 
-        protected virtual void CreateStringFormat()
+        protected void CreateStringFormat()
         {
             _stringFormat?.Dispose();
 
@@ -260,22 +260,15 @@ namespace ContentTool.Controls
         {
             lock (_fontCache)
             {
-                if (!_fontCache.ContainsKey(fontFamilyName))
-                {
-                    Font font;
+                if (_fontCache.ContainsKey(fontFamilyName))
+                    return _fontCache[fontFamilyName];
+                var font = GetFont(fontFamilyName, FontStyle.Regular)
+                           ?? GetFont(fontFamilyName, FontStyle.Bold)
+                           ?? GetFont(fontFamilyName, FontStyle.Italic)
+                           ?? GetFont(fontFamilyName, FontStyle.Bold | FontStyle.Italic)
+                           ?? (Font) Font.Clone();
 
-                    font = GetFont(fontFamilyName, FontStyle.Regular);
-                    if (font == null)
-                        font = GetFont(fontFamilyName, FontStyle.Bold);
-                    if (font == null)
-                        font = GetFont(fontFamilyName, FontStyle.Italic);
-                    if (font == null)
-                        font = GetFont(fontFamilyName, FontStyle.Bold | FontStyle.Italic);
-                    if (font == null)
-                        font = (Font)Font.Clone();
-
-                    _fontCache.Add(fontFamilyName, font);
-                }
+                _fontCache.Add(fontFamilyName, font);
             }
 
             return _fontCache[fontFamilyName];

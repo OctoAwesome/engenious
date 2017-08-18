@@ -107,7 +107,7 @@ namespace engenious.Pipeline
                         {
                             var newVec = Vector3.Transform(f.Transform.Location,child.Transformation);
                             newVec = new Vector3(newVec.X,newVec.Y,-newVec.Z);//TODO: hardcoded?
-                            f.Transform = new AnimationTransform("",newVec,f.Transform.Scale,f.Transform.Rotation);
+                            f.Transform = new AnimationTransform(string.Empty,newVec,f.Transform.Scale,f.Transform.Rotation);
                         }
                     }
                 }
@@ -120,7 +120,7 @@ namespace engenious.Pipeline
             if (c1 == null || c2 == null)
                 return;
             AnimationFrame empty = new AnimationFrame();
-            empty.Transform = new AnimationTransform("",new Vector3(),new Vector3(1),new Quaternion(0,0,0,1));
+            empty.Transform = new AnimationTransform(string.Empty,new Vector3(),new Vector3(1),new Quaternion(0,0,0,1));
             for (int i=0;i<Math.Max(c1.Frames.Count,c2.Frames.Count);i++)
             {
                 AnimationFrame f1 = i<c1.Frames.Count?c1.Frames[i]:empty;

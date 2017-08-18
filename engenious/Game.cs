@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Drawing;
-using System.Threading;
 using engenious.Audio;
 using engenious.Content;
 using engenious.Graphics;
+using engenious.Helper;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL4;
-using OpenTK.Platform;
 
 namespace engenious
 {
@@ -23,15 +22,15 @@ namespace engenious
         internal int Major, Minor;
         internal GraphicsContextFlags ContextFlags;
         private IGraphicsContext _context;
-        private AudioDevice _audio;
+        private readonly AudioDevice _audio;
         private void ConstructContext()
         {
-            IWindowInfo windowInfo = Window.BaseWindow.WindowInfo;
+            var windowInfo = Window.BaseWindow.WindowInfo;
             if (Window.BaseWindow.Context == null)
             {//TODO: really - what was that even for?
-                GraphicsContextFlags flags = GraphicsContextFlags.Default;
-                int major = 1;
-                int minor = 0;
+                var flags = GraphicsContextFlags.Default;
+                var major = 1;
+                var minor = 0;
 
                 if (Environment.OSVersion.Platform == PlatformID.Win32NT ||
                     Environment.OSVersion.Platform == PlatformID.Win32S ||
@@ -44,12 +43,12 @@ namespace engenious
                 if (_context == null || _context.IsDisposed)
                 {
 
-                    ColorFormat colorFormat = new ColorFormat(8, 8, 8, 8);
-                    int depth = 24; //TODO: wth?
-                    int stencil = 8;
-                    int samples = 4;
+                    var colorFormat = new ColorFormat(8, 8, 8, 8);
+                    var depth = 24; //TODO: wth?
+                    var stencil = 8;
+                    var samples = 4;
 
-                    GraphicsMode mode =
+                    var mode =
                         new GraphicsMode(colorFormat, depth, stencil, samples);
                     try
                     {

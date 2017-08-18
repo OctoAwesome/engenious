@@ -24,8 +24,8 @@ namespace engenious.Graphics
         public void ApplyAnimation(float time, float maxTime)
         {
             Sort();
-            int frameIndex = Math.Max(Frames.FindIndex(f => f.Frame >= time)-1,0);
-            AnimationFrame frame = Frames[frameIndex];
+            var frameIndex = Math.Max(Frames.FindIndex(f => f.Frame >= time)-1,0);
+            var frame = Frames[frameIndex];
             AnimationFrame nextFrame=null;
             if (Repeat){
                 nextFrame = Frames[(frameIndex + 1) % Frames.Count];
@@ -35,15 +35,15 @@ namespace engenious.Graphics
             else
                 return;
             
-            float diff = time-frame.Frame;
-            float frameTime = nextFrame.Frame - frame.Frame;
+            var diff = time-frame.Frame;
+            var frameTime = nextFrame.Frame - frame.Frame;
 
             /*if (diff == 0)
             {
                 Node.LocalTransform = frame.Transform.ToMatrix();
             }
             else if (diff > 0)*/
-            float percent=diff / frameTime;
+            var percent=diff / frameTime;
             if (Node.Name.Contains("$"))
             {
                 Console.WriteLine(frameIndex + " - " + percent);

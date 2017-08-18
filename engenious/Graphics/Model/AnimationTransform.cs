@@ -18,7 +18,7 @@
 
         public Matrix ToMatrix()
         {
-            Matrix res = Matrix.CreateFromQuaternion(Rotation.X, Rotation.Y, Rotation.Z, Rotation.W);
+            var res = Matrix.CreateFromQuaternion(Rotation.X, Rotation.Y, Rotation.Z, Rotation.W);
             res.M11 *= Scale.X;
             res.M12 *= Scale.X;
             res.M13 *= Scale.X;
@@ -36,17 +36,17 @@
 
         public static AnimationTransform Lerp(AnimationTransform transform1,AnimationTransform transform2,float amount)
         {
-            return new AnimationTransform("",Vector3.Lerp(transform1.Location,transform2.Location,amount),
+            return new AnimationTransform(string.Empty,Vector3.Lerp(transform1.Location,transform2.Location,amount),
                                             Vector3.Lerp(transform1.Scale,transform2.Scale,amount),
                                             Quaternion.Lerp(transform1.Rotation,transform2.Rotation,amount));
         }
         public static AnimationTransform operator +(AnimationTransform t1,AnimationTransform t2)
         {
-            return new AnimationTransform("",t1.Location+t2.Location,t1.Scale*t2.Scale,t1.Rotation*t2.Rotation);
+            return new AnimationTransform(string.Empty,t1.Location+t2.Location,t1.Scale*t2.Scale,t1.Rotation*t2.Rotation);
         }
         public static AnimationTransform Transform(AnimationTransform t,Matrix transformation)
         {
-            return new AnimationTransform("",Vector3.Transform(t.Location,transformation),
+            return new AnimationTransform(string.Empty,Vector3.Transform(t.Location,transformation),
                 t.Scale,
                 t.Rotation);
         }

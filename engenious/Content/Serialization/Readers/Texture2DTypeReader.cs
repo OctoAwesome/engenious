@@ -9,15 +9,15 @@ namespace engenious.Content.Serialization
     {
         public override Texture2D Read(ContentManager manager, ContentReader reader)
         {
-            bool genMipMaps = reader.ReadBoolean();
-            int mipCount = reader.ReadInt32();
+            var genMipMaps = reader.ReadBoolean();
+            var mipCount = reader.ReadInt32();
 
             int width=reader.ReadInt32(),height=reader.ReadInt32();
-            TextureContentFormat format = (TextureContentFormat)reader.ReadInt32();
-            bool hwCompressed = format == TextureContentFormat.DXT1 || format == TextureContentFormat.DXT3 || format == TextureContentFormat.DXT5;
+            var format = (TextureContentFormat)reader.ReadInt32();
+            var hwCompressed = format == TextureContentFormat.DXT1 || format == TextureContentFormat.DXT3 || format == TextureContentFormat.DXT5;
             Texture2D text;
-            int size = reader.ReadInt32();
-            byte[] buffer = reader.ReadBytes(size);
+            var size = reader.ReadInt32();
+            var buffer = reader.ReadBytes(size);
             if (hwCompressed)
             {
                 text = new Texture2D(manager.GraphicsDevice,width,height,mipCount,(PixelInternalFormat)format);
@@ -34,7 +34,7 @@ namespace engenious.Content.Serialization
 
             if (genMipMaps)
                 return text;
-            for (int i=1;i<mipCount;i++)
+            for (var i=1;i<mipCount;i++)
             {
                 size = reader.ReadInt32();
                 buffer = reader.ReadBytes(size);

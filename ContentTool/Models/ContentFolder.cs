@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml;
 using System.Xml.Linq;
 
 namespace ContentTool.Models
@@ -15,23 +9,28 @@ namespace ContentTool.Models
         /// <summary>
         /// Path of the content folder
         /// </summary>
-        public override string FilePath { get => Path.Combine(Parent.FilePath, Name); }
+        public override string FilePath
+        {
+            get => Path.Combine(Parent.FilePath, Name);
+        }
 
         /// <summary>
         /// The content of the folder
         /// </summary>
         [Browsable(false)]
-        public ContentItemCollection Content {
-            get => content;
+        public ContentItemCollection Content
+        {
+            get => _content;
             set
             {
-                if (value == content) return;
-                var old = content;
-                content = value;
-                OnPropertyChanged(old,value);
+                if (value == _content) return;
+                var old = _content;
+                _content = value;
+                OnPropertyChanged(old, value);
             }
         }
-        protected ContentItemCollection content;
+
+        private ContentItemCollection _content;
 
         /// <summary>
         /// Constructor
@@ -40,34 +39,38 @@ namespace ContentTool.Models
         /// <param name="parent">Parent item</param>
         public ContentFolder(string name, ContentItem parent) : base(name, parent)
         {
-            content = new ContentItemCollection();
-            content.CollectionChanged += OnCollectionChanged;
-            content.PropertyChanged += OnPropertyChanged;
+            _content = new ContentItemCollection();
+            _content.CollectionChanged += OnCollectionChanged;
+            _content.PropertyChanged += OnPropertyChanged;
         }
 
         public override ContentItem Deserialize(XElement element)
         {
-            name = element.Element("Name")?.Value;
+            SupressChangedEvent = true;
+            Name = element.Element("Name")?.Value;
 
             if (!Directory.Exists(FilePath))
                 Error = ContentErrorType.NotFound;
 
-            supressChangedEvent = true;
-            foreach (var subElement in element.Element("Contents").Elements())
+            var xElement = element.Element("Contents");
+            if (xElement == null)
+                return this;
+
+            foreach (var subElement in xElement.Elements())
             {
                 if (subElement.Name == "ContentFile")
-                    content.Add(new ContentFile("", this).Deserialize(subElement));
+                    _content.Add(new ContentFile(string.Empty, this).Deserialize(subElement));
                 else if (subElement.Name == "ContentFolder")
-                    content.Add(new ContentFolder("", this).Deserialize(subElement));
+                    _content.Add(new ContentFolder(string.Empty, this).Deserialize(subElement));
             }
-            supressChangedEvent = false;
+            SupressChangedEvent = false;
 
             return this;
         }
 
         public override XElement Serialize()
         {
-            XElement element = new XElement("ContentFolder");
+            var element = new XElement("ContentFolder");
             element.Add(new XElement("Name", Name));
 
             var contentElement = new XElement("Contents");

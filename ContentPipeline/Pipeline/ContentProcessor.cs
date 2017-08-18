@@ -4,7 +4,7 @@ namespace engenious.Content.Pipeline
 {
     public abstract class ContentProcessor<TInput,TOutput,TSettings> : IContentProcessor where TSettings:ProcessorSettings,new()
     {
-        public ContentProcessor()
+        protected ContentProcessor()
         {
             settings = new TSettings();
         }

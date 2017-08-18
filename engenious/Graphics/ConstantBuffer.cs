@@ -1,6 +1,7 @@
 ﻿using System;
 using OpenTK.Graphics.OpenGL4;
 using System.Runtime.InteropServices;
+using engenious.Helper;
 
 namespace engenious.Graphics
 {
@@ -21,7 +22,7 @@ namespace engenious.Graphics
             using (Execute.OnUiContext)
             {
                 GL.BindBuffer(BufferTarget.UniformBuffer, Ubo);
-                IntPtr ptr = GL.MapBuffer(BufferTarget.UniformBuffer, BufferAccess.WriteOnly);
+                var ptr = GL.MapBuffer(BufferTarget.UniformBuffer, BufferAccess.WriteOnly);
                 MemoryHelper.CopyBulk(data, ptr, size);
                 //Buffer.BlockCopy(
                 GL.UnmapBuffer(BufferTarget.UniformBuffer);
@@ -29,15 +30,15 @@ namespace engenious.Graphics
         }
         public void Update<T>(T data) where T : struct
         {
-            uint size = (uint)Marshal.SizeOf(data);
-            GCHandle h = GCHandle.Alloc(data,GCHandleType.Pinned);
+            var size = (uint)Marshal.SizeOf(data);
+            var h = GCHandle.Alloc(data,GCHandleType.Pinned);
             Update(h.AddrOfPinnedObject(),size);
             h.Free();
         }
         public void Update<T>(T[] data) where T : struct
         {
-            uint size = (uint)(Marshal.SizeOf(typeof(T))*data.Length);
-            GCHandle h = GCHandle.Alloc(data,GCHandleType.Pinned);
+            var size = (uint)(Marshal.SizeOf(typeof(T))*data.Length);
+            var h = GCHandle.Alloc(data,GCHandleType.Pinned);
             Update(h.AddrOfPinnedObject(),size);
             h.Free();
         }

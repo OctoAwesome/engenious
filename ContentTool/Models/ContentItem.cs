@@ -1,13 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.IO;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml;
 using System.Xml.Linq;
 using ContentTool.Observer;
 
@@ -18,18 +13,19 @@ namespace ContentTool.Models
         /// <summary>
         /// The name of the content item
         /// </summary>
-        public string Name { get => name;
+        public string Name { get => _name;
             set
             {
-                if (name == value) return;
-                var old = name;
-                name = value;
-                OnPropertyChanged(name,value);
+                if (_name == value) return;
+                var old = _name;
+                _name = value;
+                OnPropertyChanged(_name,value);
             }
         }
-        protected string name;
+
+        private string _name;
         
-        protected bool supressChangedEvent = false;
+        protected bool SupressChangedEvent = false;
 
         [Browsable(false)]
         public ContentErrorType Error { get; set; }
@@ -50,16 +46,17 @@ namespace ContentTool.Models
         /// The parent item
         /// </summary>
         [Browsable(false)]
-        public virtual ContentItem Parent { get => parent;
+        public virtual ContentItem Parent { get => _parent;
             set
             {
-                if (value == parent) return;
-                var old = parent;
-                parent = value;
+                if (value == _parent) return;
+                var old = _parent;
+                _parent = value;
                 OnPropertyChanged(old,value);
             }
         }
-        protected ContentItem parent;
+
+        private ContentItem _parent;
 
         /// <summary>
         /// Constructor
@@ -68,8 +65,8 @@ namespace ContentTool.Models
         /// <param name="parent">Parent item</param>
         protected ContentItem(string name, ContentItem parent)
         {
-            this.name = name;
-            this.parent = parent;
+            _name = name;
+            _parent = parent;
         }
 
         /// <summary>
@@ -85,22 +82,22 @@ namespace ContentTool.Models
 
         protected virtual void OnPropertyChanged(object sender,PropertyValueChangedEventArgs args)
         {
-            if (supressChangedEvent) return;
+            if (SupressChangedEvent) return;
             PropertyChanged?.Invoke(sender, args);
         }
         protected virtual void OnPropertyChanged(object sender,object oldValue,object newValue,[CallerMemberName] string propertyName = null)
         {
-            if (supressChangedEvent) return;
+            if (SupressChangedEvent) return;
             OnPropertyChanged(sender, new PropertyValueChangedEventArgs(propertyName,oldValue,newValue));
         }
         protected virtual void OnPropertyChanged(object oldValue,object newValue,[CallerMemberName] string propertyName = null)
         {
-            if (supressChangedEvent) return;
+            if (SupressChangedEvent) return;
             OnPropertyChanged(this,oldValue,newValue,propertyName);
         }
         protected virtual void OnCollectionChanged(object sender,NotifyCollectionChangedEventArgs args)
         {
-            if (supressChangedEvent) return;
+            if (SupressChangedEvent) return;
             if (sender is ContentItem)
                 CollectionChanged?.Invoke(sender,args);
             else

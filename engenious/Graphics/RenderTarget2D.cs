@@ -1,4 +1,5 @@
 ﻿using System;
+using engenious.Helper;
 using OpenTK.Graphics.OpenGL4;
 
 namespace engenious.Graphics
@@ -29,7 +30,7 @@ namespace engenious.Graphics
         {
             using (Execute.OnUiContext)
             {
-                bool isDepthTarget = ((int) surfaceFormat >= (int) PixelInternalFormat.DepthComponent16 &&
+                var isDepthTarget = ((int) surfaceFormat >= (int) PixelInternalFormat.DepthComponent16 &&
                                       (int) surfaceFormat <= (int) PixelInternalFormat.DepthComponent32Sgix);
                 if (!isDepthTarget)
                 {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using engenious.Helper;
 
 namespace engenious.Graphics
 {
@@ -28,7 +29,7 @@ namespace engenious.Graphics
             EffectPassParameter param;
 		    using (Execute.OnUiContext)
 		    {
-		        int location = _pass.GetUniformLocation(name);
+		        var location = _pass.GetUniformLocation(name);
 		        param = new EffectPassParameter(_pass, name, location);
 		    }
 		    return param;

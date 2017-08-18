@@ -148,11 +148,11 @@ namespace engenious.Graphics
 
         public void DrawString(SpriteFont spriteFont, string text, Vector2 position, Color color, float rotation, Vector2 origin, Vector2 scale, SpriteEffects effects = SpriteEffects.None, float layerDepth = 0.0f)
         {
-            Vector2 offset = new Vector2(0.0f, 0.0f);
-            for (int i = 0; i < text.Length; i++)
+            var offset = new Vector2(0.0f, 0.0f);
+            for (var i = 0; i < text.Length; i++)
             {
 
-                char c = text[i];
+                var c = text[i];
                 FontCharacter fontChar;
                 if (!spriteFont.CharacterMap.TryGetValue(c, out fontChar))
                 {
@@ -188,7 +188,7 @@ namespace engenious.Graphics
             GraphicsDevice.DepthStencilState = _depthStencilState;
             _batcher.SamplerState = _samplerState;
 
-            Matrix projection = Matrix.CreateOrthographicOffCenter(0, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, 0, 0, -1);
+            var projection = Matrix.CreateOrthographicOffCenter(0, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, 0, 0, -1);
 
             _worldViewProj.SetValue(projection * _matrix);
             _batcher.End(_effect);

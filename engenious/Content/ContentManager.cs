@@ -37,14 +37,14 @@ namespace engenious.Content
 
         internal void AddAssembly(Assembly assembly)
         {
-            foreach (Type t in assembly.GetTypes())
+            foreach (var t in assembly.GetTypes())
             {
 
                 if (t.GetInterfaces().Contains(typeof(IContentTypeReader)) && !(t.IsInterface || t.IsAbstract))
                 {
                     var attr = (ContentTypeReaderAttribute)t.GetCustomAttributes(typeof(ContentTypeReaderAttribute), true).FirstOrDefault();
                     if (attr != null){
-                        IContentTypeReader reader = Activator.CreateInstance(t) as IContentTypeReader;
+                        var reader = Activator.CreateInstance(t) as IContentTypeReader;
                         _typeReaders.Add(t.FullName, reader);
                         if (attr.OutputType != null)
                             _typeReadersOutput.Add(attr.OutputType.FullName,reader);
@@ -93,7 +93,7 @@ namespace engenious.Content
         public T Load<T>(string assetName) where T : IDisposable
         {
             object asset;
-            bool containsName =false;
+            var containsName =false;
             if (_assets.TryGetValue(assetName, out asset))
             {
                 containsName = true;
@@ -102,7 +102,7 @@ namespace engenious.Content
                     return (T)asset;
                 }
             }
-            T tmp = ReadAsset<T>(assetName);
+            var tmp = ReadAsset<T>(assetName);
             if (tmp != null)
             {
                 if (!containsName)
@@ -119,9 +119,9 @@ namespace engenious.Content
         {
             var tp = GetReaderByOutput(typeof(T).FullName);
             foreach(var file in ListContent(path)){
-                using (FileStream fs = new FileStream(file, FileMode.Open, FileAccess.Read))
+                using (var fs = new FileStream(file, FileMode.Open, FileAccess.Read))
                 {
-                    ContentFile res = _formatter.Deserialize(fs) as ContentFile;
+                    var res = _formatter.Deserialize(fs) as ContentFile;
                     if (res == null)
                         continue;
                     Console.WriteLine(res.FileType);
@@ -132,9 +132,9 @@ namespace engenious.Content
         }
         protected T ReadAsset<T>(string assetName)
         {
-            using (FileStream fs = new FileStream(Path.Combine(RootDirectory, assetName + ".ego"), FileMode.Open, FileAccess.Read))
+            using (var fs = new FileStream(Path.Combine(RootDirectory, assetName + ".ego"), FileMode.Open, FileAccess.Read))
             {
-                ContentFile res = _formatter.Deserialize(fs) as ContentFile;
+                var res = _formatter.Deserialize(fs) as ContentFile;
                 if (res == null)
                     throw new Exception("Could not load non content file");
                 return (T)res.Load(this, fs,typeof(T));

@@ -1,5 +1,5 @@
 ﻿using System;
-
+using engenious.Helper;
 using OpenTK.Graphics.OpenGL4;
 
 namespace engenious.Graphics
@@ -22,22 +22,22 @@ namespace engenious.Graphics
                 case VertexElementUsage.Color:
                     
                     GL.EnableVertexAttribArray((int)el.VertexElementUsage);
-                    GL.VertexAttribPointer((int)el.VertexElementUsage, el.ByteCount / el.GetGlVertexDataTypeSize(), el.GetGLVertexDataType(), el.IsNormalized, stride, new IntPtr(el.Offset));
+                    GL.VertexAttribPointer((int)el.VertexElementUsage, el.ByteCount / el.GetGlVertexDataTypeSize(), el.GetGlVertexDataType(), el.IsNormalized, stride, new IntPtr(el.Offset));
                     break;
                 case VertexElementUsage.Position:
                     GL.EnableVertexAttribArray((int)el.VertexElementUsage);
-                    GL.VertexAttribPointer((int)el.VertexElementUsage, el.ByteCount / el.GetGlVertexDataTypeSize(), el.GetGLVertexDataType(), el.IsNormalized, stride, new IntPtr(el.Offset));
+                    GL.VertexAttribPointer((int)el.VertexElementUsage, el.ByteCount / el.GetGlVertexDataTypeSize(), el.GetGlVertexDataType(), el.IsNormalized, stride, new IntPtr(el.Offset));
                     break;
                 case VertexElementUsage.Normal:
                     GL.EnableVertexAttribArray((int)el.VertexElementUsage);
-                    GL.VertexAttribPointer((int)el.VertexElementUsage, el.ByteCount / el.GetGlVertexDataTypeSize(), el.GetGLVertexDataType(), el.IsNormalized, stride, new IntPtr(el.Offset));
+                    GL.VertexAttribPointer((int)el.VertexElementUsage, el.ByteCount / el.GetGlVertexDataTypeSize(), el.GetGlVertexDataType(), el.IsNormalized, stride, new IntPtr(el.Offset));
                     break;
                 case VertexElementUsage.TextureCoordinate:
                     GL.EnableVertexAttribArray((int)el.VertexElementUsage);
-                    GL.VertexAttribPointer((int)el.VertexElementUsage, el.ByteCount / el.GetGlVertexDataTypeSize(), el.GetGLVertexDataType(), el.IsNormalized, stride, new IntPtr(el.Offset));
+                    GL.VertexAttribPointer((int)el.VertexElementUsage, el.ByteCount / el.GetGlVertexDataTypeSize(), el.GetGlVertexDataType(), el.IsNormalized, stride, new IntPtr(el.Offset));
                     break;
                 default:
-                    GL.VertexAttribPointer((int)el.VertexElementUsage, el.ByteCount / el.GetGlVertexDataTypeSize(), el.GetGLVertexDataType(), el.IsNormalized, stride, new IntPtr(el.Offset));
+                    GL.VertexAttribPointer((int)el.VertexElementUsage, el.ByteCount / el.GetGlVertexDataTypeSize(), el.GetGlVertexDataType(), el.IsNormalized, stride, new IntPtr(el.Offset));
                     GL.EnableVertexAttribArray(el.UsageIndex);//TODO:Is this the Intended usage?
                        
                     break;
@@ -65,7 +65,7 @@ namespace engenious.Graphics
 
         private static void DeleteVertexArray(object that)
         {
-            VertexAttributes va = (VertexAttributes) that;
+            var va = (VertexAttributes) that;
             GL.DeleteVertexArray(va._vao);
         }
         public void Dispose()

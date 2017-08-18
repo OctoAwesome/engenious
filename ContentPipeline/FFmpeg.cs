@@ -4,6 +4,7 @@ using System.IO;
 using System.Reflection;
 using System.Threading;
 using System.Windows.Forms;
+using engenious.Helper;
 
 namespace engenious.Pipeline
 {
@@ -31,7 +32,7 @@ namespace engenious.Pipeline
             }
 
             string path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            string ext = "";
+            string ext =string.Empty;
             var platform = PlatformHelper.RunningPlatform();
             switch (platform)
             {

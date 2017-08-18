@@ -118,7 +118,7 @@ namespace engenious.Input
                 {
                     fixed (int* k = Key)
                     {
-                        for (int i = 0; i < NumInts; ++i)
+                        for (var i = 0; i < NumInts; ++i)
                         {
                             if (k[i] != 0)
                             {
@@ -222,8 +222,8 @@ namespace engenious.Input
             {
                 fixed (int* k = Key)
                 {
-                    int hashcode = 0;
-                    for (int i = 0; i < NumInts; i++)
+                    var hashcode = 0;
+                    for (var i = 0; i < NumInts; i++)
                         hashcode ^= (k + i)->GetHashCode();
                     return hashcode;
                 }
@@ -250,8 +250,8 @@ namespace engenious.Input
         {
             ValidateOffset(offset);
 
-            int intOffset = offset >> ShiftDivide;
-            int bitOffset = offset & (IntSize-1);
+            var intOffset = offset >> ShiftDivide;
+            var bitOffset = offset & (IntSize-1);
             unsafe
             {
                 fixed (int* k = Key)
@@ -265,8 +265,8 @@ namespace engenious.Input
         {
             ValidateOffset(offset);
 
-            int intOffset = offset >> ShiftDivide;
-            int bitOffset = offset & (IntSize-1);
+            var intOffset = offset >> ShiftDivide;
+            var bitOffset = offset & (IntSize-1);
             unsafe
             {
                 fixed (int* k = Key)
@@ -280,8 +280,8 @@ namespace engenious.Input
         {
             ValidateOffset(offset);
 
-            int intOffset = offset >> ShiftDivide;
-            int bitOffset = offset & (IntSize-1);
+            var intOffset = offset >> ShiftDivide;
+            var bitOffset = offset & (IntSize-1);
             unsafe
             {
                 fixed (int* k = Key)
@@ -295,10 +295,10 @@ namespace engenious.Input
         {
             unsafe
             {
-                int* k2 = other.Key;
+                var k2 = other.Key;
                 fixed (int* k1 = Key)
                 {
-                    for (int i = 0; i < NumInts; i++)
+                    for (var i = 0; i < NumInts; i++)
                         *(k1 + i) |= *(k2 + i);
                 }
             }
@@ -331,13 +331,13 @@ namespace engenious.Input
         /// <returns>True, if both instances are equal; false otherwise.</returns>
         public bool Equals(KeyboardState other)
         {
-            bool equal = true;
+            var equal = true;
             unsafe
             {
-                int* k2 = other.Key;
+                var k2 = other.Key;
                 fixed (int* k1 = Key)
                 {
-                    for (int i = 0; equal && i < NumInts; i++)
+                    for (var i = 0; equal && i < NumInts; i++)
                         equal &= *(k1 + i) == *(k2 + i);
                 }
             }

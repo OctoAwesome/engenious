@@ -1,7 +1,4 @@
-﻿using System;
-using OpenTK;
-
-namespace engenious
+﻿namespace engenious
 {
     public class BoundingFrustum
     {
@@ -24,7 +21,7 @@ namespace engenious
             Far = new Plane(matrix.M41 - matrix.M31, matrix.M42 - matrix.M32, matrix.M43 - matrix.M33, matrix.M44 - matrix.M34);
             Near = new Plane(matrix.M41 + matrix.M31, matrix.M42 + matrix.M32, matrix.M43 + matrix.M33, matrix.M44 + matrix.M34);*/
 
-            this.Matrix = matrix;
+            Matrix = matrix;
         }
 
 
@@ -131,17 +128,17 @@ namespace engenious
         public bool Contains(BoundingBox box, out CollisionType type)
         {
             type = CollisionType.Outside;
-            for (int i = 0; i < _planes.Length; i++)
+            for (var i = 0; i < _planes.Length; i++)
             {
-                float d = _planes[i].D;
+                var d = _planes[i].D;
                 Vector3 vn, vp;
-                Vector3 n = _planes[i].Normal;
+                var n = _planes[i].Normal;
                 PVertex(n, box, out vn, out vp);
 
-                float a = vp.Dot(n) + d;
+                var a = vp.Dot(n) + d;
                 if (a < 0)//TODO: validate
                     return false;
-                float b = vp.Dot(n) + d;
+                var b = vp.Dot(n) + d;
                 if (b < 0)
                     type = CollisionType.Intersect;
             }

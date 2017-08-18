@@ -1,11 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
-using System.Data;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using ContentTool.Models;
 using engenious.Pipeline;
@@ -15,7 +10,7 @@ namespace ContentTool.Viewer.Viewers
     [ViewerInfo(".spritefont", false)]
     public partial class SpriteFontViewer : UserControl, IViewer
     {
-        SpriteFontContent spf;
+        private SpriteFontContent _spf;
 
         public SpriteFontViewer()
         {
@@ -25,7 +20,7 @@ namespace ContentTool.Viewer.Viewers
 
         public Control GetViewer(ContentFile file)
         {
-            spf = new SpriteFontContent(file.FilePath);
+            _spf = new SpriteFontContent(file.FilePath);
 
             return this;
         }
@@ -37,16 +32,16 @@ namespace ContentTool.Viewer.Viewers
 
         private void FillComboBox()
         {
-            string selected = fontComboBox.SelectedItem?.ToString();
+            var selected = fontComboBox.SelectedItem?.ToString();
             //_cmbFontName.Items.Clear();
             var families = FontFamily.Families.Select(x => x.Name).Distinct().ToArray();
             Array.Sort(families);
-            for (int i = fontComboBox.Items.Count - 1; i >= 0; i--)
+            for (var i = fontComboBox.Items.Count - 1; i >= 0; i--)
             {
                 if (!families.Contains(fontComboBox.Items[i]?.ToString()))
                     fontComboBox.Items.RemoveAt(i);
             }
-            for (int i = 0; i < families.Length; i++)
+            for (var i = 0; i < families.Length; i++)
             {
                 if (!fontComboBox.Items.Contains(families[i]))
                 {

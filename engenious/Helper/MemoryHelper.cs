@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Reflection;
 using System.Reflection.Emit;
 
-
-namespace engenious
+namespace engenious.Helper
 {
     public class MemoryHelper
     {
@@ -15,7 +13,7 @@ namespace engenious
             var dynamicMethod = new DynamicMethod(
                 "copybulk",
                 null,
-                new Type[] { typeof(IntPtr),typeof( IntPtr),typeof(uint) });
+                new[] { typeof(IntPtr),typeof( IntPtr),typeof(uint) });
 
             var gen = dynamicMethod.GetILGenerator();
             gen.Emit(OpCodes.Ldarg_0);

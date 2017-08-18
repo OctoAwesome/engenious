@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 
-namespace engenious.Content
+namespace engenious.Content.Serialization
 {
     [SuppressMessage("ReSharper", "InconsistentNaming")]
     public enum TextureContentFormat

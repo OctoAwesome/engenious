@@ -1,11 +1,15 @@
-﻿namespace ContentTool.Viewer.Viewers
+﻿using System.ComponentModel;
+using System.Drawing;
+using System.Windows.Forms;
+
+namespace ContentTool.Viewer.Viewers
 {
     partial class BitmapViewer
     {
         /// <summary> 
         /// Erforderliche Designervariable.
         /// </summary>
-        private System.ComponentModel.IContainer components = null;
+        private IContainer components = null;
 
         /// <summary> 
         /// Verwendete Ressourcen bereinigen.
@@ -28,34 +32,34 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.pictureBox = new System.Windows.Forms.PictureBox();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).BeginInit();
+            this.pictureBox = new PictureBox();
+            ((ISupportInitialize)(this.pictureBox)).BeginInit();
             this.SuspendLayout();
             // 
             // pictureBox
             // 
-            this.pictureBox.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pictureBox.Dock = DockStyle.Fill;
             this.pictureBox.InitialImage = null;
-            this.pictureBox.Location = new System.Drawing.Point(0, 0);
+            this.pictureBox.Location = new Point(0, 0);
             this.pictureBox.Name = "pictureBox";
-            this.pictureBox.Size = new System.Drawing.Size(150, 150);
-            this.pictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.pictureBox.Size = new Size(150, 150);
+            this.pictureBox.SizeMode = PictureBoxSizeMode.Zoom;
             this.pictureBox.TabIndex = 0;
             this.pictureBox.TabStop = false;
             // 
             // BitmapViewer
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoScaleDimensions = new SizeF(6F, 13F);
+            this.AutoScaleMode = AutoScaleMode.Font;
             this.Controls.Add(this.pictureBox);
             this.Name = "BitmapViewer";
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).EndInit();
+            ((ISupportInitialize)(this.pictureBox)).EndInit();
             this.ResumeLayout(false);
 
         }
 
         #endregion
 
-        private System.Windows.Forms.PictureBox pictureBox;
+        private PictureBox pictureBox;
     }
 }

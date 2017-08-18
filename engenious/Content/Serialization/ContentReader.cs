@@ -12,11 +12,9 @@ namespace engenious.Content.Serialization
 
         public T Read<T>(ContentManager manager)
         {
-            string name = ReadString();
-            IContentTypeReader typeReader = manager.GetReader(name);
-            if (typeReader == null)
-                return default(T);
-            return Read<T>(manager, typeReader);
+            var name = ReadString();
+            var typeReader = manager.GetReader(name);
+            return typeReader == null ? default(T) : Read<T>(manager, typeReader);
         }
 
         public T Read<T>(ContentManager manager, IContentTypeReader typeReader)

@@ -56,8 +56,8 @@
             source.X = (((source.X - X) / Width) * 2f) - 1f;
             source.Y = -((((source.Y - Y) / Height) * 2f) - 1f);
             source.Z = (source.Z - MinDepth) / (MaxDepth - MinDepth);
-            Vector3 vector = Vector3.Transform(source, matrix);
-            float a = (((source.X * matrix.M14) + (source.Y * matrix.M24)) + (source.Z * matrix.M34)) + matrix.M44;
+            var vector = Vector3.Transform(source, matrix);
+            var a = (((source.X * matrix.M14) + (source.Y * matrix.M24)) + (source.Z * matrix.M34)) + matrix.M44;
             //float a = (((source.X * matrix.M41) + (source.Y * matrix.M42)) + (source.Z * matrix.M43)) + matrix.M44;
             vector.X = vector.X / a;
             vector.Y = vector.Y / a;
@@ -74,8 +74,8 @@
         public Vector3 Project(Vector3 source, Matrix matrix)
         {
 
-            Vector3 vector = Vector3.Transform(source, matrix);
-            float a = (((source.X * matrix.M41) + (source.Y * matrix.M42)) + (source.Z * matrix.M43)) + matrix.M44;
+            var vector = Vector3.Transform(source, matrix);
+            var a = (((source.X * matrix.M41) + (source.Y * matrix.M42)) + (source.Z * matrix.M43)) + matrix.M44;
 
             vector.X = vector.X / a;
             vector.Y = vector.Y / a;

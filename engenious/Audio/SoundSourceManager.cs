@@ -42,7 +42,7 @@ namespace engenious.Audio
         }
         public int Dequeue()
         {
-            int source = _available.Last();
+            var source = _available.Last();
             _available.RemoveAt(_available.Count-1);
             _inUse.Add(source);
             return source;
@@ -63,9 +63,9 @@ namespace engenious.Audio
         public void Update()
         {
             lock(_playing){
-                for (int i=_playing.Count-1;i>=0;i--)
+                for (var i=_playing.Count-1;i>=0;i--)
                 {
-                    int sid = _playing[i];
+                    var sid = _playing[i];
                     var sei = _playingInstances[i];
                     if (AL.GetSourceState(sid) == ALSourceState.Stopped)
                     {

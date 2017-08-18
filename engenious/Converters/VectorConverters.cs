@@ -16,10 +16,10 @@ namespace engenious
             if (s == null)
                 return base.ConvertFrom(context, culture, value);
 
-            string val = s.Trim();
+            var val = s.Trim();
             if (val.StartsWith("[") && val.EndsWith("]"))
                 val = val.Substring(1,val.Length-2);
-            string[] splt = val.Split(new[]{','},2,StringSplitOptions.RemoveEmptyEntries);
+            var splt = val.Split(new[]{','},2,StringSplitOptions.RemoveEmptyEntries);
             float x,y;
             if (float.TryParse(splt[0].Trim(),NumberStyles.Float,CultureInfo.InvariantCulture.NumberFormat,out x) && float.TryParse(splt[1].Trim(),NumberStyles.Float,CultureInfo.InvariantCulture.NumberFormat,out y))
             {
@@ -39,10 +39,10 @@ namespace engenious
             var s = value as string;
             if (s == null)
                 return base.ConvertFrom(context, culture, value);
-            string val = s.Trim();
+            var val = s.Trim();
             if (val.StartsWith("[") && val.EndsWith("]"))
                 val = val.Substring(1,val.Length-2);
-            string[] splt = val.Split(new[]{','},3,StringSplitOptions.RemoveEmptyEntries);
+            var splt = val.Split(new[]{','},3,StringSplitOptions.RemoveEmptyEntries);
             float x,y,z;
             if (float.TryParse(splt[0].Trim(),NumberStyles.Float,CultureInfo.InvariantCulture.NumberFormat,out x) && float.TryParse(splt[1].Trim(),NumberStyles.Float,CultureInfo.InvariantCulture.NumberFormat,out y) && float.TryParse(splt[2].Trim(),NumberStyles.Float,CultureInfo.InvariantCulture.NumberFormat,out z))
             {
@@ -62,10 +62,10 @@ namespace engenious
             var s = value as string;
             if (s == null)
                 return base.ConvertFrom(context, culture, value);
-            string val = s.Trim();
+            var val = s.Trim();
             if (val.StartsWith("[") && val.EndsWith("]"))
                 val = val.Substring(1,val.Length-2);
-            string[] splt = val.Split(new[]{','},4,StringSplitOptions.RemoveEmptyEntries);
+            var splt = val.Split(new[]{','},4,StringSplitOptions.RemoveEmptyEntries);
             float x,y,z,w;
             if (float.TryParse(splt[0].Trim(),NumberStyles.Float,CultureInfo.InvariantCulture.NumberFormat,out x) && float.TryParse(splt[1].Trim(),NumberStyles.Float,CultureInfo.InvariantCulture.NumberFormat,out y) && float.TryParse(splt[2].Trim(),NumberStyles.Float,CultureInfo.InvariantCulture.NumberFormat,out z) && float.TryParse(splt[3].Trim(),NumberStyles.Float,CultureInfo.InvariantCulture.NumberFormat,out w))
             {
