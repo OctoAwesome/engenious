@@ -5,6 +5,8 @@ using System.Threading;
 using System.Windows.Forms;
 using ContentTool.Forms.Dialogs;
 using ContentTool.Models;
+using ContentTool.Viewer;
+using engenious.Graphics;
 using Timer = System.Windows.Forms.Timer;
 
 namespace ContentTool.Forms
@@ -56,6 +58,7 @@ namespace ContentTool.Forms
         }
 
         private ContentProject _project;
+        public IViewer CurrentViewer { get; private set; }
 
         private LoadingDialog _loadingDialog = new LoadingDialog();
         private readonly Timer _loadingTimer = new Timer();
@@ -119,7 +122,8 @@ namespace ContentTool.Forms
             projectTreeView.SelectedContentItemChanged += i => OnItemSelect?.Invoke(i);
             projectTreeView.Refreshed += (s, e) => ViewReloaded?.Invoke(this, e);
 
-            alwaysShowLogToolStripMenuItem.CheckedChanged += (s, e) => splitContainer_right.Panel2Collapsed = !alwaysShowLogToolStripMenuItem.Checked;
+            alwaysShowLogToolStripMenuItem.CheckedChanged += (s, e) =>
+                splitContainer_right.Panel2Collapsed = !alwaysShowLogToolStripMenuItem.Checked;
         }
 
         public void ShowItemButtons(bool value)
@@ -149,11 +153,18 @@ namespace ContentTool.Forms
 
         public bool ShowCloseWithoutSavingConfirmation()
         {
-            var result = MessageBox.Show($"There are unsaved changes. {Environment.NewLine} Do you want to save the project before closing it?", "Unsaved changes", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
+            var result =
+                MessageBox.Show(
+                    $"There are unsaved changes. {Environment.NewLine} Do you want to save the project before closing it?",
+                    "Unsaved changes", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
             if (result == DialogResult.Cancel)
                 return false;
             if (result != DialogResult.Yes) return true;
-            SaveProjectClick?.Invoke(Project);
+            if (CurrentViewer != null && CurrentViewer.UnsavedChanges)
+                CurrentViewer.Save();
+            if (_project.HasUnsavedChanges)
+                SaveProjectClick?.Invoke(Project);
+            
             return true;
         }
 
@@ -210,14 +221,36 @@ namespace ContentTool.Forms
         void IMainShell.Invoke(Delegate d) => Invoke(d);
         void IMainShell.BeginInvoke(Delegate d) => BeginInvoke(d);
 
-        public void ShowViewer(Control viewer)
+        public void ShowViewer(IViewer viewer, ContentFile file)
         {
+            if (CurrentViewer != null)
+            {
+                if (CurrentViewer.UnsavedChanges)
+                {
+                    if (MessageBox.Show($"This file '{CurrentViewer.ContentFile.Name}' has unsaved changes. Do you want to save them?",
+                            "Save changes?", MessageBoxButtons.YesNo,
+                            MessageBoxIcon.Warning) == DialogResult.Yes)
+                        CurrentViewer.Save();
+                    else
+                        CurrentViewer.Discard();
+                }
+                if (CurrentViewer.History != null)
+                {
+                    _project.History.Remove(CurrentViewer.History);
+                }
+            }
             splitContainer_right.Panel1.Controls.Clear();
 
-            if (viewer == null)
+            var viewerControl = viewer?.GetViewerControl(file);
+            if (viewerControl == null)
                 return;
-            viewer.Dock = DockStyle.Fill;
-            splitContainer_right.Panel1.Controls.Add(viewer);
+            
+            CurrentViewer = viewer;
+            
+            _project.History.Add(viewer.History);
+            viewerControl.Dock = DockStyle.Fill;
+
+            splitContainer_right.Panel1.Controls.Add(viewerControl);
         }
 
         public void HideViewer() => splitContainer_right.Panel1.Controls.Clear();
@@ -250,7 +283,10 @@ namespace ContentTool.Forms
         public void ShowAbout() => new AboutBox().ShowDialog();
 
         public bool ShowNotFoundDelete()
-            => (MessageBox.Show("This file could not be found. " + Environment.NewLine + "Do you want to remove it from the Project?", "File not found!", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes);
+            => (MessageBox.Show(
+                    "This file could not be found. " + Environment.NewLine +
+                    "Do you want to remove it from the Project?", "File not found!", MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Warning) == DialogResult.Yes);
 
         public event EventHandler ViewReloaded;
 
@@ -280,7 +316,7 @@ namespace ContentTool.Forms
 
         private void MainShell_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (Project == null || !Project.HasUnsavedChanges) return;
+            if (Project == null || !Project.HasUnsavedChanges && !(CurrentViewer != null && CurrentViewer.UnsavedChanges)) return;
             if (!ShowCloseWithoutSavingConfirmation())
                 e.Cancel = true;
         }
@@ -313,7 +349,7 @@ namespace ContentTool.Forms
 
         public void SuspendRendering()
         {
-            System.Threading.Interlocked.Increment(ref _suspendCount);
+            Interlocked.Increment(ref _suspendCount);
             projectTreeView.SuspendRendering();
         }
 

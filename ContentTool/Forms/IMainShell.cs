@@ -2,12 +2,14 @@
 using System.Drawing;
 using System.Windows.Forms;
 using ContentTool.Models;
+using ContentTool.Viewer;
 using static ContentTool.Delegates;
 
 namespace ContentTool.Forms
 {
     public interface IMainShell
     {
+        IViewer CurrentViewer { get; }
         ContentProject Project { get; set; }
         bool IsRenderingSuspended { get; }
 
@@ -27,7 +29,7 @@ namespace ContentTool.Forms
         void ShowLoading(string title = "Please wait...");
         void HideLoading();
 
-        void ShowViewer(Control viewer);
+        void ShowViewer(IViewer viewer,ContentFile file);
         void HideViewer();
 
         void RenameItem(ContentItem item);

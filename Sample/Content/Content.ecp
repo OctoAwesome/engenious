@@ -17,12 +17,12 @@
     <ContentFile>
       <Name>simple.glsl</Name>
       <Processor>EffectProcessor</Processor>
-      <Importer>EffectImporter</Importer>
+      <Importer>Effect Importer</Importer>
     </ContentFile>
     <ContentFile>
       <Name>blub_x.ogg</Name>
       <Processor>AudioProcessor</Processor>
-      <Importer>WaveImporter</Importer>
+      <Importer>Wave Importer</Importer>
       <OutputFormat>0</OutputFormat>
     </ContentFile>
   </Contents>

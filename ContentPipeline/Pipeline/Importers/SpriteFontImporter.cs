@@ -70,9 +70,41 @@ namespace engenious.Pipeline
             }
         }
 
+        public void Save(string fileName)
+        {
+            var doc = new XmlDocument();
+            using (var xml = new XmlTextWriter(fileName, Encoding.UTF8))
+            {
+                xml.Formatting = Formatting.Indented;
+                xml.WriteStartDocument();
+
+                xml.WriteStartElement("EngeniousFont");
+
+                xml.WriteElementString("FontName", FontName);
+                xml.WriteElementString("Size", Size.ToString());
+                xml.WriteElementString("Spacing", Spacing.ToString());
+                xml.WriteElementString("UseKerning", UseKerning.ToString());
+                xml.WriteElementString("Style", styleToString(Style));
+                xml.WriteElementString("DefaultCharacter", DefaultCharacter.ToString());
+
+
+                xml.WriteStartElement("CharacterRegions");
+
+                foreach (var cr in CharacterRegions)
+                    cr.WriteToXml(xml);
+
+                xml.WriteEndElement();
+
+
+                xml.WriteEndElement();
+
+                xml.WriteEndDocument();
+            }
+        }
+
         private void ParseCharacterRegion(XmlElement rootNode)
         {
-            foreach (XmlElement region in rootNode.ChildNodes.OfType<XmlElement>())
+            foreach (var region in rootNode.ChildNodes.OfType<XmlElement>())
             {
                 if (region.Name == "CharacterRegion")
                 {
@@ -91,18 +123,38 @@ namespace engenious.Pipeline
                     }
                     if (start != null && end != null)
                     {
-                        CharacterRegions.Add(new CharacterRegion(start, end,DefaultCharacter.HasValue? DefaultCharacter.Value:'*'));//TODO: default default character
+                        CharacterRegions.Add(new CharacterRegion(start, end,
+                            DefaultCharacter ?? '*')); //TODO: default default character
                     }
                 }
             }
         }
 
 
+        private string styleToString(FontStyle fontStyle)
+        {
+            if (fontStyle == FontStyle.Regular)
+                return fontStyle.ToString();
+            StringBuilder str = new StringBuilder();
+            foreach (var style in Enum.GetValues(typeof(FontStyle)).OfType<FontStyle>())
+            {
+                if (style == FontStyle.Regular)
+                    continue;
+                if (fontStyle.HasFlag(style))
+                {
+                    if (str.Length > 0)
+                        str.Append(' ');
+
+                    str.Append(style.ToString());
+                }
+            }
+            return str.ToString();
+        }
 
         private FontStyle parseStyle(string styles)
         {
             FontStyle fontStyle = FontStyle.Regular;
-            foreach(var style in styles.Split(new[]{' '},StringSplitOptions.RemoveEmptyEntries))
+            foreach (var style in styles.Split(new[] {' '}, StringSplitOptions.RemoveEmptyEntries))
             {
                 switch (style)
                 {
@@ -124,34 +176,30 @@ namespace engenious.Pipeline
                 }
             }
             return fontStyle;
-                
         }
 
 
+        public string FontName { get; set; }
 
-        public string FontName{ get; private set; }
+        public int Size { get; set; }
 
-        public int Size{ get; private set; }
+        public int Spacing { get; set; }
 
-        public int Spacing{ get; private set; }
+        public bool UseKerning { get; set; }
 
-        public bool UseKerning{ get; private set; }
+        public FontStyle Style { get; set; }
 
-        public FontStyle Style{ get; private set; }
+        public char? DefaultCharacter { get; set; }
 
-        public char? DefaultCharacter{ get; private set; }
-
-        public List<CharacterRegion> CharacterRegions{ get; private set; }
-
-        
+        public List<CharacterRegion> CharacterRegions { get; set; }
     }
 
-    public class CharacterRegion
+    public class CharacterRegion : IEquatable<CharacterRegion>
     {
         private static int ParseAddress(string characterAddress)
         {
             if (characterAddress.StartsWith("0x"))
-                return Convert.ToInt32(characterAddress.Substring(2),16);
+                return Convert.ToInt32(characterAddress.Substring(2), 16);
             return int.Parse(characterAddress);
         }
 
@@ -164,13 +212,12 @@ namespace engenious.Pipeline
 
         private char _defaultChar;
 
-        public CharacterRegion(string start, string end, char defaultChar)
+        public CharacterRegion(string start, string end, char defaultChar = '*')
             : this(ParseAddress(start), ParseAddress(end), defaultChar)
         {
-            
         }
 
-        public CharacterRegion(int start, int end, char defaultChar)
+        public CharacterRegion(int start, int end, char defaultChar = '*')
         {
             Start = start;
             End = end;
@@ -185,9 +232,43 @@ namespace engenious.Pipeline
             }
         }
 
-        public int Start{ get; }
+        internal void WriteToXml(XmlTextWriter xml)
+        {
+            xml.WriteStartElement("CharacterRegion");
 
-        public int End{ get; }
+            xml.WriteElementString("Start", Start.ToString());
+            xml.WriteElementString("End", End.ToString());
+
+            xml.WriteEndElement();
+        }
+
+        public int Start { get; }
+
+        public int End { get; }
+
+        public bool Equals(CharacterRegion other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return _defaultChar == other._defaultChar && Start == other.Start && End == other.End;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != GetType()) return false;
+            return Equals((CharacterRegion) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hashCode = Start;
+                hashCode = (hashCode * 397) ^ End;
+                return hashCode;
+            }
+        }
     }
 }
-

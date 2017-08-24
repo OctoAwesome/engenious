@@ -55,6 +55,24 @@ namespace ContentTool.Models
                 OnPropertyChanged(old,value);
             }
         }
+        /// <summary>
+        /// The content project
+        /// </summary>
+        [Browsable(false)]
+        public virtual ContentProject Project {
+            get
+            {
+                var x = this;
+                ContentProject proj = null;
+                while ((proj = (x as ContentProject)) == null)
+                {
+                    x = x?.Parent;
+                    if (x == null)
+                        break;
+                }
+                return proj;
+            }
+        }
 
         private ContentItem _parent;
 

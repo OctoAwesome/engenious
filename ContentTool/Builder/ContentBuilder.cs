@@ -59,6 +59,9 @@ namespace ContentTool.Builder
         {
             _buildThread = new Thread(() => {
                 IsBuilding = true;
+
+                if (Project.HasUnsavedChanges)
+                    Project.Save();
                 CleanThread();
                 BuildThread(Project);
                 IsBuilding = false;
