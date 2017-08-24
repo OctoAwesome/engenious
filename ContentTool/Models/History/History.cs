@@ -3,9 +3,10 @@ using System.Collections.Generic;
 
 namespace ContentTool.Models.History
 {
-    public class History : IHistoryItem
+    public class History : IHistory
     {
-        public event EventHandler HistoryChanged; 
+        public event EventHandler HistoryChanged;
+        public event EventHandler HistoryItemAdded;
         private bool _isWorking;
         private readonly Stack<IHistoryItem> _undo, _redo;
 
@@ -20,7 +21,8 @@ namespace ContentTool.Models.History
             if (_isWorking)
                 return;
             _undo.Push(item);
-            HistoryChanged?.Invoke(this,EventArgs.Empty);
+            HistoryItemAdded?.Invoke(this, EventArgs.Empty);
+            HistoryChanged?.Invoke(this, EventArgs.Empty);
         }
 
         public bool CanUndo => _undo.Count > 0;
@@ -33,8 +35,8 @@ namespace ContentTool.Models.History
             item.Undo();
             _isWorking = false;
             _redo.Push(item);
-            
-            HistoryChanged?.Invoke(this,EventArgs.Empty);
+
+            HistoryChanged?.Invoke(this, EventArgs.Empty);
         }
 
         public void Redo()
@@ -44,8 +46,8 @@ namespace ContentTool.Models.History
             item.Redo();
             _isWorking = false;
             _undo.Push(item);
-            
-            HistoryChanged?.Invoke(this,EventArgs.Empty);
+
+            HistoryChanged?.Invoke(this, EventArgs.Empty);
         }
     }
 }

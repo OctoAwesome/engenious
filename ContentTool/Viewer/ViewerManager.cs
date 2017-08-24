@@ -30,15 +30,15 @@ namespace ContentTool.Viewer
             }
         }
 
-        public Control GetViewer(ContentFile item)
+        public IViewer GetViewer(ContentFile item)
         {
             if (_viewers.TryGetValue(Path.GetExtension(item.FilePath), out IViewer viewer))
-                return viewer.GetViewer(item);
+                return viewer;
             if (!_viewerTypes.TryGetValue(Path.GetExtension(item.FilePath), out Type type))
                 return null;
             var view = (IViewer)Activator.CreateInstance(type);
             _viewers.Add(Path.GetExtension(item.FilePath), view);
-            return view.GetViewer(item);
+            return view;
         }
 
 

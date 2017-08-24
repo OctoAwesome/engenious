@@ -5,6 +5,8 @@ using System.Threading;
 using System.Windows.Forms;
 using ContentTool.Forms.Dialogs;
 using ContentTool.Models;
+using ContentTool.Viewer;
+using engenious.Graphics;
 using Timer = System.Windows.Forms.Timer;
 
 namespace ContentTool.Forms
@@ -56,6 +58,7 @@ namespace ContentTool.Forms
         }
 
         private ContentProject _project;
+        public IViewer CurrentViewer { get; private set; }
 
         private LoadingDialog _loadingDialog = new LoadingDialog();
         private readonly Timer _loadingTimer = new Timer();
@@ -157,7 +160,11 @@ namespace ContentTool.Forms
             if (result == DialogResult.Cancel)
                 return false;
             if (result != DialogResult.Yes) return true;
-            SaveProjectClick?.Invoke(Project);
+            if (CurrentViewer != null && CurrentViewer.UnsavedChanges)
+                CurrentViewer.Save();
+            if (_project.HasUnsavedChanges)
+                SaveProjectClick?.Invoke(Project);
+            
             return true;
         }
 
@@ -214,14 +221,36 @@ namespace ContentTool.Forms
         void IMainShell.Invoke(Delegate d) => Invoke(d);
         void IMainShell.BeginInvoke(Delegate d) => BeginInvoke(d);
 
-        public void ShowViewer(Control viewer)
+        public void ShowViewer(IViewer viewer, ContentFile file)
         {
+            if (CurrentViewer != null)
+            {
+                if (CurrentViewer.UnsavedChanges)
+                {
+                    if (MessageBox.Show($"This file '{CurrentViewer.ContentFile.Name}' has unsaved changes. Do you want to save them?",
+                            "Save changes?", MessageBoxButtons.YesNo,
+                            MessageBoxIcon.Warning) == DialogResult.Yes)
+                        CurrentViewer.Save();
+                    else
+                        CurrentViewer.Discard();
+                }
+                if (CurrentViewer.History != null)
+                {
+                    _project.History.Remove(CurrentViewer.History);
+                }
+            }
             splitContainer_right.Panel1.Controls.Clear();
 
-            if (viewer == null)
+            var viewerControl = viewer?.GetViewerControl(file);
+            if (viewerControl == null)
                 return;
-            viewer.Dock = DockStyle.Fill;
-            splitContainer_right.Panel1.Controls.Add(viewer);
+            
+            CurrentViewer = viewer;
+            
+            _project.History.Add(viewer.History);
+            viewerControl.Dock = DockStyle.Fill;
+
+            splitContainer_right.Panel1.Controls.Add(viewerControl);
         }
 
         public void HideViewer() => splitContainer_right.Panel1.Controls.Clear();
@@ -238,6 +267,17 @@ namespace ContentTool.Forms
         {
             if (!IsRenderingSuspended)
                 projectTreeView.RecalculateView();
+        }
+
+        public void WaitProgress(int progress)
+        {
+            progress = Math.Min(Math.Max(0, progress), 100);
+            toolStripProgressBar.Style = ProgressBarStyle.Continuous;
+
+            toolStripProgressBar.Value = progress;
+
+            if (_loadingDialog != null)
+                _loadingDialog.Progress = progress;
         }
 
         public void ShowAbout() => new AboutBox().ShowDialog();
@@ -276,7 +316,7 @@ namespace ContentTool.Forms
 
         private void MainShell_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (Project == null || !Project.HasUnsavedChanges) return;
+            if (Project == null || !Project.HasUnsavedChanges && !(CurrentViewer != null && CurrentViewer.UnsavedChanges)) return;
             if (!ShowCloseWithoutSavingConfirmation())
                 e.Cancel = true;
         }

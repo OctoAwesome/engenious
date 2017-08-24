@@ -85,7 +85,8 @@ namespace engenious.Pipeline
             {
                 if (throwAll || ex.NativeErrorCode != 2) //File not found
                     throw;
-                _syncContext.Send(o =>
+                
+                _syncContext?.Send(o =>
                 {
                     using (var ofd = new OpenFileDialog())
                     {

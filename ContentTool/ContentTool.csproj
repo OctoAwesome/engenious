@@ -23,6 +23,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -114,6 +115,8 @@
     <Compile Include="Models\History\HistoryCollectionChange.cs" />
     <Compile Include="Models\History\HistoryItem.cs" />
     <Compile Include="Models\History\HistoryPropertyChange.cs" />
+    <Compile Include="Models\History\HistoryUnion.cs" />
+    <Compile Include="Models\History\IHistory.cs" />
     <Compile Include="Models\History\IHistoryItem.cs" />
     <Compile Include="Models\ObservableList.cs" />
     <Compile Include="Observer\INotifyPropertyValueChanged.cs" />
@@ -229,8 +232,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="SharpFontDependencies" BeforeTargets="PrepareForBuild">
     <!-- TODO try and make this smarter, at least pick x86/x64, maybe see which MSVC redist is available -->
-    <Copy SourceFiles="..\packages\SharpFont.Dependencies.2.6\bin\msvc12\x64\freetype6.dll" DestinationFolder="$(OutputPath)\x64" Condition="Exists('..\packages\SharpFont.Dependencies.2.6\bin\msvc12\x64\freetype6.dll')"/>
-    <Copy SourceFiles="..\packages\SharpFont.Dependencies.2.6\bin\msvc12\x86\freetype6.dll" DestinationFolder="$(OutputPath)\x86" Condition="Exists('..\packages\SharpFont.Dependencies.2.6\bin\msvc12\x86\freetype6.dll')"/>
-
+    <Copy SourceFiles="..\packages\SharpFont.Dependencies.2.6\bin\msvc12\x64\freetype6.dll" DestinationFolder="$(OutputPath)\x64" Condition="Exists('..\packages\SharpFont.Dependencies.2.6\bin\msvc12\x64\freetype6.dll')" />
+    <Copy SourceFiles="..\packages\SharpFont.Dependencies.2.6\bin\msvc12\x86\freetype6.dll" DestinationFolder="$(OutputPath)\x86" Condition="Exists('..\packages\SharpFont.Dependencies.2.6\bin\msvc12\x86\freetype6.dll')" />
   </Target>
 </Project>
