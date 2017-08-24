@@ -86,9 +86,13 @@ namespace ContentTool.Models
         /// </summary>
         [Browsable(false)]
         public bool HasUnsavedChanges { get; private set; }
-
+        
         [Browsable(false)]
-        public History.History History { get; }
+        public HistoryUnion History { get; }
+
+        private readonly History.History _internalHistory;
+        
+        
 
         /// <summary>
         /// Constructor
@@ -101,7 +105,9 @@ namespace ContentTool.Models
             ContentProjectPath = contentProjectPath;
             FilePath = folderPath;
 
-            History = new History.History();
+            _internalHistory = new History.History();
+            History = new HistoryUnion();
+            History.Add(_internalHistory);
 
 
             //ContentItemChanged += (a, b) => HasUnsavedChanges = true;
@@ -117,7 +123,7 @@ namespace ContentTool.Models
             var item = HistoryCollectionChange<ContentItem>.CreateInstance((sender as ContentFolder)?.Content, args);
             if (item == null)
                 throw new NotSupportedException();
-            History.Push(item);
+            _internalHistory.Push(item);
 
             //History.Push(new HistoryCollectionChange<ContentItem>(col,args.Action,(IList<ContentItem>)args.OldItems,(IList<ContentItem>)args.NewItems));
 
@@ -126,7 +132,7 @@ namespace ContentTool.Models
 
         private void OnPropertyChangedT(object o, PropertyValueChangedEventArgs args)
         {
-            History.Push(new HistoryPropertyChange(o, args.PropertyName, args.OldValue, args.NewValue));
+            _internalHistory.Push(new HistoryPropertyChange(o, args.PropertyName, args.OldValue, args.NewValue));
             HasUnsavedChanges = true;
         }
 

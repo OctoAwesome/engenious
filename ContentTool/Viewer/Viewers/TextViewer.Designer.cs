@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -40,7 +41,6 @@ namespace ContentTool.Viewer.Viewers
             this.richTextBox.Dock = DockStyle.Fill;
             this.richTextBox.Location = new Point(0, 0);
             this.richTextBox.Name = "richTextBox";
-            this.richTextBox.ReadOnly = true;
             this.richTextBox.Size = new Size(150, 150);
             this.richTextBox.TabIndex = 0;
             this.richTextBox.Text = "";

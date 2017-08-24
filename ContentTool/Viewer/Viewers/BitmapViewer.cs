@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.Windows.Forms;
 using ContentTool.Models;
+using ContentTool.Models.History;
 
 namespace ContentTool.Viewer.Viewers
 {
@@ -17,8 +18,10 @@ namespace ContentTool.Viewer.Viewers
             InitializeComponent();
         }
 
-        public Control GetViewer(ContentFile file)
+        public Control GetViewerControl(ContentFile file)
         {
+            History = new History();
+            ContentFile = file;
             _img = Image.FromFile(file.FilePath);
 
             if (_img.Height > Height || _img.Width > Width)
@@ -30,6 +33,21 @@ namespace ContentTool.Viewer.Viewers
 
             return this;
         }
+
+        public void Save()
+        {
+            
+        }
+
+        public void Discard()
+        {
+            
+        }
+
+        public IHistory History { get; private set; }
+
+        public bool UnsavedChanges => false;
+        public ContentFile ContentFile { get; private set; }
 
         protected override void OnClientSizeChanged(EventArgs e)
         {

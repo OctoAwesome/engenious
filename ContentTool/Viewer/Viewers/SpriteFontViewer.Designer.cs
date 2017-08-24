@@ -38,9 +38,9 @@ namespace ContentTool.Viewer.Viewers
             this.panel1 = new Panel();
             this.button_save = new Button();
             this.groupBox3 = new GroupBox();
-            this.button2 = new Button();
+            this.button_remove = new Button();
             this.button_add = new Button();
-            this.listView1 = new ListView();
+            this.list_characterRegions = new ListBox();
             this.groupBox1 = new GroupBox();
             this.fontComboBox = new FontComboBox();
             this.checkBox_italics = new CheckBox();
@@ -110,9 +110,9 @@ namespace ContentTool.Viewer.Viewers
             this.groupBox3.Anchor = ((AnchorStyles)((((AnchorStyles.Top | AnchorStyles.Bottom) 
             | AnchorStyles.Left) 
             | AnchorStyles.Right)));
-            this.groupBox3.Controls.Add(this.button2);
+            this.groupBox3.Controls.Add(this.button_remove);
             this.groupBox3.Controls.Add(this.button_add);
-            this.groupBox3.Controls.Add(this.listView1);
+            this.groupBox3.Controls.Add(this.list_characterRegions);
             this.groupBox3.Location = new Point(3, 154);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new Size(244, 154);
@@ -120,15 +120,16 @@ namespace ContentTool.Viewer.Viewers
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Character Regions";
             // 
-            // button2
+            // button_remove
             // 
-            this.button2.Anchor = ((AnchorStyles)((AnchorStyles.Bottom | AnchorStyles.Left)));
-            this.button2.Location = new Point(89, 125);
-            this.button2.Name = "button2";
-            this.button2.Size = new Size(75, 23);
-            this.button2.TabIndex = 2;
-            this.button2.Text = "Remove";
-            this.button2.UseVisualStyleBackColor = true;
+            this.button_remove.Anchor = ((AnchorStyles)((AnchorStyles.Bottom | AnchorStyles.Left)));
+            this.button_remove.Location = new Point(89, 125);
+            this.button_remove.Name = "button_remove";
+            this.button_remove.Size = new Size(75, 23);
+            this.button_remove.TabIndex = 2;
+            this.button_remove.Text = "Remove";
+            this.button_remove.UseVisualStyleBackColor = true;
+            this.button_remove.Click += ButtonRemoveOnClick;
             // 
             // button_add
             // 
@@ -140,16 +141,16 @@ namespace ContentTool.Viewer.Viewers
             this.button_add.Text = "Add";
             this.button_add.UseVisualStyleBackColor = true;
             // 
-            // listView1
+            // list_characterRegions
             // 
-            this.listView1.Anchor = ((AnchorStyles)((((AnchorStyles.Top | AnchorStyles.Bottom) 
+            this.list_characterRegions.Anchor = ((AnchorStyles)((((AnchorStyles.Top | AnchorStyles.Bottom) 
             | AnchorStyles.Left) 
             | AnchorStyles.Right)));
-            this.listView1.Location = new Point(6, 19);
-            this.listView1.Name = "listView1";
-            this.listView1.Size = new Size(232, 100);
-            this.listView1.TabIndex = 0;
-            this.listView1.UseCompatibleStateImageBehavior = false;
+            this.list_characterRegions.Location = new Point(6, 19);
+            this.list_characterRegions.Name = "list_characterRegions";
+            this.list_characterRegions.Size = new Size(232, 100);
+            this.list_characterRegions.TabIndex = 0;
+            this.list_characterRegions.SelectedIndexChanged += ListCharacterRegionsOnSelectedIndexChanged;
             // 
             // groupBox1
             // 
@@ -430,6 +431,7 @@ namespace ContentTool.Viewer.Viewers
             this.numericUpDown_size.Name = "numericUpDown_size";
             this.numericUpDown_size.Size = new Size(68, 20);
             this.numericUpDown_size.TabIndex = 3;
+            this.numericUpDown_size.ValueChanged += NumericUpDownSizeOnValueChanged;
             // 
             // label2
             // 
@@ -488,6 +490,7 @@ namespace ContentTool.Viewer.Viewers
             this.numericUpDown_spacing.Name = "numericUpDown_spacing";
             this.numericUpDown_spacing.Size = new Size(45, 20);
             this.numericUpDown_spacing.TabIndex = 5;
+            this.numericUpDown_spacing.ValueChanged += NumericUpDownSpacingOnValueChanged;
             // 
             // previewBox
             // 
@@ -540,9 +543,9 @@ namespace ContentTool.Viewer.Viewers
         private CheckBox checkBox_italics;
         private CheckBox checkBox_bold;
         private GroupBox groupBox3;
-        private Button button2;
+        private Button button_remove;
         private Button button_add;
-        private ListView listView1;
+        private ListBox list_characterRegions;
         private Button button_save;
         private FontComboBox fontComboBox;
     }

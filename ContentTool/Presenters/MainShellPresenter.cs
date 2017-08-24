@@ -29,8 +29,13 @@ namespace ContentTool.Presenters
 
             shell.ShowInExplorerItemClick += Shell_ShowInExplorerItemClick;
             shell.SaveProjectClick += i => SaveProject();
-            shell.OpenProjectClick += (s, e) => { if (CloseProject()) OpenProject(); };
+            shell.OpenProjectClick += (s, e) =>
+            {
+                if (CloseProject()) OpenProject();
+            };
             shell.BuildItemClick += Shell_BuildItemClick;
+            shell.RebuildClick += ShellOnRebuildClick;
+            shell.CleanClick += ShellOnCleanClick;
             shell.OnItemSelect += Shell_OnItemSelect;
 
             shell.UndoClick += ShellOnUndoClick;
@@ -47,7 +52,6 @@ namespace ContentTool.Presenters
             shell.OnShellLoad += Shell_OnShellLoad;
 
             _viewerManager = new ViewerManager();
-
         }
 
         private void Shell_RemoveItemClick(ContentItem item)
@@ -65,8 +69,7 @@ namespace ContentTool.Presenters
 
         private void Shell_OnShellLoad(object sender, EventArgs e)
         {
-
-            if (string.IsNullOrEmpty(_arguments.ContentProject))//TODO perhaps use laodi
+            if (string.IsNullOrEmpty(_arguments.ContentProject)) //TODO perhaps use laodi
                 OpenProject(@"D:\Projects\engenious\Sample\Content\Content.ecp");
             else
                 OpenProject(_arguments.ContentProject);
@@ -91,7 +94,6 @@ namespace ContentTool.Presenters
             Directory.CreateDirectory(newFolder.FilePath);
             folder.Content.Add(newFolder);
             _shell.RenameItem(newFolder);
-
         }
 
 
@@ -105,10 +107,10 @@ namespace ContentTool.Presenters
             _shell.ShowLoading();
             _shell.SuspendRendering();
 
+            var progress = new Action<int>(i => _shell.WaitProgress(i));
             var t = new Thread(() =>
             {
-
-                FileHelper.CopyDirectory(src, dest, fld);
+                FileHelper.CopyDirectory(src, dest, fld, FileAction.Ask, progress);
                 _shell.Invoke(new MethodInvoker(() =>
                 {
                     _shell.ResumeRendering();
@@ -116,7 +118,6 @@ namespace ContentTool.Presenters
                 }));
             });
             t.Start();
-
         }
 
 
@@ -125,7 +126,7 @@ namespace ContentTool.Presenters
             var fld = (item as ContentFolder) ?? (item?.Parent as ContentFolder) ?? _shell.Project;
 
 
-            var files = _shell.ShowFileSelectDialog();
+            string[] files = _shell.ShowFileSelectDialog();
             if (files == null)
                 return;
 
@@ -155,13 +156,13 @@ namespace ContentTool.Presenters
         {
             if (item.Error.HasFlag(ContentErrorType.NotFound) && _shell.ShowNotFoundDelete())
             {
-                var p = (ContentFolder)item.Parent;
+                var p = (ContentFolder) item.Parent;
                 p.Content.Remove(item);
             }
 
             var file = item as ContentFile;
             if (file != null)
-                _shell.ShowViewer(_viewerManager.GetViewer(file));
+                _shell.ShowViewer(_viewerManager.GetViewer(file), file);
             else
                 _shell.HideViewer();
         }
@@ -171,12 +172,37 @@ namespace ContentTool.Presenters
             if (_builder == null)
             {
                 _builder = new ContentBuilder(_shell.Project);
-                _builder.BuildMessage += a => _shell.Invoke(((MethodInvoker)(() => _shell.WriteLineLog(a.Message))));
-
+                _builder.BuildMessage += a => _shell.Invoke(((MethodInvoker) (() => _shell.WriteLineLog(a.Message))));
             }
             _shell.ShowLog();
 
+            if(_shell.CurrentViewer != null && _shell.CurrentViewer.UnsavedChanges)
+                _shell.CurrentViewer.Save();//TODO: always save together with project?
             _builder.Build(item);
+        }
+        private void ShellOnCleanClick(object sender, EventArgs eventArgs)
+        {
+            if (_builder == null)
+            {
+                _builder = new ContentBuilder(_shell.Project);
+                _builder.BuildMessage += a => _shell.Invoke(((MethodInvoker) (() => _shell.WriteLineLog(a.Message))));
+            }
+            _shell.ShowLog();
+
+            _builder.Clean();
+        }
+
+        private void ShellOnRebuildClick(object sender, EventArgs eventArgs)
+        {            if (_builder == null)
+            {
+                _builder = new ContentBuilder(_shell.Project);
+                _builder.BuildMessage += a => _shell.Invoke(((MethodInvoker) (() => _shell.WriteLineLog(a.Message))));
+            }
+            _shell.ShowLog();
+
+            if(_shell.CurrentViewer != null && _shell.CurrentViewer.UnsavedChanges)
+                _shell.CurrentViewer.Save();//TODO: always save together with project?
+            _builder.Rebuild();
         }
 
         public bool CloseProject()
@@ -215,8 +241,10 @@ namespace ContentTool.Presenters
                         _shell.Project = proj;
                         _shell.WriteLineLog("Opened " + path);
                     }));
-
-
+                }
+                catch
+                {
+                    // ignore
                 }
                 finally
                 {
@@ -224,7 +252,6 @@ namespace ContentTool.Presenters
                 }
             });
             t.Start();
-
         }
 
         public void SaveProject(string path = null)
@@ -235,7 +262,7 @@ namespace ContentTool.Presenters
                 _shell.Project.Save(path);
         }
 
-        private void Shell_ShowInExplorerItemClick(ContentItem item)
+        private void Shell_ShowInExplorerItemClick(Models.ContentItem item)
         {
             var path = item.FilePath;
             if (item is ContentFile)
