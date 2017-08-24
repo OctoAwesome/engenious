@@ -34,6 +34,8 @@ namespace ContentTool.Presenters
                 if (CloseProject()) OpenProject();
             };
             shell.BuildItemClick += Shell_BuildItemClick;
+            shell.RebuildClick += ShellOnRebuildClick;
+            shell.CleanClick += ShellOnCleanClick;
             shell.OnItemSelect += Shell_OnItemSelect;
 
             shell.UndoClick += ShellOnUndoClick;
@@ -177,6 +179,30 @@ namespace ContentTool.Presenters
             if(_shell.CurrentViewer != null && _shell.CurrentViewer.UnsavedChanges)
                 _shell.CurrentViewer.Save();//TODO: always save together with project?
             _builder.Build(item);
+        }
+        private void ShellOnCleanClick(object sender, EventArgs eventArgs)
+        {
+            if (_builder == null)
+            {
+                _builder = new ContentBuilder(_shell.Project);
+                _builder.BuildMessage += a => _shell.Invoke(((MethodInvoker) (() => _shell.WriteLineLog(a.Message))));
+            }
+            _shell.ShowLog();
+
+            _builder.Clean();
+        }
+
+        private void ShellOnRebuildClick(object sender, EventArgs eventArgs)
+        {            if (_builder == null)
+            {
+                _builder = new ContentBuilder(_shell.Project);
+                _builder.BuildMessage += a => _shell.Invoke(((MethodInvoker) (() => _shell.WriteLineLog(a.Message))));
+            }
+            _shell.ShowLog();
+
+            if(_shell.CurrentViewer != null && _shell.CurrentViewer.UnsavedChanges)
+                _shell.CurrentViewer.Save();//TODO: always save together with project?
+            _builder.Rebuild();
         }
 
         public bool CloseProject()
