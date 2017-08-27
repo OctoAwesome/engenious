@@ -108,7 +108,8 @@ namespace ContentTool.Builder
 
         protected void InternalBuildItem(ContentItem item, string outputDestination, ContentImporterContext importerContext, ContentProcessorContext processorContext)
         {
-            outputDestination = Path.Combine(outputDestination, item.Name);
+            if (!(item is ContentProject))
+                outputDestination = Path.Combine(outputDestination, item.Name);
 
             var folder = item as ContentFolder;
             if(folder != null)

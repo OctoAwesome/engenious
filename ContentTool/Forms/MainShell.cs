@@ -78,7 +78,11 @@ namespace ContentTool.Forms
 
             projectTreeView.Shell = this;
             projectTreeView.SelectedContentItemChanged += ProjectTreeView_SelectedContentItemChanged;
-            projectTreeView.AddItemClick += (i, t) => AddItemClick?.Invoke(i, t);
+            projectTreeView.AddExistingItemClick +=
+                (f) => AddExistingItemClick?.Invoke(f);
+            projectTreeView.AddExistingFolderClick +=
+                (f) => AddExistingFolderClick?.Invoke(f);
+            projectTreeView.AddNewFolderClick += (f) => AddNewFolderClick?.Invoke(f);
             projectTreeView.BuildItemClick += i => BuildItemClick?.Invoke(i);
             projectTreeView.RemoveItemClick += i => { RemoveItemClick?.Invoke(i); };
             projectTreeView.ShowInExplorerItemClick += i => ShowInExplorerItemClick?.Invoke(i);
@@ -111,6 +115,10 @@ namespace ContentTool.Forms
             aboutToolStripMenuItem1.Click += (s, e) => { OnAboutClick?.Invoke(this, EventArgs.Empty); };
             helpToolStripMenuItem.Click += (s, e) => OnHelpClick?.Invoke(this, EventArgs.Empty);
 
+            existingItemToolStripMenuItem.Click +=
+                (s, e) => AddExistingItemClick?.Invoke(projectTreeView.SelectedFolder);
+            existingFolderToolStripMenuItem.Click +=
+                (s, e) => AddExistingFolderClick?.Invoke(projectTreeView.SelectedFolder);
             newFolderToolStripMenuItem.Click += (s, e) => AddNewFolderClick?.Invoke(projectTreeView.SelectedFolder);
             removeToolStripMenuItem.Click += (s, e) => RemoveItemClick?.Invoke(projectTreeView.SelectedItem);
             renameToolStripMenuItem.Click += (s, e) => RenameItemClick?.Invoke(projectTreeView.SelectedItem);
@@ -125,6 +133,7 @@ namespace ContentTool.Forms
             alwaysShowLogToolStripMenuItem.CheckedChanged += (s, e) =>
                 splitContainer_right.Panel2Collapsed = !alwaysShowLogToolStripMenuItem.Checked;
         }
+
 
         public void ShowItemButtons(bool value)
         {
@@ -292,7 +301,6 @@ namespace ContentTool.Forms
 
         public event Delegates.ItemActionEventHandler BuildItemClick;
         public event Delegates.ItemActionEventHandler ShowInExplorerItemClick;
-        public event Delegates.ItemAddActionEventHandler AddItemClick;
         public event Delegates.ItemActionEventHandler RemoveItemClick;
 
         public event EventHandler NewProjectClick;
@@ -306,7 +314,6 @@ namespace ContentTool.Forms
         public event Delegates.FolderAddActionEventHandler AddExistingFolderClick;
         public event Delegates.FolderAddActionEventHandler AddNewFolderClick;
         public event Delegates.FolderAddActionEventHandler AddExistingItemClick;
-        public event Delegates.ItemAddActionEventHandler AddNewItemClick;
         public event EventHandler OnAboutClick;
         public event EventHandler OnHelpClick;
 

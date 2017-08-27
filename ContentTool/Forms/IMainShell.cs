@@ -56,7 +56,6 @@ namespace ContentTool.Forms
 
         event ItemActionEventHandler BuildItemClick;
         event ItemActionEventHandler ShowInExplorerItemClick;
-        event ItemAddActionEventHandler AddItemClick;
         event ItemActionEventHandler RemoveItemClick;
         event ItemActionEventHandler RenameItemClick;
 
@@ -68,7 +67,6 @@ namespace ContentTool.Forms
         event FolderAddActionEventHandler AddExistingFolderClick;
         event FolderAddActionEventHandler AddNewFolderClick;
         event FolderAddActionEventHandler AddExistingItemClick;
-        event ItemAddActionEventHandler AddNewItemClick;
 
         event EventHandler NewProjectClick;
         event EventHandler OpenProjectClick;
