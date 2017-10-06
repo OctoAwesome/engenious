@@ -17,7 +17,9 @@ namespace engenious.Content.Pipeline
             SyncContext = syncContext;
             WorkingDirectory = workingDirectory;
             //BaseWindow = new GameWindow();
-            _window = new NativeWindow();
+            //_window = new NativeWindow(100,100,"Test",GameWindowFlags.Default, GraphicsMode.Default, DisplayDevice.Default);
+
+            _window = new GameWindow(100, 100);
 
             ThreadingHelper.Initialize(_window.WindowInfo, 3, 1, GraphicsContextFlags.Debug);
             GraphicsDevice = new GraphicsDevice(null, ThreadingHelper.Context);
