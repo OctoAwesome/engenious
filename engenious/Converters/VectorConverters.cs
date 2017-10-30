@@ -28,6 +28,33 @@ namespace engenious
             return base.ConvertFrom(context, culture, value);
         }
     }
+    
+    public class Vector2dConverter : ExpandableObjectConverter
+    {
+        public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
+        {
+            return sourceType == typeof(string) || base.CanConvertFrom(context, sourceType);
+        }
+        public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
+        {
+            var s = value as string;
+            if (s == null)
+                return base.ConvertFrom(context, culture, value);
+
+            var val = s.Trim();
+            if (val.StartsWith("[") && val.EndsWith("]"))
+                val = val.Substring(1,val.Length-2);
+            var splt = val.Split(new[]{','},2,StringSplitOptions.RemoveEmptyEntries);
+            double x,y;
+            if (double.TryParse(splt[0].Trim(),NumberStyles.Float,CultureInfo.InvariantCulture.NumberFormat,out x) 
+                && double.TryParse(splt[1].Trim(),NumberStyles.Float,CultureInfo.InvariantCulture.NumberFormat,out y))
+            {
+                return new Vector2d(x,y);
+            }
+            return base.ConvertFrom(context, culture, value);
+        }
+    }
+    
     public class Vector3Converter : ExpandableObjectConverter
     {
         public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
