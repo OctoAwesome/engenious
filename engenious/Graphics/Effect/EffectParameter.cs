@@ -187,6 +187,30 @@ namespace engenious.Graphics
                 }
             }
         }
+        
+        public void SetValue(Vector2d value)
+        {
+            using (Execute.OnUiContext)
+            {
+                foreach (var param in _parameters)
+                {
+                    param.Pass.Apply();
+                    param.SetValue(value);
+                }
+            }
+        }
+
+        public void SetValue(Vector2d[] values)
+        {
+            using (Execute.OnUiContext)
+            {
+                foreach (var param in _parameters)
+                {
+                    param.Pass.Apply();
+                    param.SetValue(values);
+                }
+            }
+        }
 
         public void SetValue(Vector3 value)
         {

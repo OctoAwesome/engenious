@@ -101,6 +101,22 @@ namespace engenious.Graphics
                 }
             }
         }
+        
+        public unsafe void SetValue(Vector2d value)
+        {
+            GL.Uniform2(Location,1,(double*)&value);
+        }
+
+        public void SetValue(Vector2d[] values)
+        {
+            unsafe
+            {
+                fixed(Vector2d* ptr = values)
+                {
+                    GL.Uniform2(Location, values.Length, (double*)ptr);//TODO: verify?
+                }
+            }
+        }
 
         public unsafe void SetValue(Vector3 value)
         {
