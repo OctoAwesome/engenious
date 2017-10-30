@@ -61,6 +61,16 @@ namespace engenious.Graphics
         {
             GL.Uniform1(Location, values.Length, values);
         }
+        
+        public void SetValue(double values)
+        {
+            GL.Uniform1(Location,values);
+        }
+        
+        public void SetValue(double[] values)
+        {
+            GL.Uniform1(Location,values.Length,values);
+        }
 
         public void SetValue(string value)
         {
@@ -153,7 +163,6 @@ namespace engenious.Graphics
         {
             GL.UniformBlockBinding(Pass.Program,Location,value.Ubo);
         }
-			
     }
 }
 

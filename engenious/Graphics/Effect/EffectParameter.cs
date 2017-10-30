@@ -116,6 +116,30 @@ namespace engenious.Graphics
             }
         }
 
+        public void SetValue(double value)
+        {
+            using (Execute.OnUiContext)
+            {
+                foreach (var param in _parameters)
+                {
+                    param.Pass.Apply();
+                    param.SetValue(value);
+                }
+            }
+        }
+
+        public void SetValue(double[] values)
+        {
+            using (Execute.OnUiContext)
+            {
+                foreach (var param in _parameters)
+                {
+                    param.Pass.Apply();
+                    param.SetValue(values);
+                }
+            }
+        }
+
         public void SetValue(string value)
         {
             using (Execute.OnUiContext)
