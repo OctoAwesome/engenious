@@ -60,6 +60,7 @@ namespace ContentTool.Forms
             this.toolStripMenuItem5 = new System.Windows.Forms.ToolStripSeparator();
             this.alwaysShowLogToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.integrateProjectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem4 = new System.Windows.Forms.ToolStripSeparator();
             this.aboutToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
@@ -107,6 +108,7 @@ namespace ContentTool.Forms
             this.projectToolStripMenuItem,
             this.editToolStripMenuItem,
             this.buildToolStripMenuItem,
+            this.integrateProjectToolStripMenuItem,
             this.aboutToolStripMenuItem});
             this.menuStrip_main.Location = new System.Drawing.Point(0, 0);
             this.menuStrip_main.Name = "menuStrip_main";
@@ -319,6 +321,14 @@ namespace ContentTool.Forms
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
             this.aboutToolStripMenuItem.Size = new System.Drawing.Size(52, 20);
             this.aboutToolStripMenuItem.Text = "About";
+            
+            // 
+            // integrateProjectToolStripMenuItem
+            // 
+            this.integrateProjectToolStripMenuItem.Name = "integrateProjectToolStripMenuItem";
+            this.integrateProjectToolStripMenuItem.Size = new System.Drawing.Size(52, 20);
+            this.integrateProjectToolStripMenuItem.Text = "Integrate in C#";
+            this.integrateProjectToolStripMenuItem.Enabled = false;
             // 
             // helpToolStripMenuItem
             // 
@@ -606,6 +616,7 @@ namespace ContentTool.Forms
         private ToolStripMenuItem projectToolStripMenuItem;
         private ToolStripMenuItem editToolStripMenuItem;
         private ToolStripMenuItem buildToolStripMenuItem;
+        private ToolStripMenuItem integrateProjectToolStripMenuItem;
         private ToolStripMenuItem aboutToolStripMenuItem;
         private ToolStrip toolStrip_main;
         private SplitContainer splitContainer_main;

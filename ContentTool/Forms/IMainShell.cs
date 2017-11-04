@@ -19,6 +19,7 @@ namespace ContentTool.Forms
         bool ShowCloseWithoutSavingConfirmation();
         string ShowOpenDialog();
         string ShowSaveAsDialog();
+        string ShowIntegrateDialog();
 
         void WriteLog(string text, Color color = default(Color));
         void WriteLineLog(string text, Color color = default(Color));
@@ -75,6 +76,8 @@ namespace ContentTool.Forms
         event ItemActionEventHandler SaveProjectAsClick;
 
         event ItemActionEventHandler OnItemSelect;
+        
+        event EventHandler IntegrateCSClick;
 
         event EventHandler OnAboutClick;
         event EventHandler OnHelpClick;

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Drawing;
+using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
 using ContentTool.Forms.Dialogs;
@@ -40,7 +42,8 @@ namespace ContentTool.Forms
                             buildToolStripMenuItem.Enabled = toolStripButton_save.Enabled =
                                 toolStripButton_newItemAdd.Enabled = toolStripButton_existingItemAdd.Enabled =
                                     toolStripButton_newFolderAdd.Enabled = toolStripButton_existingFolderAdd.Enabled =
-                                        toolStripButton_build.Enabled = toolStripButton_clean.Enabled = value != null;
+                                        toolStripButton_build.Enabled = toolStripButton_clean.Enabled =
+                                            integrateProjectToolStripMenuItem.Enabled = value != null;
             }
         }
 
@@ -125,6 +128,7 @@ namespace ContentTool.Forms
             toolStripButton_newFolderAdd.Click += (s, e) => AddNewFolderClick?.Invoke(projectTreeView.SelectedFolder);
             //toolStripButton_newItemAdd.Click += (s, e) => AddNewItemClick?.Invoke(projectTreeView.SelectedFolder, baaah);
 
+            integrateProjectToolStripMenuItem.Click += (s, e) => IntegrateCSClick?.Invoke(this, EventArgs.Empty);
             aboutToolStripMenuItem1.Click += (s, e) => { OnAboutClick?.Invoke(this, EventArgs.Empty); };
             helpToolStripMenuItem.Click += (s, e) => OnHelpClick?.Invoke(this, EventArgs.Empty);
 
@@ -205,6 +209,18 @@ namespace ContentTool.Forms
                 sfd.FileName = Project?.ContentProjectPath ?? "Content.ecp";
                 sfd.OverwritePrompt = true;
                 return sfd.ShowDialog() == DialogResult.OK ? sfd.FileName : null;
+            }
+        }
+
+        public string ShowIntegrateDialog()
+        {
+            using (var ofd = new OpenFileDialog())
+            {
+                ofd.Title = "C# Project to add Content Project";
+                ofd.Filter = "C# Project(.csproj)|*.csproj";
+                string path = Path.GetDirectoryName(Project?.ContentProjectPath ?? "") ?? "";
+                ofd.FileName = Directory.GetFiles(path,"*.csproj")?.FirstOrDefault();
+                return ofd.ShowDialog() == DialogResult.OK ? ofd.FileName : null;
             }
         }
 
@@ -328,6 +344,7 @@ namespace ContentTool.Forms
         public event Delegates.FolderAddActionEventHandler AddExistingFolderClick;
         public event Delegates.FolderAddActionEventHandler AddNewFolderClick;
         public event Delegates.FolderAddActionEventHandler AddExistingItemClick;
+        public event EventHandler IntegrateCSClick;
         public event EventHandler OnAboutClick;
         public event EventHandler OnHelpClick;
 

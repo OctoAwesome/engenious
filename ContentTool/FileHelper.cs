@@ -17,6 +17,20 @@ namespace ContentTool
 
     class FileHelper
     {
+        public static string GetRelativePath(string parentPath, string subPath)
+        {
+            try
+            {
+                var parentUri = new Uri(parentPath);
+                var subUri = new Uri(subPath);
+                var relUri = parentUri.MakeRelativeUri(subUri);
+                return relUri.ToString();
+            }
+            catch (Exception ex)
+            {
+                return subPath;
+            }
+        }
         public static FileAction CopyDirectory(string src, string dest, ContentFolder fld,
             FileAction action = FileAction.Ask, Action<int> progress=null)
         {
