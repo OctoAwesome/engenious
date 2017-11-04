@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Drawing;
+using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
 using ContentTool.Forms.Dialogs;
 using ContentTool.Models;
 using ContentTool.Viewer;
-using engenious.Graphics;
 using Timer = System.Windows.Forms.Timer;
 
 namespace ContentTool.Forms
@@ -34,6 +35,15 @@ namespace ContentTool.Forms
                     _project.CollectionChanged += ProjectOnCollectionChanged;
                 }
                 projectTreeView.Project = Project;
+
+                buildToolStripMenuItem.Enabled = editToolStripMenuItem.Enabled =
+                    saveProjectToolStripMenuItem.Enabled = saveProjectAsToolStripMenuItem.Enabled =
+                        closeProjectToolStripMenuItem.Enabled = editToolStripMenuItem.Enabled =
+                            buildToolStripMenuItem.Enabled = toolStripButton_save.Enabled =
+                                toolStripButton_newItemAdd.Enabled = toolStripButton_existingItemAdd.Enabled =
+                                    toolStripButton_newFolderAdd.Enabled = toolStripButton_existingFolderAdd.Enabled =
+                                        toolStripButton_build.Enabled = toolStripButton_clean.Enabled =
+                                            integrateProjectToolStripMenuItem.Enabled = value != null;
             }
         }
 
@@ -78,7 +88,11 @@ namespace ContentTool.Forms
 
             projectTreeView.Shell = this;
             projectTreeView.SelectedContentItemChanged += ProjectTreeView_SelectedContentItemChanged;
-            projectTreeView.AddItemClick += (i, t) => AddItemClick?.Invoke(i, t);
+            projectTreeView.AddExistingItemClick +=
+                f => AddExistingItemClick?.Invoke(f);
+            projectTreeView.AddExistingFolderClick +=
+                f => AddExistingFolderClick?.Invoke(f);
+            projectTreeView.AddNewFolderClick += f => AddNewFolderClick?.Invoke(f);
             projectTreeView.BuildItemClick += i => BuildItemClick?.Invoke(i);
             projectTreeView.RemoveItemClick += i => { RemoveItemClick?.Invoke(i); };
             projectTreeView.ShowInExplorerItemClick += i => ShowInExplorerItemClick?.Invoke(i);
@@ -88,6 +102,12 @@ namespace ContentTool.Forms
             closeProjectToolStripMenuItem.Click += (s, e) => CloseProjectClick?.Invoke(Project);
             saveProjectToolStripMenuItem.Click += (s, e) => SaveProjectClick?.Invoke(Project);
             saveProjectAsToolStripMenuItem.Click += (s, e) => SaveProjectAsClick?.Invoke(Project);
+
+            exitToolStripMenuItem.Click += (s, e) =>
+            {
+                CloseProjectClick?.Invoke(Project);
+                Application.Exit();
+            };
 
             toolStripButton_new.Click += (s, e) => NewProjectClick?.Invoke(this, EventArgs.Empty);
             toolStripButton_open.Click += (s, e) => OpenProjectClick?.Invoke(this, EventArgs.Empty);
@@ -108,9 +128,14 @@ namespace ContentTool.Forms
             toolStripButton_newFolderAdd.Click += (s, e) => AddNewFolderClick?.Invoke(projectTreeView.SelectedFolder);
             //toolStripButton_newItemAdd.Click += (s, e) => AddNewItemClick?.Invoke(projectTreeView.SelectedFolder, baaah);
 
+            integrateProjectToolStripMenuItem.Click += (s, e) => IntegrateCSClick?.Invoke(this, EventArgs.Empty);
             aboutToolStripMenuItem1.Click += (s, e) => { OnAboutClick?.Invoke(this, EventArgs.Empty); };
             helpToolStripMenuItem.Click += (s, e) => OnHelpClick?.Invoke(this, EventArgs.Empty);
 
+            existingItemToolStripMenuItem.Click +=
+                (s, e) => AddExistingItemClick?.Invoke(projectTreeView.SelectedFolder);
+            existingFolderToolStripMenuItem.Click +=
+                (s, e) => AddExistingFolderClick?.Invoke(projectTreeView.SelectedFolder);
             newFolderToolStripMenuItem.Click += (s, e) => AddNewFolderClick?.Invoke(projectTreeView.SelectedFolder);
             removeToolStripMenuItem.Click += (s, e) => RemoveItemClick?.Invoke(projectTreeView.SelectedItem);
             renameToolStripMenuItem.Click += (s, e) => RenameItemClick?.Invoke(projectTreeView.SelectedItem);
@@ -125,6 +150,7 @@ namespace ContentTool.Forms
             alwaysShowLogToolStripMenuItem.CheckedChanged += (s, e) =>
                 splitContainer_right.Panel2Collapsed = !alwaysShowLogToolStripMenuItem.Checked;
         }
+
 
         public void ShowItemButtons(bool value)
         {
@@ -164,7 +190,7 @@ namespace ContentTool.Forms
                 CurrentViewer.Save();
             if (_project.HasUnsavedChanges)
                 SaveProjectClick?.Invoke(Project);
-            
+
             return true;
         }
 
@@ -180,9 +206,21 @@ namespace ContentTool.Forms
             using (var sfd = new SaveFileDialog())
             {
                 sfd.Filter = "Engenious Content Project(.ecp)|*.ecp";
-                sfd.FileName = Project.ContentProjectPath;
+                sfd.FileName = Project?.ContentProjectPath ?? "Content.ecp";
                 sfd.OverwritePrompt = true;
                 return sfd.ShowDialog() == DialogResult.OK ? sfd.FileName : null;
+            }
+        }
+
+        public string ShowIntegrateDialog()
+        {
+            using (var ofd = new OpenFileDialog())
+            {
+                ofd.Title = "C# Project to add Content Project";
+                ofd.Filter = "C# Project(.csproj)|*.csproj";
+                string path = Path.GetDirectoryName(Project?.ContentProjectPath ?? "") ?? "";
+                ofd.FileName = Directory.GetFiles(path,"*.csproj")?.FirstOrDefault();
+                return ofd.ShowDialog() == DialogResult.OK ? ofd.FileName : null;
             }
         }
 
@@ -227,7 +265,8 @@ namespace ContentTool.Forms
             {
                 if (CurrentViewer.UnsavedChanges)
                 {
-                    if (MessageBox.Show($"This file '{CurrentViewer.ContentFile.Name}' has unsaved changes. Do you want to save them?",
+                    if (MessageBox.Show(
+                            $"This file '{CurrentViewer.ContentFile.Name}' has unsaved changes. Do you want to save them?",
                             "Save changes?", MessageBoxButtons.YesNo,
                             MessageBoxIcon.Warning) == DialogResult.Yes)
                         CurrentViewer.Save();
@@ -244,9 +283,9 @@ namespace ContentTool.Forms
             var viewerControl = viewer?.GetViewerControl(file);
             if (viewerControl == null)
                 return;
-            
+
             CurrentViewer = viewer;
-            
+
             _project.History.Add(viewer.History);
             viewerControl.Dock = DockStyle.Fill;
 
@@ -292,7 +331,6 @@ namespace ContentTool.Forms
 
         public event Delegates.ItemActionEventHandler BuildItemClick;
         public event Delegates.ItemActionEventHandler ShowInExplorerItemClick;
-        public event Delegates.ItemAddActionEventHandler AddItemClick;
         public event Delegates.ItemActionEventHandler RemoveItemClick;
 
         public event EventHandler NewProjectClick;
@@ -306,7 +344,7 @@ namespace ContentTool.Forms
         public event Delegates.FolderAddActionEventHandler AddExistingFolderClick;
         public event Delegates.FolderAddActionEventHandler AddNewFolderClick;
         public event Delegates.FolderAddActionEventHandler AddExistingItemClick;
-        public event Delegates.ItemAddActionEventHandler AddNewItemClick;
+        public event EventHandler IntegrateCSClick;
         public event EventHandler OnAboutClick;
         public event EventHandler OnHelpClick;
 
@@ -316,7 +354,8 @@ namespace ContentTool.Forms
 
         private void MainShell_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (Project == null || !Project.HasUnsavedChanges && !(CurrentViewer != null && CurrentViewer.UnsavedChanges)) return;
+            if (Project == null ||
+                !Project.HasUnsavedChanges && !(CurrentViewer != null && CurrentViewer.UnsavedChanges)) return;
             if (!ShowCloseWithoutSavingConfirmation())
                 e.Cancel = true;
         }

@@ -2,8 +2,10 @@
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Windows.Forms;
+using System.Xml.Linq;
 using ContentTool.Builder;
 using ContentTool.Forms;
 using ContentTool.Models;
@@ -33,6 +35,10 @@ namespace ContentTool.Presenters
             {
                 if (CloseProject()) OpenProject();
             };
+            shell.NewProjectClick += (s, e) =>
+            {
+                if (CloseProject()) NewProject();
+            };
             shell.BuildItemClick += Shell_BuildItemClick;
             shell.RebuildClick += ShellOnRebuildClick;
             shell.CleanClick += ShellOnCleanClick;
@@ -51,7 +57,138 @@ namespace ContentTool.Presenters
 
             shell.OnShellLoad += Shell_OnShellLoad;
 
+            shell.IntegrateCSClick += ShellOnIntegrateCsClick;
+
             _viewerManager = new ViewerManager();
+        }
+
+        private void ShellOnIntegrateCsClick(object sender, EventArgs eventArgs)
+        {
+            string csproj = _shell.ShowIntegrateDialog();
+            if (csproj == null || _shell.Project?.ContentProjectPath == null) return;
+
+            var csProjDir = Path.GetDirectoryName(csproj) ?? "";
+            string target = "";
+
+            string curDir = csProjDir;
+            string engVersion = "*";
+            if (File.Exists(Path.Combine(curDir, "packages.config")))
+            {
+                var pDoc = XDocument.Load(Path.Combine(curDir, "packages.config"));
+                var pEng = pDoc.Descendants().FirstOrDefault(x => x.Name.LocalName == "packages").Descendants()
+                    .FirstOrDefault(x =>
+                        x.Name.LocalName == "package" && x.Attribute(XName.Get("id"))?.Value == "engenious");
+                engVersion = pEng.Attribute(XName.Get("version"))?.Value ?? "*";
+            }
+            bool isPackageDir = false;
+            while (!(isPackageDir = File.Exists(Path.Combine(curDir, "packages", "repositories.config"))))
+            {
+                if (Directory.GetFiles(curDir, "*.sln").FirstOrDefault() != null)
+                    break;
+                curDir = Path.GetDirectoryName(curDir);
+            }
+            if (isPackageDir)
+            {
+                var dirs = Directory.GetDirectories(Path.Combine(curDir, "packages"), "engenious." + engVersion);
+                if (dirs.Length == 0)
+                {
+                    Path.GetDirectoryName(
+                        Path.GetDirectoryName(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)));
+                    target = Path.Combine(target ?? "", "build", "engenious.targets");
+                    if (!File.Exists(target))
+                    {
+                        MessageBox.Show("engenious.target not found!", "Error!", MessageBoxButtons.OK,
+                            MessageBoxIcon.Error);
+                        return;
+                    }
+                }
+                else if (dirs.Length == 1)
+                {
+                    target = Path.Combine(dirs[0], "build", "engenious.targets");
+                }
+                else
+                {
+                    //TODO find correct version
+                    target = Path.Combine(dirs[0], "build", "engenious.targets");
+                }
+            }
+
+
+            var doc = XDocument.Load(csproj);
+            var projectNode = doc.Descendants().FirstOrDefault(x => x.Name.LocalName.ToLower() == "project");
+
+            if (projectNode == null)
+                return;
+
+            var imports = projectNode.Descendants().Where(x => x.Name.LocalName.ToLower() == "import");
+
+            if (imports.FirstOrDefault(x =>
+            {
+                var relPath = x.Attribute("Project")?.Value;
+                if (relPath == null) return false;
+                relPath = relPath.Replace('\\', Path.DirectorySeparatorChar);
+                var path = Path.Combine(csProjDir, relPath);
+                if (Path.GetFileName(path) == "engenious.targets")
+                    return File.Exists(path);
+                return false;
+            }) == null)
+            {
+                //Add target import
+
+                var lastImport = imports.LastOrDefault() ?? projectNode.Descendants().LastOrDefault();
+
+                if (lastImport == null)
+                    return;
+
+                var importPath = FileHelper.GetRelativePath(Path.GetFullPath(csProjDir)+Path.DirectorySeparatorChar, Path.GetFullPath(target));
+                if (importPath == null)
+                    return;
+                importPath = importPath.Replace(Path.DirectorySeparatorChar, '\\');
+                var import = new XElement(XName.Get("Import"));
+                //<Import Project="..\packages\engenious.0.1.8\build\engenious.targets" Condition="Exists('..\packages\engenious.0.1.8\build\engenious.targets')" />
+                import.SetAttributeValue(XName.Get("Project"), importPath);
+                import.SetAttributeValue(XName.Get("Condition"),$"Exists('{importPath}')");
+                lastImport.AddAfterSelf(import);
+            }
+
+            var contentItem = projectNode.Descendants().Where(x =>
+                x.Name.LocalName.ToLower() == "itemgroup").SelectMany(x => x.Descendants()).FirstOrDefault(x =>
+                {
+                    var contentProjValue = x.Attribute("Include")?.Value;
+                    if (string.IsNullOrWhiteSpace(contentProjValue)) return false;
+                    contentProjValue = contentProjValue.Replace('\\', Path.DirectorySeparatorChar);
+                    contentProjValue = Path.Combine(csProjDir, contentProjValue);
+                    return Path.GetFullPath(contentProjValue) == Path.GetFullPath(_shell.Project?.ContentProjectPath);
+                }
+            );
+            if (contentItem == null)
+            {
+                //Add Content project
+                var lastItemGroup = projectNode.Descendants().LastOrDefault(x =>
+                    x.Name.LocalName.ToLower() == "itemgroup");
+                if (lastItemGroup == null)
+                    return;
+
+                // Add itemgroup
+                var contentItemGroup = new XElement(XName.Get("ItemGroup"));
+                contentItem = new XElement(XName.Get("EngeniousContentReference"));
+                var engeniousContentPath = FileHelper.GetRelativePath(Path.GetFullPath(csProjDir)+Path.DirectorySeparatorChar, Path.GetFullPath(_shell.Project?.ContentProjectPath));
+                if (engeniousContentPath == null)
+                    return;
+                engeniousContentPath = engeniousContentPath.Replace(Path.DirectorySeparatorChar, '\\');
+                contentItem.SetAttributeValue(XName.Get("Include"), engeniousContentPath);
+                contentItemGroup.AddFirst(contentItem);
+                lastItemGroup.AddAfterSelf(contentItemGroup);
+            }
+            else
+            {
+                //Content project as EngeniousContentReference
+                if (contentItem.Name.LocalName.ToLower() != "engeniouscontentreference")
+                {
+                    contentItem.Name = XName.Get("EngeniousContentReference");
+                }
+            }
+            doc.Save(csproj);//TODO remove empty namespaces?
         }
 
         private void Shell_RemoveItemClick(ContentItem item)
@@ -176,10 +313,11 @@ namespace ContentTool.Presenters
             }
             _shell.ShowLog();
 
-            if(_shell.CurrentViewer != null && _shell.CurrentViewer.UnsavedChanges)
-                _shell.CurrentViewer.Save();//TODO: always save together with project?
+            if (_shell.CurrentViewer != null && _shell.CurrentViewer.UnsavedChanges)
+                _shell.CurrentViewer.Save(); //TODO: always save together with project?
             _builder.Build(item);
         }
+
         private void ShellOnCleanClick(object sender, EventArgs eventArgs)
         {
             if (_builder == null)
@@ -193,15 +331,16 @@ namespace ContentTool.Presenters
         }
 
         private void ShellOnRebuildClick(object sender, EventArgs eventArgs)
-        {            if (_builder == null)
+        {
+            if (_builder == null)
             {
                 _builder = new ContentBuilder(_shell.Project);
                 _builder.BuildMessage += a => _shell.Invoke(((MethodInvoker) (() => _shell.WriteLineLog(a.Message))));
             }
             _shell.ShowLog();
 
-            if(_shell.CurrentViewer != null && _shell.CurrentViewer.UnsavedChanges)
-                _shell.CurrentViewer.Save();//TODO: always save together with project?
+            if (_shell.CurrentViewer != null && _shell.CurrentViewer.UnsavedChanges)
+                _shell.CurrentViewer.Save(); //TODO: always save together with project?
             _builder.Rebuild();
         }
 
@@ -219,6 +358,14 @@ namespace ContentTool.Presenters
             _shell.Project = null;
             _shell.ClearLog();
             return true;
+        }
+
+        public void NewProject()
+        {
+            string path = _shell.ShowSaveAsDialog();
+            if (path == null) return;
+            _shell.Project = new ContentProject("Content", path, Path.GetDirectoryName(path));
+            SaveProject();
         }
 
         public void OpenProject(string path = null)

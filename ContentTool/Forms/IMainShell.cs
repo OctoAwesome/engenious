@@ -19,6 +19,7 @@ namespace ContentTool.Forms
         bool ShowCloseWithoutSavingConfirmation();
         string ShowOpenDialog();
         string ShowSaveAsDialog();
+        string ShowIntegrateDialog();
 
         void WriteLog(string text, Color color = default(Color));
         void WriteLineLog(string text, Color color = default(Color));
@@ -56,7 +57,6 @@ namespace ContentTool.Forms
 
         event ItemActionEventHandler BuildItemClick;
         event ItemActionEventHandler ShowInExplorerItemClick;
-        event ItemAddActionEventHandler AddItemClick;
         event ItemActionEventHandler RemoveItemClick;
         event ItemActionEventHandler RenameItemClick;
 
@@ -68,7 +68,6 @@ namespace ContentTool.Forms
         event FolderAddActionEventHandler AddExistingFolderClick;
         event FolderAddActionEventHandler AddNewFolderClick;
         event FolderAddActionEventHandler AddExistingItemClick;
-        event ItemAddActionEventHandler AddNewItemClick;
 
         event EventHandler NewProjectClick;
         event EventHandler OpenProjectClick;
@@ -77,6 +76,8 @@ namespace ContentTool.Forms
         event ItemActionEventHandler SaveProjectAsClick;
 
         event ItemActionEventHandler OnItemSelect;
+        
+        event EventHandler IntegrateCSClick;
 
         event EventHandler OnAboutClick;
         event EventHandler OnHelpClick;
