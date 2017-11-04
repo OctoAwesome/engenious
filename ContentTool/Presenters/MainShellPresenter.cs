@@ -166,9 +166,11 @@ namespace ContentTool.Presenters
                 //Add Content project
                 var lastItemGroup = projectNode.Descendants().LastOrDefault(x =>
                     x.Name.LocalName.ToLower() == "itemgroup");
+                if (lastItemGroup == null)
+                    return;
 
                 // Add itemgroup
-                var contentItemGroup = new XElement(XNamespace.Get("ItemGroup"));
+                var contentItemGroup = new XElement(XName.Get("ItemGroup"));
                 contentItem = new XElement(XName.Get("EngeniousContentReference"));
                 var engeniousContentPath = FileHelper.GetRelativePath(Path.GetFullPath(csProjDir)+Path.DirectorySeparatorChar, Path.GetFullPath(_shell.Project?.ContentProjectPath));
                 if (engeniousContentPath == null)
