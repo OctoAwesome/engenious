@@ -154,6 +154,7 @@ namespace ContentTool.Forms
             this.saveProjectToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
             this.saveProjectToolStripMenuItem.Size = new System.Drawing.Size(277, 22);
             this.saveProjectToolStripMenuItem.Text = "&Save Project";
+            this.saveProjectToolStripMenuItem.Enabled = false;
             // 
             // saveProjectAsToolStripMenuItem
             // 
@@ -162,6 +163,7 @@ namespace ContentTool.Forms
             | System.Windows.Forms.Keys.S)));
             this.saveProjectAsToolStripMenuItem.Size = new System.Drawing.Size(277, 22);
             this.saveProjectAsToolStripMenuItem.Text = "Save Project &as";
+            this.saveProjectAsToolStripMenuItem.Enabled = false;
             // 
             // toolStripMenuItem2
             // 
@@ -173,6 +175,7 @@ namespace ContentTool.Forms
             this.closeProjectToolStripMenuItem.Name = "closeProjectToolStripMenuItem";
             this.closeProjectToolStripMenuItem.Size = new System.Drawing.Size(277, 22);
             this.closeProjectToolStripMenuItem.Text = "&Close Project";
+            this.closeProjectToolStripMenuItem.Enabled = false;
             // 
             // exitToolStripMenuItem
             // 
@@ -192,6 +195,7 @@ namespace ContentTool.Forms
             this.editToolStripMenuItem.Name = "editToolStripMenuItem";
             this.editToolStripMenuItem.Size = new System.Drawing.Size(39, 20);
             this.editToolStripMenuItem.Text = "&Edit";
+            this.editToolStripMenuItem.Enabled = false;
             // 
             // undoToolStripMenuItem
             // 
@@ -274,6 +278,7 @@ namespace ContentTool.Forms
             this.buildToolStripMenuItem.Name = "buildToolStripMenuItem";
             this.buildToolStripMenuItem.Size = new System.Drawing.Size(46, 20);
             this.buildToolStripMenuItem.Text = "Build";
+            this.buildToolStripMenuItem.Enabled = false;
             // 
             // buildToolStripMenuItem1
             // 
@@ -381,6 +386,7 @@ namespace ContentTool.Forms
             this.toolStripButton_save.Name = "toolStripButton_save";
             this.toolStripButton_save.Size = new System.Drawing.Size(24, 24);
             this.toolStripButton_save.Text = "Save";
+            this.toolStripButton_save.Enabled = false;
             // 
             // toolStripSeparator1
             // 
@@ -395,6 +401,7 @@ namespace ContentTool.Forms
             this.toolStripButton_newItemAdd.Name = "toolStripButton_newItemAdd";
             this.toolStripButton_newItemAdd.Size = new System.Drawing.Size(24, 24);
             this.toolStripButton_newItemAdd.Text = "Add new Item";
+            this.toolStripButton_newItemAdd.Enabled = false;
             // 
             // toolStripButton_existingItemAdd
             // 
@@ -404,6 +411,7 @@ namespace ContentTool.Forms
             this.toolStripButton_existingItemAdd.Name = "toolStripButton_existingItemAdd";
             this.toolStripButton_existingItemAdd.Size = new System.Drawing.Size(24, 24);
             this.toolStripButton_existingItemAdd.Text = "Add existing Item";
+            this.toolStripButton_existingItemAdd.Enabled = false;
             // 
             // toolStripButton_newFolderAdd
             // 
@@ -413,6 +421,7 @@ namespace ContentTool.Forms
             this.toolStripButton_newFolderAdd.Name = "toolStripButton_newFolderAdd";
             this.toolStripButton_newFolderAdd.Size = new System.Drawing.Size(24, 24);
             this.toolStripButton_newFolderAdd.Text = "Add new Folder";
+            this.toolStripButton_newFolderAdd.Enabled = false;
             // 
             // toolStripButton_existingFolderAdd
             // 
@@ -422,6 +431,7 @@ namespace ContentTool.Forms
             this.toolStripButton_existingFolderAdd.Name = "toolStripButton_existingFolderAdd";
             this.toolStripButton_existingFolderAdd.Size = new System.Drawing.Size(24, 24);
             this.toolStripButton_existingFolderAdd.Text = "Add existing Folder";
+            this.toolStripButton_existingFolderAdd.Enabled = false;
             // 
             // toolStripSeparator2
             // 
@@ -436,6 +446,7 @@ namespace ContentTool.Forms
             this.toolStripButton_build.Name = "toolStripButton_build";
             this.toolStripButton_build.Size = new System.Drawing.Size(24, 24);
             this.toolStripButton_build.Text = "Build";
+            this.toolStripButton_build.Enabled = false;
             // 
             // toolStripButton_clean
             // 
@@ -445,6 +456,7 @@ namespace ContentTool.Forms
             this.toolStripButton_clean.Name = "toolStripButton_clean";
             this.toolStripButton_clean.Size = new System.Drawing.Size(24, 24);
             this.toolStripButton_clean.Text = "Clean";
+            this.toolStripButton_clean.Enabled = false;
             // 
             // splitContainer_main
             // 

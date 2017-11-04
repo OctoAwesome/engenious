@@ -33,6 +33,10 @@ namespace ContentTool.Presenters
             {
                 if (CloseProject()) OpenProject();
             };
+            shell.NewProjectClick += (s, e) =>
+            {
+                if (CloseProject()) NewProject();
+            };
             shell.BuildItemClick += Shell_BuildItemClick;
             shell.RebuildClick += ShellOnRebuildClick;
             shell.CleanClick += ShellOnCleanClick;
@@ -221,6 +225,13 @@ namespace ContentTool.Presenters
             return true;
         }
 
+        public void NewProject()
+        {
+            string path = _shell.ShowSaveAsDialog();
+            if (path == null) return;
+            _shell.Project = new ContentProject("Content",path,Path.GetDirectoryName(path));
+            SaveProject();
+        }
         public void OpenProject(string path = null)
         {
             if (path == null)

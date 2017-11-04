@@ -6,7 +6,6 @@ using System.Windows.Forms;
 using ContentTool.Forms.Dialogs;
 using ContentTool.Models;
 using ContentTool.Viewer;
-using engenious.Graphics;
 using Timer = System.Windows.Forms.Timer;
 
 namespace ContentTool.Forms
@@ -34,6 +33,14 @@ namespace ContentTool.Forms
                     _project.CollectionChanged += ProjectOnCollectionChanged;
                 }
                 projectTreeView.Project = Project;
+
+                buildToolStripMenuItem.Enabled = editToolStripMenuItem.Enabled =
+                    saveProjectToolStripMenuItem.Enabled = saveProjectAsToolStripMenuItem.Enabled =
+                        closeProjectToolStripMenuItem.Enabled = editToolStripMenuItem.Enabled =
+                            buildToolStripMenuItem.Enabled = toolStripButton_save.Enabled =
+                                toolStripButton_newItemAdd.Enabled = toolStripButton_existingItemAdd.Enabled =
+                                    toolStripButton_newFolderAdd.Enabled = toolStripButton_existingFolderAdd.Enabled =
+                                        toolStripButton_build.Enabled = toolStripButton_clean.Enabled = value != null;
             }
         }
 
@@ -79,10 +86,10 @@ namespace ContentTool.Forms
             projectTreeView.Shell = this;
             projectTreeView.SelectedContentItemChanged += ProjectTreeView_SelectedContentItemChanged;
             projectTreeView.AddExistingItemClick +=
-                (f) => AddExistingItemClick?.Invoke(f);
+                f => AddExistingItemClick?.Invoke(f);
             projectTreeView.AddExistingFolderClick +=
-                (f) => AddExistingFolderClick?.Invoke(f);
-            projectTreeView.AddNewFolderClick += (f) => AddNewFolderClick?.Invoke(f);
+                f => AddExistingFolderClick?.Invoke(f);
+            projectTreeView.AddNewFolderClick += f => AddNewFolderClick?.Invoke(f);
             projectTreeView.BuildItemClick += i => BuildItemClick?.Invoke(i);
             projectTreeView.RemoveItemClick += i => { RemoveItemClick?.Invoke(i); };
             projectTreeView.ShowInExplorerItemClick += i => ShowInExplorerItemClick?.Invoke(i);
@@ -92,6 +99,12 @@ namespace ContentTool.Forms
             closeProjectToolStripMenuItem.Click += (s, e) => CloseProjectClick?.Invoke(Project);
             saveProjectToolStripMenuItem.Click += (s, e) => SaveProjectClick?.Invoke(Project);
             saveProjectAsToolStripMenuItem.Click += (s, e) => SaveProjectAsClick?.Invoke(Project);
+
+            exitToolStripMenuItem.Click += (s, e) =>
+            {
+                CloseProjectClick?.Invoke(Project);
+                Application.Exit();
+            };
 
             toolStripButton_new.Click += (s, e) => NewProjectClick?.Invoke(this, EventArgs.Empty);
             toolStripButton_open.Click += (s, e) => OpenProjectClick?.Invoke(this, EventArgs.Empty);
@@ -173,7 +186,7 @@ namespace ContentTool.Forms
                 CurrentViewer.Save();
             if (_project.HasUnsavedChanges)
                 SaveProjectClick?.Invoke(Project);
-            
+
             return true;
         }
 
@@ -189,7 +202,7 @@ namespace ContentTool.Forms
             using (var sfd = new SaveFileDialog())
             {
                 sfd.Filter = "Engenious Content Project(.ecp)|*.ecp";
-                sfd.FileName = Project.ContentProjectPath;
+                sfd.FileName = Project?.ContentProjectPath ?? "Content.ecp";
                 sfd.OverwritePrompt = true;
                 return sfd.ShowDialog() == DialogResult.OK ? sfd.FileName : null;
             }
@@ -236,7 +249,8 @@ namespace ContentTool.Forms
             {
                 if (CurrentViewer.UnsavedChanges)
                 {
-                    if (MessageBox.Show($"This file '{CurrentViewer.ContentFile.Name}' has unsaved changes. Do you want to save them?",
+                    if (MessageBox.Show(
+                            $"This file '{CurrentViewer.ContentFile.Name}' has unsaved changes. Do you want to save them?",
                             "Save changes?", MessageBoxButtons.YesNo,
                             MessageBoxIcon.Warning) == DialogResult.Yes)
                         CurrentViewer.Save();
@@ -253,9 +267,9 @@ namespace ContentTool.Forms
             var viewerControl = viewer?.GetViewerControl(file);
             if (viewerControl == null)
                 return;
-            
+
             CurrentViewer = viewer;
-            
+
             _project.History.Add(viewer.History);
             viewerControl.Dock = DockStyle.Fill;
 
@@ -323,7 +337,8 @@ namespace ContentTool.Forms
 
         private void MainShell_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (Project == null || !Project.HasUnsavedChanges && !(CurrentViewer != null && CurrentViewer.UnsavedChanges)) return;
+            if (Project == null ||
+                !Project.HasUnsavedChanges && !(CurrentViewer != null && CurrentViewer.UnsavedChanges)) return;
             if (!ShowCloseWithoutSavingConfirmation())
                 e.Cancel = true;
         }
