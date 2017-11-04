@@ -300,11 +300,11 @@ namespace ContentTool.Controls
 
             var addItem = new ToolStripMenuItem("Add");
             addItem.DropDownItems.Add(CreateToolStripMenuItem("Existing Item",
-                (s, e) => AddItemClick?.Invoke(SelectedFolder, AddType.ExistingItem)));
+                (s, e) => AddExistingItemClick?.Invoke(SelectedFolder)));
             addItem.DropDownItems.Add(CreateToolStripMenuItem("Existing Folder",
-                (s, e) => AddItemClick?.Invoke(SelectedFolder, AddType.ExistingFolder)));
+                (s, e) => AddExistingFolderClick?.Invoke(SelectedFolder)));
             addItem.DropDownItems.Add(CreateToolStripMenuItem("New Folder",
-                (s, e) => AddItemClick?.Invoke(SelectedFolder, AddType.NewFolder)));
+                (s, e) => AddNewFolderClick?.Invoke(SelectedFolder)));
             menu.Items.Add(addItem);
 
             menu.Items.Add(CreateToolStripMenuItem("Build", (s, e) => BuildItemClick?.Invoke(SelectedItem)));
@@ -405,7 +405,9 @@ namespace ContentTool.Controls
 
         public event ItemActionEventHandler BuildItemClick;
         public event ItemActionEventHandler ShowInExplorerItemClick;
-        public event ItemAddActionEventHandler AddItemClick;
+        public event FolderAddActionEventHandler AddExistingFolderClick;
+        public event FolderAddActionEventHandler AddNewFolderClick;
+        public event FolderAddActionEventHandler AddExistingItemClick;
         public event ItemActionEventHandler RemoveItemClick;
 
         private void treeView_AfterLabelEdit(object sender, NodeLabelEditEventArgs e)

@@ -205,14 +205,14 @@ namespace engenious.Graphics
             CheckError();*/
         }
 
-        public void DrawPrimitives(PrimitiveType primitiveType, int startVertex, int primitiveCount)
+        public void DrawPrimitives(PrimitiveType primitiveType, int startVertex, int vertexCount)
         {
 
             VertexBuffer.EnsureVao();
             VertexBuffer.Vao.Bind();
 
 
-            GL.DrawArrays((OpenTK.Graphics.OpenGL4.PrimitiveType)primitiveType, startVertex, primitiveCount * 3);
+            GL.DrawArrays((OpenTK.Graphics.OpenGL4.PrimitiveType)primitiveType, startVertex, vertexCount);
             CheckError();
         }
 
