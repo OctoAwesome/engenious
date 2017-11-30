@@ -28,7 +28,7 @@ namespace engenious
             var windowInfo = Window.BaseWindow.WindowInfo;
             if (Window.BaseWindow.Context == null)
             {//TODO: really - what was that even for?
-                var flags = GraphicsContextFlags.Default;
+                var flags = GraphicsContextFlags.ForwardCompatible;
                 var major = 1;
                 var minor = 0;
 
