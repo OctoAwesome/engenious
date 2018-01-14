@@ -11,23 +11,31 @@ namespace engenious
     {
         public float X
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]get;
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]set;
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get;
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            set;
         }
         public float Y
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]get;
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]set;
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get;
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            set;
         }
         public float Z
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]get;
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]set;
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get;
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            set;
         }
         public float W
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]get;
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]set;
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get;
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            set;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Vector4(float val)
@@ -64,22 +72,22 @@ namespace engenious
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public float Dot(Vector4 value2)
         {
-            return Dot(this,value2);
+            return Dot(this, value2);
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public Vector4 Cross(Vector4 value2,Vector4 value3)
+        public Vector4 Cross(Vector4 value2, Vector4 value3)
         {
-            return Cross(this,value2,value3);
+            return Cross(this, value2, value3);
         }
         [System.ComponentModel.Browsable(false)]
         public float Length
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get{return (float)Math.Sqrt(LengthSquared);}
+            get { return (float)Math.Sqrt(LengthSquared); }
         }
 
         [System.ComponentModel.Browsable(false)]
-        public float LengthSquared => Dot(this,this);
+        public float LengthSquared => Dot(this, this);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Normalize()
@@ -92,7 +100,7 @@ namespace engenious
         {
             return this / Length;
         }
-            
+
 
         #region IEquatable implementation
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -123,8 +131,12 @@ namespace engenious
         public static Vector4 operator +(Vector4 value1, Vector4 value2)
         {
 #if USE_SIMD
-            Fast.Vector4 res = *(Fast.Vector4*)&value1 + *(Fast.Vector4*)&value2;
-            return *(Vector4*)&res;
+            var tempVal1 = &value1;
+            var tempVal2 = &value2;
+            Fast.Vector4 res = *(Fast.Vector4*)tempVal1 + *(Fast.Vector4*)tempVal2;
+
+            var tempRes = &res;
+            return *(Vector4*)tempRes;
 #else
             value1.X += value2.X;
             value1.Y += value2.Y;
@@ -137,8 +149,13 @@ namespace engenious
         public static Vector4 operator -(Vector4 value1, Vector4 value2)
         {
 #if USE_SIMD
-            Fast.Vector4 res = *(Fast.Vector4*)&value1 - *(Fast.Vector4*)&value2;
-            return *(Vector4*)&res;
+            var tempVal1 = &value1;
+            var tempVal2 = &value2;
+
+            Fast.Vector4 res = *(Fast.Vector4*)tempVal1 - *(Fast.Vector4*)tempVal2;
+
+            var tempRes = &res;
+            return *(Vector4*)tempRes;
 #else
             value1.X -= value2.X;
             value1.Y -= value2.Y;
@@ -151,8 +168,11 @@ namespace engenious
         public static Vector4 operator -(Vector4 value)
         {
 #if USE_SIMD
-            Fast.Vector4 res = -*(Fast.Vector4*)&value;
-            return *(Vector4*)&res;
+            var tempVal = &value;
+            Fast.Vector4 res = -*(Fast.Vector4*)tempVal;
+
+            var tempRes = &res;
+            return *(Vector4*)tempRes;
 #else
             value.X = -value.X;
             value.Y = -value.Y;
@@ -166,8 +186,11 @@ namespace engenious
         public static Vector4 operator *(Vector4 value, float scalar)
         {
 #if USE_SIMD
-            Fast.Vector4 res = *(Fast.Vector4*)&value * scalar;
-            return *(Vector4*)&res;
+            var tempVal = &value;
+            Fast.Vector4 res = *(Fast.Vector4*)tempVal * scalar;
+
+            var tempRes = &res;
+            return *(Vector4*)tempRes;
 #else
             value.X *= scalar;
             value.Y *= scalar;
@@ -185,8 +208,12 @@ namespace engenious
         public static Vector4 operator *(Vector4 value1, Vector4 value2)//TODO: ugly as hell
         {
 #if USE_SIMD
-            Fast.Vector4 res = *(Fast.Vector4*)&value1 * *(Fast.Vector4*)&value2;
-            return *(Vector4*)&res;
+            var tempVal1 = &value1;
+            var tempVal2 = &value2;
+            Fast.Vector4 res = *(Fast.Vector4*)tempVal1 * *(Fast.Vector4*)tempVal2;
+
+            var tempRes = &res;
+            return *(Vector4*)tempRes;
 #else
             value1.X *= value2.X;
             value1.Y *= value2.Y;
@@ -199,8 +226,11 @@ namespace engenious
         public static Vector4 operator /(Vector4 value, float scalar)
         {
 #if USE_SIMD
-            Fast.Vector4 res = *(Fast.Vector4*)&value / scalar;
-            return *(Vector4*)&res;
+            var tempVal = &value;
+            Fast.Vector4 res = *(Fast.Vector4*)tempVal / scalar;
+
+            var tempRes = &res;
+            return *(Vector4*)tempRes;
 #else
             value.X /= scalar;
             value.Y /= scalar;
@@ -213,8 +243,12 @@ namespace engenious
         public static Vector4 operator /(Vector4 value1, Vector4 value2)//TODO: ugly as hell?
         {
 #if USE_SIMD
-            Fast.Vector4 res = *(Fast.Vector4*)&value1 / *(Fast.Vector4*)&value2;
-            return *(Vector4*)&res;
+            var tempVal1 = &value1;
+            var tempVal2 = &value2;
+            Fast.Vector4 res = *(Fast.Vector4*)tempVal1 / *(Fast.Vector4*)tempVal2;
+
+            var tempRes = &res;
+            return *(Vector4*)tempRes;
 #else
             value1.X /= value2.X;
             value1.Y /= value2.Y;
@@ -225,25 +259,25 @@ namespace engenious
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Vector4 Cross(Vector4 value1, Vector4 value2,Vector4 value3)
+        public static Vector4 Cross(Vector4 value1, Vector4 value2, Vector4 value3)
         {
             throw new NotImplementedException();
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector4 Clamp(Vector4 value, Vector4 min, Vector4 max)
         {
-            return Min(Max(min,value),max);
+            return Min(Max(min, value), max);
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Clamp(Vector4 value, Vector4 min, Vector4 max, out Vector4 output)
         {
-            output = Min(Max(min,value),max);
+            output = Min(Max(min, value), max);
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float Dot(Vector4 value1, Vector4 value2)
         {
-            var res = value1*value2;
-            return res.X+res.Y+res.Z+res.W;
+            var res = value1 * value2;
+            return res.X + res.Y + res.Z + res.W;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float Distance(Vector4 value1, Vector4 value2)
@@ -264,20 +298,28 @@ namespace engenious
         public static Vector4 Max(Vector4 value1, Vector4 value2)
         {
 #if USE_SIMD
-            Fast.Vector4 res = Fast.Vector4.Max(*(Fast.Vector4*)&value1,*(Fast.Vector4*)&value2);
-            return *(Vector4*)&res;
+            var tempVal1 = &value1;
+            var tempVal2 = &value2;
+            Fast.Vector4 res = Fast.Vector4.Max(*(Fast.Vector4*)tempVal1,*(Fast.Vector4*)tempVal2);
+
+            var tempRes = &res;
+            return *(Vector4*)tempRes;
 #else
-            return new Vector4(Math.Max(value1.X, value2.X), Math.Max(value1.Y, value2.Y), Math.Max(value1.Z, value2.Z),Math.Max(value1.W, value2.W));
+            return new Vector4(Math.Max(value1.X, value2.X), Math.Max(value1.Y, value2.Y), Math.Max(value1.Z, value2.Z), Math.Max(value1.W, value2.W));
 #endif
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector4 Min(Vector4 value1, Vector4 value2)
         {
 #if USE_SIMD
-            Fast.Vector4 res = Fast.Vector4.Min(*(Fast.Vector4*)&value1,*(Fast.Vector4*)&value2);
-            return *(Vector4*)&res;
+            var tempVal1 = &value1;
+            var tempVal2 = &value2;
+            Fast.Vector4 res = Fast.Vector4.Min(*(Fast.Vector4*)tempVal1,*(Fast.Vector4*)tempVal2);
+
+            var tempRes = &res;
+            return *(Vector4*)tempRes;
 #else
-            return new Vector4(Math.Min(value1.X, value2.X), Math.Min(value1.Y, value2.Y), Math.Min(value1.Z, value2.Z),Math.Min(value1.W, value2.W));
+            return new Vector4(Math.Min(value1.X, value2.X), Math.Min(value1.Y, value2.Y), Math.Min(value1.Z, value2.Z), Math.Min(value1.W, value2.W));
 #endif
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -288,9 +330,9 @@ namespace engenious
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Vector4 Transform(Vector4 position,Quaternion quaternion)
+        public static Vector4 Transform(Vector4 position, Quaternion quaternion)
         {
-            return Transform(position,Matrix.CreateFromQuaternion(quaternion));
+            return Transform(position, Matrix.CreateFromQuaternion(quaternion));
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -104,8 +104,12 @@ namespace engenious
         public static Vector2 operator +(Vector2 value1, Vector2 value2)
         {
 #if USE_SIMD
-            Fast.Vector2 res= (*(Fast.Vector2*)&value1 + *(Fast.Vector2*)&value2);
-            return *(Vector2*)&res;
+            var tempVal1 = &value1;
+            var tempVal2 = &value2;
+            Fast.Vector2 res= (*(Fast.Vector2*)tempVal1 + *(Fast.Vector2*)tempVal2);
+
+            var tempRes = &res;
+            return *(Vector2*)tempRes;
 #else
             value1.X += value2.X;
             value1.Y += value2.Y;
@@ -116,8 +120,12 @@ namespace engenious
         public static Vector2 operator -(Vector2 value1, Vector2 value2)
         {
 #if USE_SIMD
-            Fast.Vector2 res= (*(Fast.Vector2*)&value1 - *(Fast.Vector2*)&value2);
-            return *(Vector2*)&res;
+            var tempVal1 = &value1;
+            var tempVal2 = &value2;
+            Fast.Vector2 res= (*(Fast.Vector2*)tempVal1 - *(Fast.Vector2*)tempVal2);
+
+            var tempRes = &res;
+            return *(Vector2*)tempRes;
 #else
             value1.X -= value2.X;
             value1.Y -= value2.Y;
@@ -135,8 +143,11 @@ namespace engenious
         public static Vector2 operator *(Vector2 value, float scalar)
         {
 #if USE_SIMD
-            Fast.Vector2 res= (*(Fast.Vector2*)&value * scalar);
-            return *(Vector2*)&res;
+            var tempVal = &value;
+            Fast.Vector2 res= (*(Fast.Vector2*)tempVal * scalar);
+
+            var tempRes = &res;
+            return *(Vector2*)res;
 #else
             value.X *= scalar;
             value.Y *= scalar;
@@ -152,8 +163,12 @@ namespace engenious
         public static Vector2 operator *(Vector2 value1, Vector2 value2)//TODO: ugly as hell
         {
 #if USE_SIMD
-            Fast.Vector2 res= (*(Fast.Vector2*)&value1 * *(Fast.Vector2*)&value2);
-            return *(Vector2*)&res;
+            var tempVal1 = &value1;
+            var tempVal2 = &value2;
+            Fast.Vector2 res= (*(Fast.Vector2*)tempVal1 * *(Fast.Vector2*)tempVal2);
+
+            var tempRes = &res;
+            return *(Vector2*)tempRes;
 #else
             value1.X *= value2.X;
             value1.Y *= value2.Y;
@@ -164,8 +179,11 @@ namespace engenious
         public static Vector2 operator /(Vector2 value, float scalar)
         {
 #if USE_SIMD
-            Fast.Vector2 res= (*(Fast.Vector2*)&value / scalar);
-            return *(Vector2*)&res;
+            var tempVal = &value;
+            Fast.Vector2 res= (*(Fast.Vector2*)tempVal / scalar);
+
+            var tempRes = &res;
+            return *(Vector2*)tempRes;
 #else
             value.X /= scalar;
             value.Y /= scalar;
@@ -176,8 +194,12 @@ namespace engenious
         public static Vector2 operator /(Vector2 value1, Vector2 value2)//TODO: ugly as hell?
         {
 #if USE_SIMD
-            Fast.Vector2 res= (*(Fast.Vector2*)&value1 / *(Fast.Vector2*)&value2);
-            return *(Vector2*)&res;
+            var tempVal1 = &value1;
+            var tempVal2 = &value2;
+            Fast.Vector2 res= (*(Fast.Vector2*)tempVal1 / *(Fast.Vector2*)tempVal2);
+
+            var tempRes = &res;
+            return *(Vector2*)tempRes;
 #else
             value1.X /= value2.X;
             value1.Y /= value2.Y;
@@ -200,7 +222,9 @@ namespace engenious
         public static float Dot(Vector2 value1, Vector2 value2)
         {
 #if USE_SIMD
-            Fast.Vector2 res= (*(Fast.Vector2*)&value1 * *(Fast.Vector2*)&value2);
+            var tempVal1 = &value1;
+            var tempVal2 = &value2;
+            Fast.Vector2 res= (*(Fast.Vector2*)tempVal1 * *(Fast.Vector2*)tempVal2);
             return res.X+res.Y;
 #else
             value1.X *= value2.X;
@@ -227,8 +251,13 @@ namespace engenious
         public static Vector2 Max(Vector2 value1, Vector2 value2)
         {
 #if USE_SIMD
-            Fast.Vector2 res = Fast.Vector2.Max(*(Fast.Vector2*)&value1,*(Fast.Vector2*)&value2);
-            return *(Vector2*)&res;
+            var tempVal1 = &value1;
+            var tempVal2 = &value2;
+
+            Fast.Vector2 res = Fast.Vector2.Max(*(Fast.Vector2*)tempVal1,*(Fast.Vector2*)tempVal2);
+
+            var tempRes = &res;
+            return *(Vector2*)tempRes;
 #else
             return new Vector2(Math.Max(value1.X, value2.X), Math.Max(value1.Y, value2.Y));
 #endif
@@ -237,8 +266,12 @@ namespace engenious
         public static Vector2 Min(Vector2 value1, Vector2 value2)
         {
 #if USE_SIMD
-            Fast.Vector2 res = Fast.Vector2.Min(*(Fast.Vector2*)&value1,*(Fast.Vector2*)&value2);
-            return *(Vector2*)&res;
+            var tempVal1 = &value1;
+            var tempVal2 = &value2;
+            Fast.Vector2 res = Fast.Vector2.Min(*(Fast.Vector2*)tempVal1,*(Fast.Vector2*)tempVal2);
+
+            var tempRes = &res;
+            return *(Vector2*)tempRes;
 #else
             return new Vector2(Math.Min(value1.X, value2.X), Math.Min(value1.Y, value2.Y));
 #endif
