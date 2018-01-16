@@ -147,7 +147,7 @@ namespace engenious
             Fast.Vector2 res= (*(Fast.Vector2*)tempVal * scalar);
 
             var tempRes = &res;
-            return *(Vector2*)res;
+            return *(Vector2*)tempRes;
 #else
             value.X *= scalar;
             value.Y *= scalar;
