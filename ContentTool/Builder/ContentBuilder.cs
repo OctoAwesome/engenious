@@ -183,7 +183,16 @@ namespace ContentTool.Builder
                 formatter.Serialize(fs, outputContentFileWriter);
                 var writer = new ContentWriter(fs);
                 writer.WriteObject(processedFile, typeWriter);
+                
+                foreach (var f in processorContext.CompiledSourceFiles)//TODO other architecture?
+                {
+                    File.WriteAllText(Path.Combine(dirName,f.Key),f.Value);
+                }
             }
+
+
+            
+            processorContext.CompiledSourceFiles.Clear();
 
             cache?.AddFile(item.FilePath, buildFile);
             buildFile.RefreshModifiedTime();

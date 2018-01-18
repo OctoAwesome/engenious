@@ -10,10 +10,19 @@ namespace engenious.Content.Serialization
 
         public override void Write(ContentWriter writer, EffectContent value)
         {
+            writer.Write(value.CreateUserEffect);
+            if (value.CreateUserEffect)
+            {
+                writer.Write(value.UserEffectName);
+            }
             writer.Write(value.Techniques.Count);
             foreach (var technique in value.Techniques)
             {
                 writer.Write(technique.Name);
+                if (value.CreateUserEffect)
+                {
+                    writer.Write(technique.UserTechniqueName);
+                }
                 writer.Write(technique.Passes.Count);
                 foreach (var pass in technique.Passes)
                 {
