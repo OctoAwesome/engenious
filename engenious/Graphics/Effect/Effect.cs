@@ -9,7 +9,7 @@
 
 		}
 
-		internal void Initialize ()
+		internal virtual void Initialize ()
 		{
 			Parameters = new EffectParameterCollection (Techniques);
 		}

@@ -330,7 +330,8 @@ namespace engenious.Content.Pipeline
         {
             Techniques = new List<EffectTechnique>();
         }
-
+        public bool CreateUserEffect { get; internal set; }
+        public string UserEffectName { get; internal set; }
         public List<EffectTechnique> Techniques{ get; private set; }
     }
 
@@ -342,7 +343,7 @@ namespace engenious.Content.Pipeline
         }
 
         public string Name{ get; internal set; }
-
+        public string UserTechniqueName { get; internal set; }
         public List<EffectPass> Passes{ get; private set; }
     }
     public class EffectPass
@@ -351,6 +352,7 @@ namespace engenious.Content.Pipeline
         {
             Shaders = new Dictionary<ShaderType, string>();
             Attributes = new Dictionary<VertexElementUsage,string>(); 
+            Parameters = new List<ParameterInfo>();
         }
 
         public string Name{ get; internal set; }
@@ -364,6 +366,19 @@ namespace engenious.Content.Pipeline
         public Dictionary<ShaderType,string> Shaders{ get; private set; }
 
         public Dictionary<VertexElementUsage,string> Attributes{ get; private set; }
+
+        public List<ParameterInfo> Parameters { get; }
     }
+    }
+
+    public class ParameterInfo
+    {
+        public ParameterInfo(string name,Type type)
+        {
+            Name = name;
+            Type = type;
+        }
+        public string Name { get; }
+        public Type Type { get; }
 }
 

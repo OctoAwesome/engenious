@@ -21,7 +21,6 @@ namespace Sample
             _texture = new Texture2D(GraphicsDevice, 512, 512); //Content.Load<Texture2D>("brick");
             _font = Content.Load<SpriteFont>("test");
             _effect = Content.Load<Effect>("simple");
-
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
 
@@ -59,6 +58,7 @@ namespace Sample
             _effect.CurrentTechnique = _effect.Techniques["Compute"];
             _effect.CurrentTechnique.Passes[0].Compute(_texture.Width, _texture.Height);
             _effect.CurrentTechnique.Passes[0].WaitForImageCompletion();
+            
 
             _spriteBatch.Begin();
             _spriteBatch.Draw(_texture, new Rectangle(0, 0, 512, 512), Color.White);

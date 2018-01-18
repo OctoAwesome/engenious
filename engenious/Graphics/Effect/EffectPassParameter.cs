@@ -8,12 +8,14 @@ namespace engenious.Graphics
     {
         internal int Location;
         internal EffectPass Pass;
+        internal ActiveUniformType Type;
 
-        internal EffectPassParameter(EffectPass pass, string name, int location)
+        internal EffectPassParameter(EffectPass pass, string name, int location,ActiveUniformType type=(ActiveUniformType)0x7FFFFFFF)
         {
             Pass = pass;
             Location = location;
             Name = name;
+            Type = type;
         }
 
         public string Name{ get; private set; }

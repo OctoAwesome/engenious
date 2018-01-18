@@ -1,6 +1,6 @@
 ﻿namespace engenious.Graphics
 {
-	public sealed class EffectTechnique
+	public class EffectTechnique
 	{
 		internal EffectTechnique (string name)
 		{
