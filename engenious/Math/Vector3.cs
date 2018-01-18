@@ -6,22 +6,28 @@ namespace engenious
 {
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [System.ComponentModel.TypeConverter(typeof(Vector3Converter))]
-    public unsafe struct Vector3:IEquatable<Vector3>
+    public unsafe struct Vector3 : IEquatable<Vector3>
     {
         public float X
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]get;
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]set;
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get;
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            set;
         }
         public float Y
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]get;
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]set;
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get;
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            set;
         }
         public float Z
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]get;
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]set;
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get;
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            set;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Vector3(float w)
@@ -31,7 +37,7 @@ namespace engenious
             Z = w;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public Vector3(float x, float y, float z=0.0f)
+        public Vector3(float x, float y, float z = 0.0f)
         {
             X = x;
             Y = y;
@@ -40,22 +46,22 @@ namespace engenious
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public float Dot(Vector3 value2)
         {
-            return Dot(this,value2);
+            return Dot(this, value2);
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Vector3 Cross(Vector3 value2)
         {
-            return Cross(this,value2);
+            return Cross(this, value2);
         }
         [System.ComponentModel.Browsable(false)]
         public float Length
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get{return (float)Math.Sqrt(LengthSquared);}
+            get { return (float)Math.Sqrt(LengthSquared); }
         }
 
         [System.ComponentModel.Browsable(false)]
-        public float LengthSquared => Dot(this,this);
+        public float LengthSquared => Dot(this, this);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Normalize()
@@ -110,8 +116,13 @@ namespace engenious
         public static Vector3 operator +(Vector3 value1, Vector3 value2)
         {
 #if USE_SIMD
-            Fast.Vector3 res= (*(Fast.Vector3*)&value1 + *(Fast.Vector3*)&value2);
-            return *(Vector3*)&res;
+            var tempVal1 = &value1;
+            var tempVal2 = &value2;
+
+            Fast.Vector3 res= (*(Fast.Vector3*)tempVal1 + *(Fast.Vector3*)tempVal2);
+
+            var tempRes = &res;
+            return *(Vector3*)tempRes;
 #else
             value1.X += value2.X;
             value1.Y += value2.Y;
@@ -123,8 +134,13 @@ namespace engenious
         public static Vector3 operator -(Vector3 value1, Vector3 value2)
         {
 #if USE_SIMD
-            Fast.Vector3 res= (*(Fast.Vector3*)&value1 - *(Fast.Vector3*)&value2);
-            return *(Vector3*)&res;
+            var tempVal1 = &value1;
+            var tempVal2 = &value2;
+
+            Fast.Vector3 res= (*(Fast.Vector3*)tempVal1 - *(Fast.Vector3*)tempVal2);
+
+            var tempRes = &res;
+            return *(Vector3*)tempRes;
 #else
             value1.X -= value2.X;
             value1.Y -= value2.Y;
@@ -136,8 +152,12 @@ namespace engenious
         public static Vector3 operator -(Vector3 value)
         {
 #if USE_SIMD
-            Fast.Vector3 res= (-*(Fast.Vector3*)&value);
-            return *(Vector3*)&res;
+            var tempVal = &value;
+
+            Fast.Vector3 res= (-*(Fast.Vector3*)tempVal);
+
+            var tempRes = &res;
+            return *(Vector3*)tempRes;
 #else
             value.X = -value.X;
             value.Y = -value.Y;
@@ -150,8 +170,12 @@ namespace engenious
         public static Vector3 operator *(Vector3 value, float scalar)
         {
 #if USE_SIMD
-            Fast.Vector3 res= (scalar * *(Fast.Vector3*)&value);
-            return *(Vector3*)&res;
+            var tempVal = &value;
+
+            Fast.Vector3 res= (scalar * *(Fast.Vector3*)tempVal);
+
+            var tempRes = &res;
+            return *(Vector3*)tempRes;
 #else
             value.X *= scalar;
             value.Y *= scalar;
@@ -168,8 +192,13 @@ namespace engenious
         public static Vector3 operator *(Vector3 value1, Vector3 value2)//TODO: ugly as hell
         {
 #if USE_SIMD
-            Fast.Vector3 res= (*(Fast.Vector3*)&value1 * *(Fast.Vector3*)&value2);
-            return *(Vector3*)&res;
+            var tempVal1 = &value1;
+            var tempVal2 =  &value2;
+
+            Fast.Vector3 res= (*(Fast.Vector3*)tempVal1 * *(Fast.Vector3*)tempVal2);
+
+            var tempRes = &res;
+            return *(Vector3*)tempRes;
 #else
             value1.X *= value2.X;
             value1.Y *= value2.Y;
@@ -181,8 +210,12 @@ namespace engenious
         public static Vector3 operator /(Vector3 value, float scalar)
         {
 #if USE_SIMD
-            Fast.Vector3 res= (*(Fast.Vector3*)&value / scalar);
-            return *(Vector3*)&res;
+            var tempVal = &value;
+
+            Fast.Vector3 res= (*(Fast.Vector3*)tempVal / scalar);
+
+            var tempRes = &res;
+            return *(Vector3*)tempRes;
 #else
             value.X /= scalar;
             value.Y /= scalar;
@@ -194,8 +227,13 @@ namespace engenious
         public static Vector3 operator /(Vector3 value1, Vector3 value2)//TODO: ugly as hell?
         {
 #if USE_SIMD
-            Fast.Vector3 res= (*(Fast.Vector3*)&value1 / *(Fast.Vector3*)&value2);
-            return *(Vector3*)&res;
+            var tempVal1 = &value1;
+            var tempVal2 = &value2;
+
+            Fast.Vector3 res= (*(Fast.Vector3*)tempVal1 / *(Fast.Vector3*)tempVal2);
+
+            var tempRes = &res;
+            return *(Vector3*)tempRes;
 #else
             value1.X /= value2.X;
             value1.Y /= value2.Y;
@@ -214,28 +252,30 @@ namespace engenious
             Fast.Vector3 b2 = new Fast.Vector3(value2.Y,value2.Z,value2.X);
 
             Fast.Vector3 res = a1*a2 - b1*b2;
-            return *(Vector3*)&res;
+
+            var tempRes = &res;
+            return *(Vector3*)tempRes;
 #else
-            return new Vector3(value1.Y*value2.Z - value1.Z*value2.Y,
-                value1.Z*value2.X - value1.X*value2.Z,
-                value1.X*value2.Y - value1.Y*value2.X);
+            return new Vector3(value1.Y * value2.Z - value1.Z * value2.Y,
+                value1.Z * value2.X - value1.X * value2.Z,
+                value1.X * value2.Y - value1.Y * value2.X);
 #endif
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector3 Clamp(Vector3 value, Vector3 min, Vector3 max)
         {
-            return Min(Max(min,value),max);
+            return Min(Max(min, value), max);
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Clamp(Vector3 value, Vector3 min, Vector3 max, out Vector3 output)
         {
-            output = Min(Max(min,value),max);
+            output = Min(Max(min, value), max);
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float Dot(Vector3 value1, Vector3 value2)
         {
-            var res = value1*value2;
-            return res.X+res.Y+res.Z;
+            var res = value1 * value2;
+            return res.X + res.Y + res.Z;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float Distance(Vector3 value1, Vector3 value2)
@@ -256,8 +296,13 @@ namespace engenious
         public static Vector3 Max(Vector3 value1, Vector3 value2)
         {
 #if USE_SIMD
-            Fast.Vector3 res= Fast.Vector3.Max(*(Fast.Vector3*)&value1,*(Fast.Vector3*)&value2);
-            return *(Vector3*)&res;
+            var tempVal1 = &value1;
+            var tempVal2 = &value2;
+
+            Fast.Vector3 res= Fast.Vector3.Max(*(Fast.Vector3*)tempVal1,*(Fast.Vector3*)tempVal2);
+            
+            var tempRes = &res;
+            return *(Vector3*)tempRes;
 #else
             return new Vector3(Math.Max(value1.X, value2.X), Math.Max(value1.Y, value2.Y), Math.Max(value1.Z, value2.Z));
 #endif
@@ -266,8 +311,13 @@ namespace engenious
         public static Vector3 Min(Vector3 value1, Vector3 value2)
         {
 #if USE_SIMD
-            Fast.Vector3 res = Fast.Vector3.Min(*(Fast.Vector3*)&value1,*(Fast.Vector3*)&value2);
-            return *(Vector3*)&res;
+            var tempVal1 = &value1;
+            var tempVal2 = &value2;
+
+            Fast.Vector3 res = Fast.Vector3.Min(*(Fast.Vector3*)tempVal1,*(Fast.Vector3*)tempVal2);
+
+            var tempRes = &res;
+            return *(Vector3*)tempRes;
 #else
             return new Vector3(Math.Min(value1.X, value2.X), Math.Min(value1.Y, value2.Y), Math.Min(value1.Z, value2.Z));
 #endif
@@ -286,9 +336,9 @@ namespace engenious
                 position.X * matrix.M13 + position.Y * matrix.M23 + position.Z * matrix.M33 + matrix.M43);
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Vector3 Transform(Vector3 position,Quaternion quaternion)
+        public static Vector3 Transform(Vector3 position, Quaternion quaternion)
         {
-            return Transform(position,Matrix.CreateFromQuaternion(quaternion));
+            return Transform(position, Matrix.CreateFromQuaternion(quaternion));
         }
 
         public static readonly Vector3 One = new Vector3(1, 1, 1);
