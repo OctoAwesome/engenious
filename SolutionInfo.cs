@@ -7,9 +7,9 @@ using System.Reflection;
 
 [assembly: AssemblyCompany("jvbsl")]
 [assembly: AssemblyProduct("engenious")]
-[assembly: AssemblyVersion("0.1.13.0")]
+[assembly: AssemblyVersion("0.1.14.0")]
 [assembly: AssemblyFileVersion("0.1.0")]
-[assembly: AssemblyInformationalVersion("0.1.13+Branch.develop.Sha.cc33f3c06d19b751e9e05770b711301552c83dd0")]
+[assembly: AssemblyInformationalVersion("0.1.14+Branch.develop.Sha.36ed18227dc36f70fda581288c585c8dad6f6715")]
 [assembly: AssemblyCopyright("Copyright (c) jvbsl 2016")]
 [assembly: AssemblyConfiguration("Release")]
 
