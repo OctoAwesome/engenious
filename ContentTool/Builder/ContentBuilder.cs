@@ -98,7 +98,7 @@ namespace ContentTool.Builder
 
             // Add an assembly reference.
             cp.ReferencedAssemblies.Add("System.dll");
-            cp.ReferencedAssemblies.Add("engenious.dll");
+            cp.ReferencedAssemblies.Add(typeof(engenious.Graphics.GraphicsDevice).Assembly.Location);
             // Generate an executable instead of
             // a class library.
             cp.GenerateExecutable = false;
