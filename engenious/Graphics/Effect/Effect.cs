@@ -9,9 +9,13 @@
 
 		}
 
-		internal virtual void Initialize ()
+		protected internal virtual void Initialize ()
 		{
 			Parameters = new EffectParameterCollection (Techniques);
+			foreach (var technique in Techniques)
+			{
+				technique.Initialize();
+			}
 		}
 
 		public EffectParameterCollection Parameters {
@@ -31,7 +35,7 @@
 
 		protected internal virtual void OnApply ()
 		{
-			foreach (var pass in CurrentTechnique.Passes.PassesList) {
+			foreach (var pass in CurrentTechnique.Passes) {
 				pass.Apply ();
 			}
 		}

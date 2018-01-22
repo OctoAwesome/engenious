@@ -63,7 +63,7 @@ namespace engenious.Graphics
                 return;
             effect.Texture = text;
 
-            foreach (var pass in effect.CurrentTechnique.Passes.PassesList)
+            foreach (var pass in effect.CurrentTechnique.Passes)
             {
                 pass.Apply();
                 

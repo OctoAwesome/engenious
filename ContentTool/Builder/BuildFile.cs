@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using engenious.Pipeline;
 
 namespace ContentTool.Builder
 {
@@ -14,12 +15,13 @@ namespace ContentTool.Builder
         public DateTime OutputFileModifiedTime { get; private set; }
 
         public List<string> Dependencies { get; }
-
+        public List<SourceFile> Sources { get; }
         public BuildFile(string inputFilePath, string outputFilePath)
         {
             InputFilePath = inputFilePath;
             OutputFilePath = outputFilePath;
             Dependencies = new List<string>();
+            Sources = new List<SourceFile>();
             RefreshModifiedTime();
         }
 

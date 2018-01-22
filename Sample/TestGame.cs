@@ -13,14 +13,14 @@ namespace Sample
 
         private RenderTarget2D _target;
 
-        private readonly Effect _effect;
+        private readonly engenious.UserEffects.simple _effect;
         private SoundEffect _testSoundEffect;
         private SoundEffectInstance _testSound,_testSound2;
         public TestGame()
         {
             _texture = new Texture2D(GraphicsDevice, 512, 512); //Content.Load<Texture2D>("brick");
             _font = Content.Load<SpriteFont>("test");
-            _effect = Content.Load<Effect>("simple");
+            _effect = Content.Load<engenious.UserEffects.simple>("simple");
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
 
@@ -29,7 +29,7 @@ namespace Sample
         public override void LoadContent()
         {
             base.LoadContent();
-            _testSoundEffect = Content.Load<SoundEffect>("blub");
+            _testSoundEffect = Content.Load<SoundEffect>("blub_x");
             _testSound = _testSoundEffect.CreateInstance();
             _testSound2 = _testSoundEffect.CreateInstance();
             _testSound.Play();
@@ -55,9 +55,8 @@ namespace Sample
             GraphicsDevice.SetRenderTarget(null);
             GraphicsDevice.Clear(Color.CornflowerBlue);
             _texture.BindComputation();
-            _effect.CurrentTechnique = _effect.Techniques["Compute"];
-            _effect.CurrentTechnique.Passes[0].Compute(_texture.Width, _texture.Height);
-            _effect.CurrentTechnique.Passes[0].WaitForImageCompletion();
+            _effect.Compute.p1.Compute(_texture.Width, _texture.Height);
+            _effect.Compute.p1.WaitForImageCompletion();
             
 
             _spriteBatch.Begin();

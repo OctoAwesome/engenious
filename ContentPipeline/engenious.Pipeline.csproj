@@ -38,6 +38,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="..\SolutionInfo.cs" />
+    <Compile Include="SourceFile.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Pipeline\BuildMessageEventArgs.cs" />
