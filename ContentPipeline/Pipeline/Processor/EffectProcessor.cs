@@ -1,8 +1,10 @@
 ﻿using System;
+using System.CodeDom.Compiler;
 using System.ComponentModel;
 using System.IO;
 using System.Text;
 using engenious.Graphics;
+using engenious.Pipeline;
 using OpenTK.Graphics.OpenGL4;
 
 namespace engenious.Content.Pipeline
@@ -34,118 +36,151 @@ namespace engenious.Content.Pipeline
 
         private void GenerateEffectSource(EffectContent input, string name, ContentProcessorContext context)
         {
-            input.UserEffectName = "engenious.UserEffects." + name;
-            var mainCsSource = new StringBuilder();
-            mainCsSource.AppendLine("using engenious.Graphics;");
-            mainCsSource.AppendLine("namespace engenious.UserEffects");
-            mainCsSource.AppendLine("{");
-
-            mainCsSource.AppendLine($"\tpublic class {name} : engenious.Graphics.Effect");
-            mainCsSource.AppendLine("\t{");
-            mainCsSource.AppendLine($"\t\tpublic {name}(GraphicsDevice graphicsDevice)");
-            mainCsSource.AppendLine("\t\t\t: base(graphicsDevice)");
-            mainCsSource.AppendLine("\t\t{");
-            mainCsSource.AppendLine("\t\t}");
-            mainCsSource.AppendLine("\t\tinternal virtual void Initialize ()");
-            mainCsSource.AppendLine("\t\t{");
-            mainCsSource.AppendLine("\t\t\tbase.Initialize();");
-            foreach (var technique in input.Techniques)
+            using(var csSource = new StringWriter())
+            using (var csSourceWriter = new IndentedTextWriter(csSource, "    "))
             {
-                mainCsSource.AppendLine($"\t\t\t{technique.Name} = Techniques[\"{technique.Name}\"] as {technique.Name}Impl;");
+                input.UserEffectName = "engenious.UserEffects." + name;
+                csSourceWriter.WriteLine("using engenious.Graphics;");
+                csSourceWriter.WriteLine("namespace engenious.UserEffects");
+                csSourceWriter.WriteLine("{");
+                csSourceWriter.Indent++;
+                csSourceWriter.WriteLine($"public class {name} : engenious.Graphics.Effect");
+                csSourceWriter.WriteLine("{");
+                csSourceWriter.Indent++;
+                
+                csSourceWriter.WriteLine($"public {name}(GraphicsDevice graphicsDevice)");
+                csSourceWriter.Indent++;
+                csSourceWriter.WriteLine(": base(graphicsDevice)");
+                csSourceWriter.Indent--;
+                csSourceWriter.WriteLine("{");
+                csSourceWriter.WriteLine("}");
+                csSourceWriter.WriteLine("protected override void Initialize ()");
+                csSourceWriter.WriteLine("{");
+                csSourceWriter.Indent++;
+                csSourceWriter.WriteLine("base.Initialize();");
+                foreach (var technique in input.Techniques)
+                {
+                    csSourceWriter.WriteLine($"{technique.Name} = Techniques[\"{technique.Name}\"] as {technique.Name}Impl;");
+                }
+                csSourceWriter.Indent--;
+                csSourceWriter.WriteLine("}");
+                foreach (var technique in input.Techniques)
+                {
+                    csSourceWriter.WriteLine($"public {technique.Name}Impl {technique.Name} {{get; private set;}}");
+                }
+
+                foreach (var technique in input.Techniques)
+                {
+                    GenerateEffectTechniqueSource(technique, csSourceWriter);
+                }
+                csSourceWriter.Indent--;
+                csSourceWriter.WriteLine("}");
+                csSourceWriter.Indent--;
+                
+                csSourceWriter.WriteLine("}");
+
+
+                context.SourceFiles.Add(new SourceFile(name, csSource.ToString()));
             }
-            mainCsSource.AppendLine("\t\t}");
-            foreach (var technique in input.Techniques)
-            {
-                mainCsSource.AppendLine($"\t\tpublic {technique.Name}Impl {technique.Name} {{get; private set;}}");
-            }
-
-            foreach (var technique in input.Techniques)
-            {
-                GenerateEffectTechniqueSource(technique,mainCsSource);
-            }
-            mainCsSource.AppendLine("\t}");
-            mainCsSource.AppendLine("}");
-
-
-
-            context.CompiledSourceFiles[name + ".cs"] = mainCsSource.ToString();
         }
 
-        private void GenerateEffectTechniqueSource(EffectTechnique technique,StringBuilder src)
+        private void GenerateEffectTechniqueSource(EffectTechnique technique,IndentedTextWriter src)
         {
             technique.UserTechniqueName = $"{technique.Name}Impl";
-            src.AppendLine($"\t\tpublic class {technique.Name}Impl : engenious.Graphics.EffectTechnique");
-            src.AppendLine("\t\t{");
-            
-            src.AppendLine($"\t\t\tpublic {technique.Name}Impl(string name)");
-            src.AppendLine("\t\t\t\t: base(name)");
-            src.AppendLine("\t\t\t{");
-            src.AppendLine("\t\t\t}");
+            src.WriteLine($"public class {technique.Name}Impl : engenious.Graphics.EffectTechnique");
+            src.WriteLine("{");
+            src.Indent++;
+            src.WriteLine($"public {technique.Name}Impl(string name)");
+            src.Indent++;
+            src.WriteLine(": base(name)");
+            src.Indent--;
+            src.WriteLine("{");
+            src.WriteLine("}");
+            src.WriteLine("protected override void Initialize()");
+            src.WriteLine("{");
+            src.Indent++;
+            src.WriteLine("base.Initialize();");
             foreach (var pass in technique.Passes)
             {
-                src.AppendLine($"\t\t\tpublic {pass.Name}Impl {pass.Name} {{get; private set;}}");
+                src.WriteLine($"{pass.Name} = Passes[\"{pass.Name}\"] as {pass.Name}Impl;");
+            }
+            src.Indent--;
+            src.WriteLine("}");
+            foreach (var pass in technique.Passes)
+            {
+                src.WriteLine($"public {pass.Name}Impl {pass.Name} {{get; private set;}}");
             }
             foreach (var pass in technique.Passes)
             {
                 GenerateEffectPassSource(pass,src);
             }
-            
-            src.AppendLine("\t\t}");
+            src.Indent--;
+            src.WriteLine("}");
         }
-        private void GenerateEffectPassSource(EffectPass pass,StringBuilder src)
+
+        private void GenerateEffectPassSource(EffectPass pass,IndentedTextWriter src)
         {
+            src.WriteLine($"public class {pass.Name}Impl : engenious.Graphics.EffectPass");
+            src.WriteLine("{");
+            src.Indent++;
+            src.WriteLine($"public {pass.Name}Impl(string name)");
+            src.Indent++;
+            src.WriteLine(": base(name)");
+            src.Indent--;
+            src.WriteLine("{");
+            src.WriteLine("}");
 
-            src.AppendLine($"\t\t\tpublic class {pass.Name}Impl : engenious.Graphics.EffectPass");
-            src.AppendLine("\t\t\t{");
-
-            src.AppendLine($"\t\t\t\tpublic {pass.Name}Impl(string name)");
-            src.AppendLine("\t\t\t\t\t: base(name)");
-            src.AppendLine("\t\t\t\t{");
-            src.AppendLine("\t\t\t\t}");
-
-            src.AppendLine("\t\t\t\tinternal virtual void CacheParameters()");
-            src.AppendLine("\t\t\t\t{");
-            src.AppendLine("\t\t\t\t\tbase.CacheParameters();");
+            src.WriteLine("protected override void CacheParameters()");
+            src.WriteLine("{");
+            src.Indent++;
+            src.WriteLine("base.CacheParameters();");
             foreach (var p in pass.Parameters)
             {
                 if (p.Type == typeof(EffectPassParameter))
                 {
-                    src.AppendLine($"\t\t\t\t\t{p.Name} = Parameters[\"{p.Name}\"];");
+                    src.WriteLine($"{p.Name} = Parameters[\"{p.Name}\"];");
                 }
                 else
                 {
-                    src.AppendLine($"\t\t\t\t\t_{p.Name}PassParameter = Parameters[\"{p.Name}\"];");
+                    src.WriteLine($"_{p.Name}PassParameter = Parameters[\"{p.Name}\"];");
                 }
             }
-            src.AppendLine("\t\t\t\t}");
+            src.Indent--;
+            src.WriteLine("}");
             foreach (var p in pass.Parameters)
             {
                 if (p.Type == typeof(EffectPassParameter))
                 {
-                    src.AppendLine($"\t\t\t\tpublic {p.Type.FullName} {p.Name} {{get; private set;}}");
+                    src.WriteLine($"public {p.Type.FullName} {p.Name} {{get; private set;}}");
                 }
                 else
                 {
-                    src.AppendLine($"\t\t\t\tprivate {p.Type.FullName} _{p.Name};");
-                    src.AppendLine($"\t\t\t\tprivate EffectPassParameter _{p.Name}PassParameter;");
-                    src.AppendLine($"\t\t\t\tpublic {p.Type.FullName} {p.Name}");
-                    src.AppendLine("\t\t\t\t{");
-                    src.AppendLine("\t\t\t\t\tget");
-                    src.AppendLine("\t\t\t\t\t{");
-                    src.AppendLine($"\t\t\t\t\t\treturn _{p.Name};");
-                    src.AppendLine("\t\t\t\t\t}");
-                    src.AppendLine("\t\t\t\t\tset");
-                    src.AppendLine("\t\t\t\t\t{");
-                    src.AppendLine($"\t\t\t\t\t\tif (_{p.Name} == value) return;");
-                    src.AppendLine($"\t\t\t\t\t\t_{p.Name} = value;");
-                    src.AppendLine($"\t\t\t\t\t\t_{p.Name}PassParameter.SetValue(value);");
-                    src.AppendLine("\t\t\t\t\t}");
-                    src.AppendLine("\t\t\t\t}");
+                    src.WriteLine($"private {p.Type.FullName} _{p.Name};");
+                    src.WriteLine($"private EffectPassParameter _{p.Name}PassParameter;");
+                    src.WriteLine($"public {p.Type.FullName} {p.Name}");
+                    src.WriteLine("{");
+                    src.Indent++;
+                    src.WriteLine("get");
+                    src.WriteLine("{");
+                    src.Indent++;
+                    src.WriteLine($"return _{p.Name};");
+                    src.Indent--;
+                    src.WriteLine("}");
+                    src.WriteLine("set");
+                    src.WriteLine("{");
+                    src.Indent++;
+                    src.WriteLine($"if (_{p.Name} == value) return;");
+                    src.WriteLine($"_{p.Name} = value;");
+                    src.WriteLine($"_{p.Name}PassParameter.SetValue(value);");
+                    src.Indent--;
+                    src.WriteLine("}");
+                    src.Indent--;
+                    src.WriteLine("}");
                 }
             }
+            src.Indent--;
             
-            
-            src.AppendLine("\t\t\t}");
+            src.WriteLine("}");
         }
 
         private Type getType(ActiveUniformType type)

@@ -34,9 +34,9 @@ namespace engenious.Content.Serialization
                         {
                             try
                             {
-                                if (typeof(Effect).IsAssignableFrom(type)||typeof(EffectTechnique).IsAssignableFrom(type))
+                                if (type != null && (typeof(Effect).IsAssignableFrom(type)||typeof(EffectTechnique).IsAssignableFrom(type)||typeof(EffectPass).IsAssignableFrom(type)))
                                 {
-                                    _effectTypes.Add(type.FullName, type);
+                                    _effectTypes.Add(type.FullName ?? "", type);
                                 }
                             }
                             catch (Exception ex)
@@ -99,8 +99,24 @@ namespace engenious.Content.Serialization
                 var passCount = reader.ReadInt32();
                 for (var passIndex = 0; passIndex < passCount; passIndex++)
                 {
-                    var pass = new EffectPass(reader.ReadString());
+                    var passName = reader.ReadString();
+                    EffectPass pass = null;
+                    if (useCustomType)
+                    {
+                        try
+                        {
+                            string customTypeName = technique.GetType().FullName + "+" + passName + "Impl";
 
+                            var passType = _effectTypes[customTypeName];
+                            pass = (EffectPass) Activator.CreateInstance(passType,passName);
+                        }
+                        catch (Exception ex)
+                        {
+                        
+                        }
+                    }
+                    if (pass == null)
+                        pass = new EffectPass(passName);
                     pass.BlendState = reader.Read<BlendState>(manager);
                     pass.DepthStencilState = reader.Read<DepthStencilState>(manager);
                     pass.RasterizerState = reader.Read<RasterizerState>(manager);
@@ -125,7 +141,7 @@ namespace engenious.Content.Serialization
                 effect.Techniques.Add(technique);
             }
 
-            effect.CurrentTechnique = effect.Techniques.TechniqueList.FirstOrDefault();
+            effect.CurrentTechnique = effect.Techniques.FirstOrDefault();
             effect.Initialize();
             return effect;
         }

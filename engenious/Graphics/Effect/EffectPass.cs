@@ -10,7 +10,7 @@ namespace engenious.Graphics
     {
         internal int Program;
 
-        internal EffectPass(string name)//TODO: content loading
+        protected internal EffectPass(string name)//TODO: content loading
         {
             Name = name;
             using (Execute.OnUiContext)
@@ -28,7 +28,7 @@ namespace engenious.Graphics
             }
         }
 
-        internal virtual void CacheParameters()
+        protected internal virtual void CacheParameters()
         {
             var total = -1;
             using (Execute.OnUiContext)
@@ -112,7 +112,7 @@ namespace engenious.Graphics
             }
         }
 
-        internal EffectPassParameterCollection Parameters{ get; private set; }
+        protected internal EffectPassParameterCollection Parameters{ get; private set; }
 
         public string Name
         {

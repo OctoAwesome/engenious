@@ -1,10 +1,16 @@
 ﻿using System;
+using System.CodeDom.Compiler;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Reflection.Emit;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading;
 using ContentTool.Models;
 using engenious.Content.Pipeline;
 using engenious.Content.Serialization;
+using Microsoft.CSharp;
 
 namespace ContentTool.Builder
 {
@@ -29,12 +35,14 @@ namespace ContentTool.Builder
             Project = project;
             _syncContext = SynchronizationContext.Current;
 
-            _cache = BuildCache.Load(Path.Combine(Path.GetDirectoryName(project.ContentProjectPath), "obj", project.Name + ".dat"));
+            _cache = BuildCache.Load(Path.Combine(Path.GetDirectoryName(project.ContentProjectPath), "obj",
+                project.Name + ".dat"));
         }
 
         public void Build(ContentItem item)
         {
-            _buildThread = new Thread(() => {
+            _buildThread = new Thread(() =>
+            {
                 IsBuilding = true;
                 BuildThread(item);
                 IsBuilding = false;
@@ -57,7 +65,8 @@ namespace ContentTool.Builder
 
         public void Rebuild()
         {
-            _buildThread = new Thread(() => {
+            _buildThread = new Thread(() =>
+            {
                 IsBuilding = true;
 
                 if (Project.HasUnsavedChanges)
@@ -75,9 +84,53 @@ namespace ContentTool.Builder
             if (IsBuilding)
                 _buildThread.Abort();
         }
+
         public void Join()
         {
             _buildThread.Join();
+        }
+
+        private List<CompilerError> CompileCachedSources()
+        {
+            var provider = new CSharpCodeProvider();
+            // Build the parameters for source compilation.
+            var cp = new CompilerParameters();
+
+            // Add an assembly reference.
+            cp.ReferencedAssemblies.Add("System.dll");
+            cp.ReferencedAssemblies.Add("engenious.dll");
+            // Generate an executable instead of
+            // a class library.
+            cp.GenerateExecutable = false;
+
+            // Set the assembly file name to generate.
+            cp.OutputAssembly = Path.Combine(Path.GetDirectoryName(Project.ContentProjectPath),"engenious.CreatedContent." + Project.Name + ".dll");
+            // Save the assembly as a physical file.
+            cp.GenerateInMemory = false;
+
+            var sources = new List<string>();
+            foreach (var x in _cache.Files.Values)
+            {
+                if (x.Sources == null)
+                    continue;
+                foreach (var i in x.Sources)
+                {
+                    if (i?.Source == null)
+                        continue;
+                    sources.Add(i.Source);
+                }
+            }
+            //var sources = _cache.Files.SelectMany(x => x.Value?.Sources?.Select(i => i?.Source)).ToArray();
+            // Invoke compilation.
+            var cr = provider.CompileAssemblyFromSource(cp, sources.ToArray());//CompileAssemblyFromFile(cp, sourceFile);
+
+            var lst = new List<CompilerError>();//
+            for (int i = 0; i < cr.Errors.Count; i++)
+            {
+                var e = cr.Errors[i];
+                lst.Add(e);
+            }
+            return lst;
         }
 
         protected void BuildThread(ContentItem item)
@@ -85,7 +138,8 @@ namespace ContentTool.Builder
             FailedBuilds = 0;
             PipelineHelper.PreBuilt(Project);
 
-            var outputDestination = Path.Combine(Path.GetDirectoryName(Project.ContentProjectPath), string.Format(Project.OutputDirectory.Replace("{Configuration}", "{0}"), Project.Configuration));
+            var outputDestination = Path.Combine(Path.GetDirectoryName(Project.ContentProjectPath),
+                string.Format(Project.OutputDirectory.Replace("{Configuration}", "{0}"), Project.Configuration));
 
             using (var iContext = new ContentImporterContext())
             using (var pContext = new ContentProcessorContext(_syncContext))
@@ -93,26 +147,35 @@ namespace ContentTool.Builder
                 iContext.BuildMessage += RaiseBuildMessage;
                 pContext.BuildMessage += RaiseBuildMessage;
                 InternalBuildItem(item, outputDestination, iContext, pContext);
+                foreach (var error in CompileCachedSources())
+                {
+                    pContext.RaiseBuildMessage(error.FileName,error.ErrorText,error.IsWarning ? BuildMessageEventArgs.BuildMessageType.Warning : BuildMessageEventArgs.BuildMessageType.Error);
+                }
             }
+
+
+            
+
             _cache.Save();
         }
 
         protected void CleanThread()
         {
-            foreach(var item in _cache.Files)
+            foreach (var item in _cache.Files)
             {
                 if (File.Exists(item.Value.OutputFilePath))
                     File.Delete(item.Value.OutputFilePath);
             }
         }
 
-        protected void InternalBuildItem(ContentItem item, string outputDestination, ContentImporterContext importerContext, ContentProcessorContext processorContext)
+        protected void InternalBuildItem(ContentItem item, string outputDestination,
+            ContentImporterContext importerContext, ContentProcessorContext processorContext)
         {
             if (!(item is ContentProject))
                 outputDestination = Path.Combine(outputDestination, item.Name);
 
             var folder = item as ContentFolder;
-            if(folder != null)
+            if (folder != null)
             {
                 foreach (var child in folder.Content)
                     InternalBuildItem(child, outputDestination, importerContext, processorContext);
@@ -121,26 +184,33 @@ namespace ContentTool.Builder
             {
                 if (_cache.NeedsRebuild(item.FilePath))
                 {
-                    InternalBuildFile(item as ContentFile, Path.Combine(Path.GetDirectoryName(outputDestination), Path.GetFileNameWithoutExtension(item.Name) + FileExtension), importerContext, processorContext);
-                    RaiseBuildMessage(this, new BuildMessageEventArgs(item.RelativePath, item.RelativePath + " built", BuildMessageEventArgs.BuildMessageType.Information));
+                    InternalBuildFile(item as ContentFile,
+                        Path.Combine(Path.GetDirectoryName(outputDestination),
+                            Path.GetFileNameWithoutExtension(item.Name) + FileExtension), importerContext,
+                        processorContext);
+                    RaiseBuildMessage(this,
+                        new BuildMessageEventArgs(item.RelativePath, item.RelativePath + " built",
+                            BuildMessageEventArgs.BuildMessageType.Information));
                 }
                 else
                 {
-                    RaiseBuildMessage(this, new BuildMessageEventArgs(item.RelativePath, item.RelativePath + " skipped", BuildMessageEventArgs.BuildMessageType.Information));
+                    RaiseBuildMessage(this,
+                        new BuildMessageEventArgs(item.RelativePath, item.RelativePath + " skipped",
+                            BuildMessageEventArgs.BuildMessageType.Information));
                 }
                 importerContext.Dependencies.Clear();
                 processorContext.Dependencies.Clear();
             }
-
-
         }
 
         protected void RaiseBuildMessage(object sender, BuildMessageEventArgs e) => BuildMessage?.Invoke(e);
 
-        public object InternalBuildFile(ContentFile item, string destination, ContentImporterContext importerContext, ContentProcessorContext processorContext)
+        public object InternalBuildFile(ContentFile item, string destination, ContentImporterContext importerContext,
+            ContentProcessorContext processorContext)
         {
             return BuildFile(item, destination, importerContext, processorContext, _cache);
         }
+
         /// <summary>
         /// Builds a ContentFile and writes it to the destinatin
         /// </summary>
@@ -149,7 +219,8 @@ namespace ContentTool.Builder
         /// <param name="importerContext"></param>
         /// <param name="processorContext"></param>
         /// <returns></returns>
-        public static object BuildFile(ContentFile item, string destination, ContentImporterContext importerContext, ContentProcessorContext processorContext,BuildCache cache = null)
+        public static object BuildFile(ContentFile item, string destination, ContentImporterContext importerContext,
+            ContentProcessorContext processorContext, BuildCache cache = null)
         {
             if (!File.Exists(item.FilePath)) return null;
 
@@ -159,7 +230,9 @@ namespace ContentTool.Builder
             var buildFile = new BuildFile(item.FilePath, destination);
 
             var importer = item.Importer;
-
+            buildFile.Sources.Clear();
+            importerContext.SourceFiles = buildFile.Sources;
+            processorContext.SourceFiles = buildFile.Sources;
             var importedFile = importer?.Import(item.FilePath, importerContext);
             if (importedFile == null) return null;
 
@@ -183,16 +256,8 @@ namespace ContentTool.Builder
                 formatter.Serialize(fs, outputContentFileWriter);
                 var writer = new ContentWriter(fs);
                 writer.WriteObject(processedFile, typeWriter);
-                
-                foreach (var f in processorContext.CompiledSourceFiles)//TODO other architecture?
-                {
-                    File.WriteAllText(Path.Combine(dirName,f.Key),f.Value);
-                }
             }
 
-
-            
-            processorContext.CompiledSourceFiles.Clear();
 
             cache?.AddFile(item.FilePath, buildFile);
             buildFile.RefreshModifiedTime();
@@ -204,6 +269,7 @@ namespace ContentTool.Builder
         public event BuildStatusChangedHandler BuildStatusChanged;
 
         public delegate void BuildMessageHandler(BuildMessageEventArgs args);
+
         public delegate void BuildStatusChangedHandler(BuildStatus status);
 
         [Flags]
@@ -215,6 +281,5 @@ namespace ContentTool.Builder
             Finished = 8,
             Built = 16
         }
-
     }
 }
