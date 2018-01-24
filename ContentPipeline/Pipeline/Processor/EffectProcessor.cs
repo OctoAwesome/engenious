@@ -246,7 +246,7 @@ namespace engenious.Content.Pipeline
                         {
                             try
                             {
-                                var tmp = new Shader(shader.Key, File.ReadAllText(shader.Value));
+                                var tmp = new Shader(context.GraphicsDevice,shader.Key, File.ReadAllText(shader.Value));
                                 tmp.Compile();
                                 compiledPass.AttachShader(tmp);
                             }

@@ -6,7 +6,7 @@ namespace engenious.Graphics
     {
         private const string VertexShader =
             @"
-#version 440
+#if __VERSION__ >= 300
 
 in vec3 position;
 in vec4 color;
@@ -23,12 +23,44 @@ void main(void)
    psColor = color;
    psTexCoord = textureCoordinate;
 }
+#else
+attribute vec3 position;
+attribute vec4 color;
+attribute vec2 textureCoordinate;
+varying vec4 psColor;
+varying vec2 psTexCoord;
+
+uniform mat4 World;
+uniform mat4 View;
+uniform mat4 Proj;
+void main(void)
+{
+   gl_Position = Proj*View*World*vec4(position, 1.0);
+   psColor = color;
+   psTexCoord = textureCoordinate;
+}
+#endif
 ";
         private const string PixelShader =
             @"
-#version 440
+#if __VERSION__ >= 300
 in vec4 psColor;
 in vec2 psTexCoord;
+out vec4 outColor;
+uniform sampler2D text;
+uniform int textEnabled,colorEnabled;
+void main(void)
+{
+   outColor = vec4(1.0,1.0,1.0,1.0);
+   if (textEnabled == 1)
+     outColor = outColor * texture2D(text,psTexCoord);
+   if (colorEnabled == 1)
+     outColor = outColor * psColor;
+   
+}
+#else
+attribute vec4 psColor;
+attribute vec2 psTexCoord;
 uniform sampler2D text;
 uniform int textEnabled,colorEnabled;
 void main(void)
@@ -40,6 +72,7 @@ void main(void)
      gl_FragColor = gl_FragColor * psColor;
    
 }
+#endif
 ";
 
         public BasicEffect(GraphicsDevice graphicsDevice)
@@ -50,8 +83,8 @@ void main(void)
             using (Execute.OnUiContext)
             {
                 Shader[] shaders = {
-                    new Shader(ShaderType.VertexShader, VertexShader),
-                    new Shader(ShaderType.FragmentShader, PixelShader)
+                    new Shader(graphicsDevice,ShaderType.VertexShader, VertexShader),
+                    new Shader(graphicsDevice,ShaderType.FragmentShader, PixelShader)
                 };
 
                 foreach (var shader in shaders)

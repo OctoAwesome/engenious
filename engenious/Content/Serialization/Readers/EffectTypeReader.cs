@@ -124,7 +124,7 @@ namespace engenious.Content.Serialization
                     
                     for (var shaderIndex = 0; shaderIndex < shaderCount; shaderIndex++)
                     {
-                        var shader = new Shader((ShaderType)reader.ReadUInt16(), reader.ReadString());
+                        var shader = new Shader(manager.GraphicsDevice,(ShaderType)reader.ReadUInt16(), reader.ReadString());
                         shader.Compile();
                         pass.AttachShader(shader);
                     }

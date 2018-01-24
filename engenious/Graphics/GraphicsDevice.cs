@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using engenious.Helper;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL4;
@@ -29,13 +30,16 @@ namespace engenious.Graphics
         internal Game Game;
         internal Dictionary<string, bool> Extensions = new Dictionary<string, bool>();
         internal int MajorVersion,MinorVersion;
+        internal Version DriverVersion;
+        internal Version GlslVersion;
         public GraphicsDevice(Game game, IGraphicsContext context)
         {
             _context = context;
             Game = game;
 
-            MajorVersion = GL.GetInteger(GetPName.MajorVersion);
-            MinorVersion = GL.GetInteger(GetPName.MinorVersion);
+            ReadOpenGlVersion();
+            //MajorVersion = GL.GetInteger(GetPName.MajorVersion);
+            //MinorVersion = GL.GetInteger(GetPName.MinorVersion);
             int count;
             GL.GetInteger(GetPName.NumExtensions,out count);
             for (var i = 0; i < count; i++)
@@ -58,6 +62,35 @@ namespace engenious.Graphics
             Textures = new TextureCollection();
             CheckError();
             //TODO: samplerstate
+        }
+        private void ReadOpenGlVersion()
+        {
+            string versionString = GL.GetString(StringName.Version).Split(' ').FirstOrDefault();
+            if (versionString == null)
+                return;
+            DriverVersion = new Version(versionString);
+            
+            versionString = GL.GetString(StringName.ShadingLanguageVersion).Split(' ').FirstOrDefault();
+            if (versionString == null)
+                return;
+            
+            GlslVersion = new Version(versionString);
+            /*if (Version.Major == 2)
+            {
+                GlslVersion = Version.Minor == 0 ? 110 : 120;
+            }
+            else if (Version.Major == 3 && Version.Minor <= 2)
+            {
+                GlslVersion = 130 + 10 * Version.Minor;
+            }
+            else if (Version.Major >= 3)
+            {
+                GlslVersion = Version.Major * 100 + Version.Minor * 10;
+            }
+            else
+            {
+                GlslVersion = 100;
+            }*/
         }
         public void Clear(ClearBufferMask mask)
         {

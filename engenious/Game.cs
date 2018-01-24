@@ -19,7 +19,6 @@ namespace engenious
         public event EventHandler Exiting;
         public event EventHandler Resized;
 
-        internal int Major, Minor;
         internal GraphicsContextFlags ContextFlags;
         private IGraphicsContext _context;
         private readonly AudioDevice _audio;
@@ -69,7 +68,7 @@ namespace engenious
                 _context = Window.BaseWindow.Context;
             _context.MakeCurrent(windowInfo);
             (_context as IGraphicsContextInternal)?.LoadAll();
-            ThreadingHelper.Initialize(windowInfo, Major, Minor, ContextFlags);
+            ThreadingHelper.Initialize(windowInfo, 0,0, ContextFlags);
             _context.MakeCurrent(windowInfo);
 
         }
