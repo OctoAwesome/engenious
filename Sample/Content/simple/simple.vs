@@ -1,4 +1,3 @@
-#version 130
 #if __VERSION__ >= 130
 uniform mat4 WorldViewProj;
 

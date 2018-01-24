@@ -141,9 +141,14 @@ namespace ContentTool.Builder
             var outputDestination = Path.Combine(Path.GetDirectoryName(Project.ContentProjectPath),
                 string.Format(Project.OutputDirectory.Replace("{Configuration}", "{0}"), Project.Configuration));
 
+            
+            
             using (var iContext = new ContentImporterContext())
             using (var pContext = new ContentProcessorContext(_syncContext))
             {
+                Console.WriteLine($"GL Version: {pContext.GraphicsDevice.DriverVersion.ToString()}");
+                Console.WriteLine($"GLSL Version: {pContext.GraphicsDevice.GlslVersion.ToString()}");
+                
                 iContext.BuildMessage += RaiseBuildMessage;
                 pContext.BuildMessage += RaiseBuildMessage;
                 InternalBuildItem(item, outputDestination, iContext, pContext);
