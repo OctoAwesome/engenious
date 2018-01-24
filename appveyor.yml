@@ -1,6 +1,7 @@
 init:
   - git config --global core.autocrlf true
-
+environment:
+  FFMPEG: ./tools/FFMPEG/content/References/ffmpeg.exe
 version: '{build}'
 image: Visual Studio 2017
 build_script:
