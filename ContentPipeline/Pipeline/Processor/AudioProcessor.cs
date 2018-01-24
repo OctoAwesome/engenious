@@ -33,12 +33,12 @@ namespace engenious.Pipeline
                 var err = process.StandardError.ReadToEnd();//TODO: error handling
                 if (!string.IsNullOrEmpty(err))
                 {
-                    context.RaiseBuildMessage(filename, "ffmpeg: " + err, BuildMessageEventArgs.BuildMessageType.Error);
+                    context.RaiseBuildMessage(filename, "error: ffmpeg: " + err, BuildMessageEventArgs.BuildMessageType.Error);
                 }
                 return output;
             }catch (Win32Exception ex)
             {
-                context.RaiseBuildMessage(filename, "ffmpeg: " + ex.Message, BuildMessageEventArgs.BuildMessageType.Error);
+                context.RaiseBuildMessage(filename, "error: ffmpeg: " + ex.Message, BuildMessageEventArgs.BuildMessageType.Error);
                 return null;
             }
         }

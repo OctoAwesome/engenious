@@ -9,7 +9,7 @@ using System.Reflection;
 [assembly: AssemblyProduct("engenious")]
 [assembly: AssemblyVersion("0.2.0.0")]
 [assembly: AssemblyFileVersion("0.2.0")]
-[assembly: AssemblyInformationalVersion("0.2.0-ci-fix.1+92.Branch.feature/ci-fix.Sha.4c1428cf98d44e9372506f90506f9b9fdb5cbbc7")]
+[assembly: AssemblyInformationalVersion("0.2.0-ci-fix.1+94.Branch.feature/ci-fix.Sha.5b3bbb3a74d407f10077ea6e4e4c8ad9eabb8e99")]
 [assembly: AssemblyCopyright("Copyright (c) jvbsl 2016")]
 [assembly: AssemblyConfiguration("Release")]
 
