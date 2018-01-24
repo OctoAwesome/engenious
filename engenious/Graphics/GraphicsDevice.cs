@@ -65,16 +65,28 @@ namespace engenious.Graphics
         }
         private void ReadOpenGlVersion()
         {
-            string versionString = GL.GetString(StringName.Version).Split(' ').FirstOrDefault();
-            if (versionString == null)
-                return;
-            DriverVersion = new Version(versionString);
             
-            versionString = GL.GetString(StringName.ShadingLanguageVersion).Split(' ').FirstOrDefault();
-            if (versionString == null)
-                return;
-            
-            GlslVersion = new Version(versionString);
+            string versionString = null,fullVersion = null;
+            try
+            {
+                fullVersion = GL.GetString(StringName.Version);
+                versionString = fullVersion.Split(' ').FirstOrDefault();
+                if (versionString == null)
+                    return;
+                DriverVersion = new Version(versionString);
+                
+                fullVersion = GL.GetString(StringName.ShadingLanguageVersion);
+                versionString = fullVersion.Split(' ').FirstOrDefault();
+                if (versionString == null)
+                    return;
+
+                GlslVersion = new Version(versionString);
+            }
+            catch (ArgumentException ex)
+            {
+                throw new Exception($"can't parse version: {versionString} fullversion{fullVersion}",ex);
+            }
+
             /*if (Version.Major == 2)
             {
                 GlslVersion = Version.Minor == 0 ? 110 : 120;
