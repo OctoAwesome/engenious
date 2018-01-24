@@ -23,7 +23,7 @@ namespace engenious.Content.Pipeline
 
             _window = new GameWindow(100, 100);
 
-            ThreadingHelper.Initialize(_window.WindowInfo, 3, 1, GraphicsContextFlags.Debug);
+            ThreadingHelper.Initialize(_window.WindowInfo, 0, 0, GraphicsContextFlags.Debug);
             GraphicsDevice = new GraphicsDevice(null, ThreadingHelper.Context);
 
         }
