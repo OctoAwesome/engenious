@@ -4,6 +4,9 @@ env:
   
 #This should fix the detatched head problem which causes GitVersion to crash
 before_script:
+  - sudo add-apt-repository ppa:mc3man/trusty-media -y
+  - sudo aptitude update
+  - sudo aptitude -y -q install ffmpeg
   - git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
   - git fetch origin --unshallow
   - git checkout $branch

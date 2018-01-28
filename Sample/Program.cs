@@ -2,7 +2,7 @@
 
 namespace Sample
 {
-    public class MainClass
+    public static class MainClass
 	{
         [STAThread()]
 		public static void Main (string[] args)

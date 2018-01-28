@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 using engenious.Content;
 using engenious.Content.Serialization;
 using engenious.Helper;
-using OpenTK.Graphics.OpenGL4;
+using OpenTK.Graphics.OpenGL;
 
 namespace engenious.Graphics
 {
@@ -35,11 +35,11 @@ namespace engenious.Graphics
                     GL.TexImage2D(
                         TextureTarget.Texture2D,
                         0,
-                        (OpenTK.Graphics.OpenGL4.PixelInternalFormat) internalFormat,
+                        (OpenTK.Graphics.OpenGL.PixelInternalFormat) internalFormat,
                         width,
                         height,
                         0,
-                        OpenTK.Graphics.OpenGL4.PixelFormat.DepthComponent,
+                        OpenTK.Graphics.OpenGL.PixelFormat.DepthComponent,
                         PixelType.Float,
                         IntPtr.Zero);
                 else
@@ -50,7 +50,7 @@ namespace engenious.Graphics
                         width,
                         height);
 
-                //GL.TexImage2D(TextureTarget.Texture2D, 0, (OpenTK.Graphics.OpenGL4.PixelInternalFormat)internalFormat, width, height, 0, (OpenTK.Graphics.OpenGL4.PixelFormat)Format, PixelType.UnsignedByte, IntPtr.Zero);
+                //GL.TexImage2D(TextureTarget.Texture2D, 0, (OpenTK.Graphics.OpenGL.PixelInternalFormat)internalFormat, width, height, 0, (OpenTK.Graphics.OpenGL.PixelFormat)Format, PixelType.UnsignedByte, IntPtr.Zero);
             }
         }
 
@@ -101,16 +101,16 @@ namespace engenious.Graphics
         public void SetData<T>(T[] data, int level = 0)
             where T : struct
         {
-            SetData(data,level,OpenTK.Graphics.OpenGL4.PixelFormat.Bgra);
+            SetData(data,level,OpenTK.Graphics.OpenGL.PixelFormat.Bgra);
         }
 
-        internal void SetData<T>(T[] data, int level,OpenTK.Graphics.OpenGL4.PixelFormat format)
+        internal void SetData<T>(T[] data, int level,OpenTK.Graphics.OpenGL.PixelFormat format)
             where T : struct //ValueType
         {
             var hwCompressed =
-                format == (OpenTK.Graphics.OpenGL4.PixelFormat) TextureContentFormat.DXT1 ||
-                format == (OpenTK.Graphics.OpenGL4.PixelFormat) TextureContentFormat.DXT3 || format ==
-                (OpenTK.Graphics.OpenGL4.PixelFormat) TextureContentFormat.DXT5;
+                format == (OpenTK.Graphics.OpenGL.PixelFormat) TextureContentFormat.DXT1 ||
+                format == (OpenTK.Graphics.OpenGL.PixelFormat) TextureContentFormat.DXT3 || format ==
+                (OpenTK.Graphics.OpenGL.PixelFormat) TextureContentFormat.DXT5;
             if (!hwCompressed && Marshal.SizeOf(typeof(T)) * data.Length < Width * Height)
                 throw new ArgumentException("Not enough pixel data");
 
@@ -132,7 +132,7 @@ namespace engenious.Graphics
                 if (hwCompressed)
                 {
                     var blockSize = (format ==
-                                     (OpenTK.Graphics.OpenGL4.PixelFormat) TextureContentFormat
+                                     (OpenTK.Graphics.OpenGL.PixelFormat) TextureContentFormat
                                          .DXT1)
                         ? 8
                         : 16;
@@ -145,13 +145,13 @@ namespace engenious.Graphics
                         handle.AddrOfPinnedObject());
             }
             handle.Free();
-            //GL.TexSubImage2D<T> (TextureTarget.Texture2D, 0, 0, 0, Width, Height, OpenTK.Graphics.OpenGL4.PixelFormat.Bgra, getPixelType (typeof(T)), data);
+            //GL.TexSubImage2D<T> (TextureTarget.Texture2D, 0, 0, 0, Width, Height, OpenTK.Graphics.OpenGL.PixelFormat.Bgra, getPixelType (typeof(T)), data);
         }
 
         public void SetData<T>(T[] data, int startIndex, int elementCount) where T : struct
         {
             throw new NotImplementedException("Need to implement offset");
-            //TODO:GL.TexSubImage2D<T> (TextureTarget.Texture2D, 0, 0, 0, Width, Height, OpenTK.Graphics.OpenGL4.PixelFormat.Rgba, PixelType.UnsignedByte, data);
+            //TODO:GL.TexSubImage2D<T> (TextureTarget.Texture2D, 0, 0, 0, Width, Height, OpenTK.Graphics.OpenGL.PixelFormat.Rgba, PixelType.UnsignedByte, data);
         }
 
         public void SetData<T>(int level, Rectangle? rect, T[] data, int startIndex, int elementCount)
@@ -159,9 +159,9 @@ namespace engenious.Graphics
         {
             throw new NotImplementedException("Need to implement offset"); //TODO:
             /*if (rect.HasValue)
-				GL.TexSubImage2D<T> (TextureTarget.Texture2D, level, rect.Value.X, rect.Value.Y, rect.Value.Width, rect.Value.Height, OpenTK.Graphics.OpenGL4.PixelFormat.Rgba, PixelType.UnsignedByte, data);
+				GL.TexSubImage2D<T> (TextureTarget.Texture2D, level, rect.Value.X, rect.Value.Y, rect.Value.Width, rect.Value.Height, OpenTK.Graphics.OpenGL.PixelFormat.Rgba, PixelType.UnsignedByte, data);
 			else
-				GL.TexSubImage2D<T> (TextureTarget.Texture2D, level, 0, 0, Width, Height, OpenTK.Graphics.OpenGL4.PixelFormat.Rgba, PixelType.UnsignedByte, data);*/
+				GL.TexSubImage2D<T> (TextureTarget.Texture2D, level, 0, 0, Width, Height, OpenTK.Graphics.OpenGL.PixelFormat.Rgba, PixelType.UnsignedByte, data);*/
         }
 
         public void GetData<T>(T[] data) where T : struct //ValueType
@@ -179,7 +179,7 @@ namespace engenious.Graphics
                 {
                     //TODO:
                     var temp = new T[this.Width * this.Height];
-                    GL.GetTexImage(TextureTarget.Texture2D, level, OpenTK.Graphics.OpenGL4.PixelFormat.Bgra,
+                    GL.GetTexImage(TextureTarget.Texture2D, level, OpenTK.Graphics.OpenGL.PixelFormat.Bgra,
                         PixelType.UnsignedByte, temp);
                     int z = 0, w = 0;
 
@@ -196,7 +196,7 @@ namespace engenious.Graphics
                 }
                 else*/
                 {
-                    GL.GetTexImage(TextureTarget.Texture2D, level, OpenTK.Graphics.OpenGL4.PixelFormat.Bgra,
+                    GL.GetTexImage(TextureTarget.Texture2D, level, OpenTK.Graphics.OpenGL.PixelFormat.Bgra,
                         PixelType.UnsignedByte, data);
                 }
             }
@@ -213,7 +213,7 @@ namespace engenious.Graphics
                 {
                     //TODO: use ? GL.CopyImageSubData(
                     var temp = new T[Width * Height];
-                    GL.GetTexImage(TextureTarget.Texture2D, level, OpenTK.Graphics.OpenGL4.PixelFormat.Bgra,
+                    GL.GetTexImage(TextureTarget.Texture2D, level, OpenTK.Graphics.OpenGL.PixelFormat.Bgra,
                         PixelType.UnsignedByte, temp);
                     int z = 0, w = 0;
 
@@ -230,7 +230,7 @@ namespace engenious.Graphics
                 }
                 else
                 {
-                    GL.GetTexImage(TextureTarget.Texture2D, level, OpenTK.Graphics.OpenGL4.PixelFormat.Bgra,
+                    GL.GetTexImage(TextureTarget.Texture2D, level, OpenTK.Graphics.OpenGL.PixelFormat.Bgra,
                         PixelType.UnsignedByte, data);
                 }
             }
@@ -254,7 +254,7 @@ namespace engenious.Graphics
             {
                 text.Bind();
                 GL.TexSubImage2D(TextureTarget.Texture2D, 0, 0, 0, text.Width, text.Height,
-                    OpenTK.Graphics.OpenGL4.PixelFormat.Bgra, PixelType.UnsignedByte, bmpData.Scan0);
+                    OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, bmpData.Scan0);
             }
             bmp.UnlockBits(bmpData);
 
@@ -270,7 +270,7 @@ namespace engenious.Graphics
             using (Execute.OnUiContext)
             {
                 text.Bind();
-                GL.GetTexImage(TextureTarget.Texture2D, 0, OpenTK.Graphics.OpenGL4.PixelFormat.Bgra,
+                GL.GetTexImage(TextureTarget.Texture2D, 0, OpenTK.Graphics.OpenGL.PixelFormat.Bgra,
                     PixelType.UnsignedByte, bmpData.Scan0);
             }
             //System.Runtime.InteropServices.Marshal.Copy (bmpData.Scan0, data, 0, data.Length);//TODO: performance

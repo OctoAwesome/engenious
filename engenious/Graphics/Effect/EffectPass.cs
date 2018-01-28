@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using engenious.Helper;
-using OpenTK.Graphics.OpenGL4;
+using OpenTK.Graphics.OpenGL;
 
 namespace engenious.Graphics
 {

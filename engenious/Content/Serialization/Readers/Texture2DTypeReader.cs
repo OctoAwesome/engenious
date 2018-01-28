@@ -22,7 +22,7 @@ namespace engenious.Content.Serialization
             {
                 text = new Texture2D(manager.GraphicsDevice,width,height,mipCount,(PixelInternalFormat)format);
 
-                text.SetData(buffer,0,(OpenTK.Graphics.OpenGL4.PixelFormat)format);
+                text.SetData(buffer,0,(OpenTK.Graphics.OpenGL.PixelFormat)format);
                 //TODO:...
             }
             else
@@ -40,7 +40,7 @@ namespace engenious.Content.Serialization
                 buffer = reader.ReadBytes(size);
                 hwCompressed = format == TextureContentFormat.DXT1 || format == TextureContentFormat.DXT3 || format == TextureContentFormat.DXT5;
                 if (hwCompressed)
-                    text.SetData(buffer,i,(OpenTK.Graphics.OpenGL4.PixelFormat)format);
+                    text.SetData(buffer,i,(OpenTK.Graphics.OpenGL.PixelFormat)format);
                 else
                 {
                     text.SetData(buffer,i);

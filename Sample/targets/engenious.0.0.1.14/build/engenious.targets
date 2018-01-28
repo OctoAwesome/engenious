@@ -55,7 +55,7 @@
 
     <!--<Exec Command="chmod +x &quot;$(EngeniousContentBuilderExe)&quot;" Condition=" '$(OS)' == 'Unix' " />-->
     <Exec Command="$(MonoExe) &quot;$(EngeniousContentBuilderExe)&quot; /@:&quot;%(ContentReferences.FullPath)&quot; $(Header)"
-          WorkingDirectory="%(ContentReferences.RootDir)%(ContentReferences.Directory)" Condition="Exists('%(ContentReferences.FullPath)') AND '$(CI)'!='true'" />
+          WorkingDirectory="%(ContentReferences.RootDir)%(ContentReferences.Directory)" Condition="Exists('%(ContentReferences.FullPath)')" />
     <ItemGroup>
       <ExtraContent Include="$(ParentOutputDir)\**\*.*" />
     </ItemGroup>

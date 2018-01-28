@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
@@ -20,6 +21,7 @@ namespace engenious.Pipeline
         private static string LocateFFmpegExe()
         {
             string completePath;
+            
             try
             {
                 completePath = File.ReadAllText(".ffmpeg");
@@ -56,6 +58,11 @@ namespace engenious.Pipeline
                     if (File.Exists(completePath))
                         return completePath;
                     break;
+                case Platform.Windows:
+                    completePath = Environment.GetEnvironmentVariable("FFMPEG");
+                    if (File.Exists(completePath))
+                        return completePath;
+                    break;
             }
             return "ffmpeg" + ext;
         }
@@ -84,7 +91,7 @@ namespace engenious.Pipeline
             catch (Win32Exception ex)
             {
                 if (throwAll || ex.NativeErrorCode != 2) //File not found
-                    throw;
+                    throw new FileNotFoundException($"Could not find ffmpeg at location: '{_ffmpegExe}'.");
                 
                 _syncContext?.Send(o =>
                 {
@@ -103,7 +110,7 @@ namespace engenious.Pipeline
                 },null);
                 if (File.Exists(_ffmpegExe))
                     return RunCommand(arguments, true);
-                throw;
+                throw new FileNotFoundException($"Could not find ffmpeg at location: '{_ffmpegExe}'.");
 
             }
             return null;

@@ -55,10 +55,10 @@ namespace Sample
             GraphicsDevice.SetRenderTarget(null);
             GraphicsDevice.Clear(Color.CornflowerBlue);
             _texture.BindComputation();
-            _effect.Compute.p1.Compute(_texture.Width, _texture.Height);
-            _effect.Compute.p1.WaitForImageCompletion();
+            //_effect.Compute.p1.Compute(_texture.Width, _texture.Height);
+            //_effect.Compute.p1.WaitForImageCompletion();
+            //_effect.Ambient.Pass1.AmbientColor = Color.AliceBlue;
             
-
             _spriteBatch.Begin();
             _spriteBatch.Draw(_texture, new Rectangle(0, 0, 512, 512), Color.White);
             _spriteBatch.DrawString(_font, "Taxi.\nTT\nTx\nTe\nTA", new Vector2(), Color.Black);

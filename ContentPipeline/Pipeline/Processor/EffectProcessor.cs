@@ -5,7 +5,7 @@ using System.IO;
 using System.Text;
 using engenious.Graphics;
 using engenious.Pipeline;
-using OpenTK.Graphics.OpenGL4;
+using OpenTK.Graphics.OpenGL;
 
 namespace engenious.Content.Pipeline
 {
@@ -246,7 +246,7 @@ namespace engenious.Content.Pipeline
                         {
                             try
                             {
-                                var tmp = new Shader(shader.Key, File.ReadAllText(shader.Value));
+                                var tmp = new Shader(context.GraphicsDevice,shader.Key, File.ReadAllText(shader.Value));
                                 tmp.Compile();
                                 compiledPass.AttachShader(tmp);
                             }

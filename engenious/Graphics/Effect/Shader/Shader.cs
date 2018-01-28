@@ -1,6 +1,6 @@
 ﻿using System;
 using engenious.Helper;
-using OpenTK.Graphics.OpenGL4;
+using OpenTK.Graphics.OpenGL;
 
 
 namespace engenious.Graphics
@@ -19,14 +19,17 @@ namespace engenious.Graphics
     {
         public int BaseShader;
 
-        public Shader(ShaderType type, string source)
+        public Shader(GraphicsDevice graphicsDevice,ShaderType type, string source)
         {
             using (Execute.OnUiContext)
             {
-                BaseShader = GL.CreateShader((OpenTK.Graphics.OpenGL4.ShaderType) type);
+                BaseShader = GL.CreateShader((OpenTK.Graphics.OpenGL.ShaderType) type);
+                if (!source.Contains("#version"))
+                    source = $"#version {(graphicsDevice.GlslVersion.Major*100+graphicsDevice.GlslVersion.Minor).ToString()}\r\n"+source;
                 GL.ShaderSource(BaseShader, source);
             }
         }
+        
 
         internal void Compile()
         {

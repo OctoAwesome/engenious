@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using engenious.Helper;
-using OpenTK.Graphics.OpenGL4;
+using OpenTK.Graphics.OpenGL;
 
 namespace engenious.Graphics
 {
@@ -34,7 +34,7 @@ namespace engenious.Graphics
                     BufferTarget.ElementArrayBuffer,
                     new IntPtr(indexCount * _elementSize),
                     IntPtr.Zero,
-                    (OpenTK.Graphics.OpenGL4.BufferUsageHint) BufferUsage);
+                    (OpenTK.Graphics.OpenGL.BufferUsageHint) BufferUsage);
             }
             GraphicsDevice.CheckError();
             //buffer = new byte[indexCount * (int)IndexElementSize / 8];
@@ -55,7 +55,7 @@ namespace engenious.Graphics
                     BufferTarget.ElementArrayBuffer,
                     new IntPtr(indexCount * _elementSize),
                     IntPtr.Zero,
-                    (OpenTK.Graphics.OpenGL4.BufferUsageHint) BufferUsage);
+                    (OpenTK.Graphics.OpenGL.BufferUsageHint) BufferUsage);
             }
             GraphicsDevice.CheckError();
             //buffer = new byte[indexCount * (int)IndexElementSize / 8];
@@ -142,7 +142,7 @@ namespace engenious.Graphics
                     BufferTarget.ElementArrayBuffer,
                     new IntPtr(indexCount * _elementSize),
                     IntPtr.Zero,
-                    (OpenTK.Graphics.OpenGL4.BufferUsageHint) BufferUsage);
+                    (OpenTK.Graphics.OpenGL.BufferUsageHint) BufferUsage);
 
 
                 GL.DeleteBuffer(_ibo);
