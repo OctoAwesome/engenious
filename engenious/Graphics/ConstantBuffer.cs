@@ -1,5 +1,5 @@
 ﻿using System;
-using OpenTK.Graphics.OpenGL4;
+using OpenTK.Graphics.OpenGL;
 using System.Runtime.InteropServices;
 using engenious.Helper;
 
@@ -14,7 +14,7 @@ namespace engenious.Graphics
             {
                 Ubo = GL.GenBuffer();
                 GL.BindBuffer(BufferTarget.UniformBuffer, Ubo);
-                GL.BufferData(BufferTarget.UniformBuffer, new IntPtr(size), IntPtr.Zero, OpenTK.Graphics.OpenGL4.BufferUsageHint.DynamicDraw);
+                GL.BufferData(BufferTarget.UniformBuffer, new IntPtr(size), IntPtr.Zero, OpenTK.Graphics.OpenGL.BufferUsageHint.DynamicDraw);
             }
         }
         public void Update(IntPtr data,uint size)

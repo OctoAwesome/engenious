@@ -5,7 +5,7 @@ using System.IO;
 using System.Text;
 using engenious.Graphics;
 using engenious.Pipeline;
-using OpenTK.Graphics.OpenGL4;
+using OpenTK.Graphics.OpenGL;
 
 namespace engenious.Content.Pipeline
 {

@@ -6,7 +6,7 @@ using engenious.Graphics;
 using engenious.Helper;
 using OpenTK;
 using OpenTK.Graphics;
-using OpenTK.Graphics.OpenGL4;
+using OpenTK.Graphics.OpenGL;
 
 namespace engenious
 {
@@ -68,7 +68,7 @@ namespace engenious
                 _context = Window.BaseWindow.Context;
             _context.MakeCurrent(windowInfo);
             (_context as IGraphicsContextInternal)?.LoadAll();
-            ThreadingHelper.Initialize(windowInfo, 0,0, ContextFlags);
+            ThreadingHelper.Initialize(_context.GraphicsMode,windowInfo, 0,0, ContextFlags);
             _context.MakeCurrent(windowInfo);
 
         }

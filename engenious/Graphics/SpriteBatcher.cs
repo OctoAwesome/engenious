@@ -171,7 +171,7 @@ namespace engenious.Graphics
                 return;
 
 
-            //graphicsDevice.DrawPrimitives(OpenTK.Graphics.OpenGL4.PrimitiveType.Qu
+            //graphicsDevice.DrawPrimitives(OpenTK.Graphics.OpenGL.PrimitiveType.Qu
             _vertexBuffer.SetData(VertexPositionColorTexture.VertexDeclaration.VertexStride * batch * 4, _vertexData, 0, batchCount * 4, VertexPositionColorTexture.VertexDeclaration.VertexStride);
             _indexBuffer.SetData(sizeof(short) * 6 * batch, _indexData, 0, batchCount * 6);
 
