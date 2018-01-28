@@ -91,7 +91,7 @@ namespace engenious.Pipeline
             catch (Win32Exception ex)
             {
                 if (throwAll || ex.NativeErrorCode != 2) //File not found
-                    throw;
+                    throw new FileNotFoundException($"Could not find ffmpeg at location: '{_ffmpegExe}'.");
                 
                 _syncContext?.Send(o =>
                 {
@@ -110,7 +110,7 @@ namespace engenious.Pipeline
                 },null);
                 if (File.Exists(_ffmpegExe))
                     return RunCommand(arguments, true);
-                throw;
+                throw new FileNotFoundException($"Could not find ffmpeg at location: '{_ffmpegExe}'.");
 
             }
             return null;
