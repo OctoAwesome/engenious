@@ -5,33 +5,41 @@ using OpenTK;
 using OpenTK.Graphics;
 using System.Threading;
 using System.ComponentModel;
+using System.Linq.Expressions;
+using System.Runtime.InteropServices;
+using System.Text;
 using engenious.Helper;
 using engenious.Pipeline;
 
 namespace engenious.Content.Pipeline
 {
-    public class ContentProcessorContext: ContentContext
+    public class ContentProcessorContext : ContentContext
     {
         private readonly INativeWindow _window;
 
-        public ContentProcessorContext(SynchronizationContext syncContext,string workingDirectory = "")
+        public ContentProcessorContext(SynchronizationContext syncContext, string workingDirectory = "")
         {
             SyncContext = syncContext;
             WorkingDirectory = workingDirectory;
             //BaseWindow = new GameWindow();
             //_window = new NativeWindow(100,100,"Test",GameWindowFlags.Default, GraphicsMode.Default, DisplayDevice.Default);
 
-            _window = new GameWindow(100, 100);
+            var window = new GameWindow(100, 100);
+            _window = window;
+            var windowInfo = window.WindowInfo;
+            var context = window.Context;
 
-            ThreadingHelper.Initialize(_window.WindowInfo, 0, 0, GraphicsContextFlags.Debug);
+            context.MakeCurrent(windowInfo);
+            (context as IGraphicsContextInternal)?.LoadAll();
+
+            ThreadingHelper.Initialize(null, null, 0, 0, GraphicsContextFlags.Debug);
             GraphicsDevice = new GraphicsDevice(null, ThreadingHelper.Context);
-
         }
 
         public SynchronizationContext SyncContext { get; private set; }
-        public GraphicsDevice GraphicsDevice{ get; private set; }
+        public GraphicsDevice GraphicsDevice { get; private set; }
 
-        public string WorkingDirectory{ get; private set; }
+        public string WorkingDirectory { get; private set; }
         public List<SourceFile> SourceFiles { get; set; }
 
         public override void Dispose()
