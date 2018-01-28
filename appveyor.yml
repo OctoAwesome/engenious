@@ -1,7 +1,9 @@
 init:
   - git config --global core.autocrlf true
-environment:
-  FFMPEG: ./tools/FFMPEG/content/References/ffmpeg.exe
+install:
+  # Install OpenGL
+  - "powershell ./install_tools.ps1"
+
 version: '{build}'
 image: Visual Studio 2017
 build_script:
