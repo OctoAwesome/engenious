@@ -146,8 +146,8 @@ namespace ContentTool.Builder
             using (var iContext = new ContentImporterContext())
             using (var pContext = new ContentProcessorContext(_syncContext))
             {
-                Console.WriteLine($"GL Version: {pContext.GraphicsDevice.DriverVersion.ToString()}");
-                Console.WriteLine($"GLSL Version: {pContext.GraphicsDevice.GlslVersion.ToString()}");
+                //Console.WriteLine($"GL Version: {pContext.GraphicsDevice.DriverVersion.ToString()}");
+                //Console.WriteLine($"GLSL Version: {pContext.GraphicsDevice.GlslVersion.ToString()}");
                 
                 iContext.BuildMessage += RaiseBuildMessage;
                 pContext.BuildMessage += RaiseBuildMessage;
