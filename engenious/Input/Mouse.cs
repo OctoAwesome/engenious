@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 using engenious.Helper;
 using OpenTK;
 using OpenTK.Input;
@@ -40,8 +41,6 @@ namespace engenious.Input
         {
             var state = OpenTK.Input.Mouse.GetState();
             var actual = *(MouseState*)(&state);
-            actual.X = _window.Mouse.X;
-            actual.Y = _window.Mouse.Y;
             actual.Scroll = new MouseScroll(actual.Scroll.X,_deltaPrecise);//.Y = ;
             //deltaPrecise = 0;
             return actual;
@@ -50,11 +49,10 @@ namespace engenious.Input
 
         public static void SetPosition(double x, double y)
         {
-            
             var pt = _window.PointToScreen(new System.Drawing.Point((int)x, (int)y));
-            x -= (int)x;
-            y -= (int)y;
-            OpenTK.Input.Mouse.SetPosition(pt.X + x, pt.Y + y);
+            x = pt.X + (x - (int)x);
+            y = pt.Y + (x - (int)y);
+            OpenTK.Input.Mouse.SetPosition(x,y);
         }
     }
 }
