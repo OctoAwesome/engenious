@@ -25,8 +25,8 @@ namespace engenious
         private void ConstructContext()
         {
             var windowInfo = Window.BaseWindow.WindowInfo;
-            if (Window.BaseWindow.Context == null)
-            {//TODO: really - what was that even for?
+            /*if (Window.BaseWindow.Context == null)
+            {
                 var flags = GraphicsContextFlags.ForwardCompatible;
                 var major = 1;
                 var minor = 0;
@@ -43,7 +43,7 @@ namespace engenious
                 {
 
                     var colorFormat = new ColorFormat(8, 8, 8, 8);
-                    var depth = 24; //TODO: wth?
+                    var depth = 24;
                     var stencil = 8;
                     var samples = 4;
 
@@ -64,8 +64,9 @@ namespace engenious
                     }
                 }
             }
-            else
-                _context = Window.BaseWindow.Context;
+            else*/
+            _context = Window.BaseWindow.Context;
+
             _context.MakeCurrent(windowInfo);
             (_context as IGraphicsContextInternal)?.LoadAll();
             ThreadingHelper.Initialize(_context.GraphicsMode,windowInfo, 0,0, ContextFlags);

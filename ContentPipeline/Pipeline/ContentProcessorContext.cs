@@ -15,17 +15,15 @@ namespace engenious.Content.Pipeline
 {
     public class ContentProcessorContext : ContentContext
     {
-        private readonly INativeWindow _window;
+        private static readonly INativeWindow Window;
 
-        public ContentProcessorContext(SynchronizationContext syncContext, string workingDirectory = "")
+        static ContentProcessorContext()
         {
-            SyncContext = syncContext;
-            WorkingDirectory = workingDirectory;
+            
             //BaseWindow = new GameWindow();
             //_window = new NativeWindow(100,100,"Test",GameWindowFlags.Default, GraphicsMode.Default, DisplayDevice.Default);
-
             var window = new GameWindow(100, 100);
-            _window = window;
+            Window = window;
             var windowInfo = window.WindowInfo;
             var context = window.Context;
 
@@ -33,6 +31,13 @@ namespace engenious.Content.Pipeline
             (context as IGraphicsContextInternal)?.LoadAll();
 
             ThreadingHelper.Initialize(null, null, 0, 0, GraphicsContextFlags.Debug);
+        }
+
+        public ContentProcessorContext(SynchronizationContext syncContext, string workingDirectory = "")
+        {
+            SyncContext = syncContext;
+            WorkingDirectory = workingDirectory;
+
             GraphicsDevice = new GraphicsDevice(null, ThreadingHelper.Context);
         }
 
@@ -45,7 +50,7 @@ namespace engenious.Content.Pipeline
         public override void Dispose()
         {
             //GraphicsDevice.Dispose();
-            _window.Dispose();
+            //Window.Dispose();
         }
     }
 }

@@ -12,22 +12,62 @@ namespace engenious.Content.Pipeline
     [ContentProcessor(DisplayName = "Effect Processor")]
     public class EffectProcessor : ContentProcessor<EffectContent, EffectContent,EffectProcessorSettings>
     {
+        private static BuildMessageEventArgs.BuildMessageType GetMessageType(string line)
+        {
+            var splt = line.Split(':');
+            var messageType = BuildMessageEventArgs.BuildMessageType.None;
+            foreach (var s in splt)
+            {
+                var trimmed = s.Trim();
+                if (trimmed.StartsWith("error", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    messageType = BuildMessageEventArgs.BuildMessageType.Error;
+                }
+                else if (trimmed.StartsWith("warning", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    messageType = BuildMessageEventArgs.BuildMessageType.Warning;
+                }
+                else if (trimmed.StartsWith("info", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    messageType = BuildMessageEventArgs.BuildMessageType.Information;
+                }
+            }
+
+            return messageType;
+        }
+
+        private int GetMinGreaterZero(int a, int b)
+        {
+            if (a < 0)
+                return b;
+            if (b < 0)
+                return a;
+            return Math.Min(a, b);
+        }
         private void PreprocessMessage(ContentProcessorContext context, string file, string msg, BuildMessageEventArgs.BuildMessageType messageType)
         {
             string[] lines = msg.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
             for (int i = 0; i < lines.Length; i++)
             {
-                if (lines[i].StartsWith("error:", StringComparison.InvariantCultureIgnoreCase))
+                messageType = GetMessageType(lines[i]);
+                if (messageType == BuildMessageEventArgs.BuildMessageType.Error || messageType == BuildMessageEventArgs.BuildMessageType.Warning)
                 {
-                    lines[i] = lines[i].Substring("ERROR: 0:".Length);
-                    int eInd = lines[i].IndexOf(':');
+                    int sInd = GetMinGreaterZero(lines[i].IndexOf("0:", StringComparison.Ordinal),lines[i].IndexOf("0(", StringComparison.Ordinal));
                     string errorLoc = string.Empty;
-                    if (eInd != -1)
+                    if (sInd != -1)
                     {
-                        errorLoc = "(" + lines[i].Substring(0, eInd) + ")";
-                        lines[i] = lines[i].Substring(eInd + 1);
+                        lines[i] = lines[i].Substring(sInd + 2);
+                        int eInd = GetMinGreaterZero(lines[i].IndexOf(':'),lines[i].IndexOf(')'));
+                        if (eInd != -1)
+                        {
+                            errorLoc = lines[i].Substring(0, eInd);
+                            if (errorLoc.IndexOf(',') == -1)
+                                errorLoc = errorLoc + ",1";
+                            lines[i] = lines[i].Substring(eInd+3).Trim();
+                        }
                     }
-                    lines[i] = errorLoc + ":ERROR:" + lines[i];
+                    
+                    lines[i] = file + "("+errorLoc+"): " + lines[i];
                 }
                 context.RaiseBuildMessage(file,lines[i],messageType);
             }
@@ -234,6 +274,7 @@ namespace engenious.Content.Pipeline
         {
             try
             {
+                var success = true;
                 input.CreateUserEffect = settings.CreateUserEffect;
                 //Passthrough and verification
                 foreach (var technique in input.Techniques)
@@ -252,6 +293,7 @@ namespace engenious.Content.Pipeline
                             }
                             catch (Exception ex)
                             {
+                                success = false;
                                 PreprocessMessage(context,shader.Value, ex.Message, BuildMessageEventArgs.BuildMessageType.Error);
                                 
                             }
@@ -272,6 +314,9 @@ namespace engenious.Content.Pipeline
                     }
                 }
 
+                if (!success)
+                    return null;
+                
                 if (input.CreateUserEffect)
                     GenerateEffectSource(input, Path.GetFileNameWithoutExtension(filename), context);
                 

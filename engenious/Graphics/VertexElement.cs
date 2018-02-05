@@ -67,13 +67,12 @@ namespace engenious.Graphics
                     return VertexAttribPointerType.Short;
                 case VertexElementFormat.Byte4:
                     return VertexAttribPointerType.Byte;
-                //case VertexElementFormat.Normalized101010:
-                //case VertexElementFormat.UInt101010:
-                //    break; //TODO: dunno
-                default:
-                    throw new NotImplementedException(); //TODO: dunno
+                case VertexElementFormat.Normalized101010:
+                    return VertexAttribPointerType.Int;
+                case VertexElementFormat.UInt101010:
+                    return VertexAttribPointerType.UnsignedInt;
             }
-
+            throw new ArgumentOutOfRangeException();
         }
 
         internal int GetGlVertexDataTypeSize()
@@ -90,11 +89,14 @@ namespace engenious.Graphics
                 case VertexAttribPointerType.Int:
                 case VertexAttribPointerType.UnsignedInt:
                 case VertexAttribPointerType.Float:
+                case VertexAttribPointerType.UnsignedInt2101010Rev:
+                case VertexAttribPointerType.Int2101010Rev:
+                case VertexAttribPointerType.Fixed:
                     return 4;
                 case VertexAttribPointerType.Double:
                     return 8;
             }
-            throw new NotImplementedException(); //TODO: dunno
+            throw new ArgumentOutOfRangeException();
         }
 
         public int ByteCount
@@ -128,7 +130,7 @@ namespace engenious.Graphics
                     case VertexElementFormat.NormalizedShort4:
                         return 8;
                     case VertexElementFormat.Normalized101010:
-                        return -1; //TODO: dunno
+                        return 4;
                     case VertexElementFormat.Short2:
                         return 4;
                     case VertexElementFormat.Short4:
@@ -136,9 +138,9 @@ namespace engenious.Graphics
                     case VertexElementFormat.Byte4:
                         return 4;
                     case VertexElementFormat.UInt101010:
-                        break; //TODO: dunno
+                        return 4;
                 }
-                throw new NotImplementedException(); //TODO: dunno
+                throw new ArgumentOutOfRangeException();
             }
         }
     }

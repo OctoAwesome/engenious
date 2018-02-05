@@ -72,7 +72,10 @@ namespace engenious
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override int GetHashCode()
         {
-            return X.GetHashCode() ^ Y.GetHashCode();
+            unchecked
+            {
+                return (X.GetHashCode() * 397) ^ Y.GetHashCode();
+            }
         }
 
         #region IEquatable implementation

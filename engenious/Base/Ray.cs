@@ -1,4 +1,6 @@
-﻿namespace engenious
+﻿using OpenTK.Graphics.ES20;
+
+namespace engenious
 {
     public struct Ray
     {
@@ -18,7 +20,14 @@
 
         public static bool operator ==(Ray ray1, Ray ray2)
         {
-            return ray1.Position == ray2.Position && ray1.Direction.Normalized() == ray2.Direction.Normalized();//TODO: really normalized
+            
+            bool posEqual = ray1.Position == ray2.Position;
+                if (!posEqual)
+                return false;
+            //ray1.Direction.Normalized() == ray2.Direction.Normalized();
+            // test if direction is the same
+            var div = ray1.Direction * (ray2.Direction.X * ray2.Direction.Y * ray2.Direction.Z) / ray2.Direction;
+            return div.X > 0 && (int)div.X == (int)div.Y && (int)div.Y == (int)div.Z;
         }
 
         public static bool operator !=(Ray ray1, Ray ray2)
@@ -28,7 +37,10 @@
 
         public override int GetHashCode()
         {
-            return Direction.GetHashCode() ^ Position.GetHashCode();
+            unchecked
+            {
+                return (Direction.GetHashCode()*397) ^ Position.GetHashCode();
+            }
         }
 
         public override bool Equals(object obj)
