@@ -10,48 +10,99 @@ namespace engenious.Helper
 
         private class CallbackState
         {
-            public CallbackState(object state, ManualResetEvent waitHandle)
+            public CallbackState()
             {
-                UserState = state;
-                WaitHandle = waitHandle;
+                WaitHandle = new AutoResetEvent(false);
+                DoWait = false;
             }
-            public readonly object UserState;
-            public readonly ManualResetEvent WaitHandle;
+            public SendOrPostCallback Callback;
+            public object UserState;
+            public AutoResetEvent WaitHandle;
+            public bool DoWait;
         }
 
-        private readonly BlockingCollection<KeyValuePair<SendOrPostCallback, CallbackState>> _queue = new BlockingCollection<KeyValuePair<SendOrPostCallback, CallbackState>>();
+        private readonly object _syncRoot = new object();
+        
+        private int _count,_head,_tail;
+        private readonly List<CallbackState> _array = new List<CallbackState>();
 
-        public override void Send(SendOrPostCallback d, object state)
+        public GlSynchronizationContext()
+        {
+            for (int i = 0; i < 128; i++)
+            {
+                _array.Add(new CallbackState());
+            }
+        }
+        
+        public override void Send(SendOrPostCallback callback, object state)
         {
             if (Thread.CurrentThread == _currentThread)
             {
-                d(state);
+                callback(state);
             }
             else
             {
-                var waitHandle = new ManualResetEvent(false);//TODO: memory pooling
-                _queue.Add(new KeyValuePair<SendOrPostCallback, CallbackState>(d, new CallbackState(state, waitHandle)));//TODO: memory pooling
-                waitHandle.WaitOne();
-                waitHandle.Dispose();
+                Add(callback,state,true).WaitOne();
             }
         }
-        public override void Post(SendOrPostCallback d, object state)
+        public override void Post(SendOrPostCallback callback, object state)
         {
-            _queue.Add(new KeyValuePair<SendOrPostCallback, CallbackState>(d, new CallbackState(state,null)));//TODO: memory pooling
+            Add(callback, state);
         }
 
+        private AutoResetEvent Add(SendOrPostCallback callback, object state,bool wait=false)
+        {
+            lock (_syncRoot)
+            {
+                if (_count == _array.Count) {
+                    int newcapacity = (int)((long)_array.Count * 2);
+                    if (newcapacity < _array.Count + 4) {
+                        newcapacity = _array.Count + 4;
+                    }
+
+                    int added = newcapacity - _array.Capacity;
+                    _array.Capacity = newcapacity;
+                    for (int i = 0; i < added; i++)
+                    {
+                        _array.Add(new CallbackState());
+                    }
+                }
+                var item = _array[_tail];
+                item.Callback = callback;
+                item.UserState = state;
+                item.DoWait = wait;
+                _tail = (_tail + 1) % _array.Count;
+                _count++;
+
+                return item.WaitHandle;
+            }
+        }
+
+        private bool TryTake(ref CallbackState callbackState)
+        {
+            if (_count == 0)
+                return false;
+            lock (_syncRoot)
+            {
+                if (_count == 0)
+                    return false;
+                callbackState = _array[_head];
+                _head = (_head + 1) % _array.Count;
+                _count--;
+                return true;
+            }
+        }
         public void RunOnCurrentThread()
         {
             _currentThread = Thread.CurrentThread;
-            KeyValuePair<SendOrPostCallback, CallbackState> workItem;
-
-            while (_queue.Count > 0 && _queue.TryTake(out workItem, Timeout.Infinite))
+            var workItem = default(CallbackState);
+            while (TryTake(ref workItem))
             {
-                var callbackState = workItem.Value;
-                var waitHandle = callbackState.WaitHandle;
+                var callbackState = workItem;
 
-                workItem.Key(callbackState.UserState);
-                waitHandle?.Set();
+                callbackState.Callback(callbackState.UserState);
+                if(callbackState.DoWait)
+                    callbackState.WaitHandle.Set();
             }
 
         }
