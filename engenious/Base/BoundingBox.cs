@@ -7,17 +7,22 @@ namespace engenious
     {
         public Vector3 Max;
         public Vector3 Min;
+        
+        
+        private Vector3[] _cornerPreAlloc;
 
         public BoundingBox(Vector3 min, Vector3 max)
         {
             Min = min;
             Max = max;
+            _cornerPreAlloc = new Vector3[8];
         }
 
         public BoundingBox(float minX, float minY, float minZ, float maxX, float maxY, float maxZ)
         {
             Min = new Vector3(minX, minY, minZ);
             Max = new Vector3(maxX, maxY, maxZ);
+            _cornerPreAlloc = new Vector3[8];
         }
 
         public bool Contains(Vector3 vec)
@@ -129,51 +134,22 @@ namespace engenious
                 return null;
 
             return tMin;
-            /*float txmin = (Min.X - ray.Position.X) / ray.Direction.X;
-            float txmax = (Max.X - ray.Position.X) / ray.Direction.X;
-
-            if (txmin > txmax)
-                swap(ref txmin, ref txmax);
-
-            float tymin = (Min.Y - ray.Position.Y) / ray.Direction.Y;
-            float tymax = (Max.Y - ray.Position.Y) / ray.Direction.Y;
-
-            if (tymin > tymax)
-                swap(ref tymin, ref tymax);
-
-            if ((txmin > tymax) || (tymin > txmax))
-                return null;
-
-            if (tymin > txmin)
-                txmin = tymin;
-
-            if (tymax < txmax)
-                txmax = tymax;
-
-            float tzmin = (Min.Z - ray.Position.Z) / ray.Direction.Z;
-            float tzmax = (Max.Z - ray.Position.Z) / ray.Direction.Z;
-
-            if (tzmin > tzmax)
-                swap(ref tzmin, ref tzmax);
-
-            if ((txmin > tzmax) || (tzmin > txmax))
-                return null;
-
-            if (tzmin > txmin)
-                txmin = tzmin;
-
-            if (tzmax < txmax)
-                txmax = tzmax;
-
-            return (float)Math.Sqrt(txmin * txmin + tymin * tymin + tzmin * tzmin);*/ //TODO: verify?
         }
 
         public Vector3[] GetCorners()
         {
-            return new[]
-            { new Vector3(Min.X, Max.Y, Max.Z), Max, new Vector3(Max.X, Min.Y, Max.Z), new Vector3(Min.X, Min.Y, Max.Z),
-                new Vector3(Min.X, Max.Y, Min.Z), Max, new Vector3(Max.X, Min.Y, Min.Z), new Vector3(Min.X, Min.Y, Min.Z),
-            };//TODO: verify?
+            if (_cornerPreAlloc == null)
+                _cornerPreAlloc = new Vector3[8];
+            _cornerPreAlloc[0] = new Vector3(Min.X, Max.Y, Max.Z);
+            _cornerPreAlloc[1] = Max;
+            _cornerPreAlloc[2] = new Vector3(Max.X, Min.Y, Max.Z);
+            _cornerPreAlloc[3] = new Vector3(Min.X, Min.Y, Max.Z);
+            _cornerPreAlloc[4] = new Vector3(Min.X, Max.Y, Min.Z);
+            _cornerPreAlloc[5] = Max;
+            _cornerPreAlloc[6] = new Vector3(Max.X, Min.Y, Min.Z);
+            _cornerPreAlloc[7] = new Vector3(Min.X, Min.Y, Min.Z);
+
+            return _cornerPreAlloc;
         }
 
         public static BoundingBox CreateFromPoints(IEnumerable<Vector3> points)
