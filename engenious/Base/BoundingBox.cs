@@ -34,7 +34,13 @@ namespace engenious
 
         public bool Intersects(BoundingBox box)
         {
-            throw new NotImplementedException();//TODO: return (this.Max.X >= box.Min.X) && (this.Min.X <= box.Max.X)
+            if (Min.X > box.Max.X || box.Min.X > Max.X)
+                return false;
+
+            if (Min.Y > box.Max.Y || box.Min.Y > Max.Y)
+                return false;
+
+            return (Min.Z > box.Max.Z) && !(box.Min.Z > Max.Z);
         }
         public float? Intersects(Ray ray)
         {
