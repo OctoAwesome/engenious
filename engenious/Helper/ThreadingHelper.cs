@@ -9,46 +9,30 @@ namespace engenious.Helper
 {
     internal static class Execute
     {
-        private static readonly Stack<UiExecutor> FreeList = new Stack<UiExecutor>(16);
-        private static readonly object FreeListLock = new object();
-
-        internal class UiExecutor : IDisposable
+        internal struct UiExecutor : IDisposable
         {
             internal bool WasOnUiThread;
 
             public void Dispose()
             {
-                if (!WasOnUiThread)
+                if (WasOnUiThread) return;
+                try
                 {
+                    GL.Flush();
+
                     try
                     {
-                        GL.Flush();
-
-                        try
-                        {
-                            ThreadingHelper.Context.MakeCurrent(null);
-                        }
-                        catch (Exception)
-                        {
-                            // ignored
-                        }
+                        ThreadingHelper.Context.MakeCurrent(null);
                     }
-                    finally
+                    catch (Exception)
                     {
-                        Monitor.Exit(ThreadingHelper.Context);
+                        // ignored
                     }
-
                 }
-
-                Free(this);
-            }
-        }
-
-        private static void Free(UiExecutor ex)
-        {
-            lock (FreeListLock)
-            {
-                FreeList.Push(ex);
+                finally
+                {
+                    Monitor.Exit(ThreadingHelper.Context);
+                }
             }
         }
 
@@ -56,14 +40,7 @@ namespace engenious.Helper
         {
             get
             {
-                UiExecutor ex = null;
-
-                if(FreeList.Count > 0)
-                    lock (FreeListLock)
-                        if(FreeList.Count > 0)
-                            ex = FreeList.Pop();
-
-                ex = ex ?? new UiExecutor();
+                var ex = new UiExecutor();
 
                 if (ThreadingHelper.UiThreadId == Thread.CurrentThread.ManagedThreadId)
                 {
