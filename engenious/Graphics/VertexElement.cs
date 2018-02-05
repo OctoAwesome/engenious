@@ -71,10 +71,8 @@ namespace engenious.Graphics
                     return VertexAttribPointerType.Int;
                 case VertexElementFormat.UInt101010:
                     return VertexAttribPointerType.UnsignedInt;
-                default:
-                    throw new NotImplementedException(); //TODO: dunno
             }
-
+            throw new ArgumentOutOfRangeException();
         }
 
         internal int GetGlVertexDataTypeSize()
@@ -91,11 +89,14 @@ namespace engenious.Graphics
                 case VertexAttribPointerType.Int:
                 case VertexAttribPointerType.UnsignedInt:
                 case VertexAttribPointerType.Float:
+                case VertexAttribPointerType.UnsignedInt2101010Rev:
+                case VertexAttribPointerType.Int2101010Rev:
+                case VertexAttribPointerType.Fixed:
                     return 4;
                 case VertexAttribPointerType.Double:
                     return 8;
             }
-            throw new NotImplementedException(); //TODO: dunno
+            throw new ArgumentOutOfRangeException();
         }
 
         public int ByteCount
@@ -139,7 +140,7 @@ namespace engenious.Graphics
                     case VertexElementFormat.UInt101010:
                         return 4;
                 }
-                throw new NotImplementedException(); //TODO: dunno
+                throw new ArgumentOutOfRangeException();
             }
         }
     }
