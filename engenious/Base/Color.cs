@@ -4,7 +4,7 @@ namespace engenious
     [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 1)]
     public struct Color
     {
-        private Vector4 _color;
+        private readonly Vector4 _color;
 
         public Color(byte r, byte g, byte b, byte a = 255)
         {
@@ -36,7 +36,7 @@ namespace engenious
 
         public override int GetHashCode()
         {
-            return (int)(A + R + G + B);//TODO?
+            return _color.GetHashCode();
         }
 
         public static implicit operator ColorByte(Color col)

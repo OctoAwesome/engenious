@@ -212,7 +212,26 @@ namespace engenious
 
         public override int GetHashCode()
         {
-            throw new NotImplementedException();
+            unchecked
+            {
+                var hashCode = M11.GetHashCode();
+                hashCode = (hashCode * 397) ^ M12.GetHashCode();
+                hashCode = (hashCode * 397) ^ M13.GetHashCode();
+                hashCode = (hashCode * 397) ^ M14.GetHashCode();
+                hashCode = (hashCode * 397) ^ M21.GetHashCode();
+                hashCode = (hashCode * 397) ^ M22.GetHashCode();
+                hashCode = (hashCode * 397) ^ M23.GetHashCode();
+                hashCode = (hashCode * 397) ^ M24.GetHashCode();
+                hashCode = (hashCode * 397) ^ M31.GetHashCode();
+                hashCode = (hashCode * 397) ^ M32.GetHashCode();
+                hashCode = (hashCode * 397) ^ M33.GetHashCode();
+                hashCode = (hashCode * 397) ^ M34.GetHashCode();
+                hashCode = (hashCode * 397) ^ M41.GetHashCode();
+                hashCode = (hashCode * 397) ^ M42.GetHashCode();
+                hashCode = (hashCode * 397) ^ M43.GetHashCode();
+                hashCode = (hashCode * 397) ^ M44.GetHashCode();
+                return hashCode;
+            }
         }
 
         #region IEquatable implementation
