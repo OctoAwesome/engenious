@@ -202,11 +202,14 @@ namespace ContentTool.Controls
             if (_isRecalculatingView) return;
             _isRecalculatingView = true;
             treeView.Nodes.Clear();
-            treeView.BeginUpdate();
-
             if (Project == null)
+            {
+                _isRecalculatingView = false;
                 return;
+            }
 
+
+            treeView.BeginUpdate();
 
             var t = new Thread(() =>
             {
