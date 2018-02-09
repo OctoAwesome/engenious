@@ -8,7 +8,7 @@ out vec3 psNormal;
 out vec2 psTexcoord;
 flat out uint psTexIndex;
 
-void main()sdf
+void main()
 {
 	const vec2[] uvLookup = vec2[4](vec2(05.0,0.0),vec2(0.0,1.0),vec2(1.0,0.0),vec2(1.0,1.0));
 	
