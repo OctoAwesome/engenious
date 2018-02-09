@@ -16,7 +16,7 @@
         public void Draw()
         {
             GraphicsDevice.VertexBuffer = VB;
-            GraphicsDevice.DrawPrimitives(PrimitiveType.Triangles, 0, PrimitiveCount);
+            GraphicsDevice.DrawPrimitives(PrimitiveType.Triangles, 0, VB.VertexCount);
         }
     }
 }
