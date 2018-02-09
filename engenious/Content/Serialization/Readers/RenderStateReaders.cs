@@ -1,22 +1,17 @@
-﻿using System;
-using engenious.Graphics;
+﻿using engenious.Graphics;
 
 namespace engenious.Content.Serialization
 {
-    [ContentTypeReaderAttribute(typeof(RasterizerState))]
+    [ContentTypeReader(typeof(RasterizerState))]
     public class RasterizerStateTypeReader : ContentTypeReader<RasterizerState>
     {
-        public RasterizerStateTypeReader()
-        {
-        }
-
         #region implemented abstract members of ContentTypeReader
 
         public override RasterizerState Read(ContentManager manager, ContentReader reader)
         {
             if (reader.ReadBoolean())
                 return null;
-            RasterizerState state = new RasterizerState();
+            var state = new RasterizerState();
             state.CullMode = (CullMode)reader.ReadUInt16();
             state.FillMode = (PolygonMode)reader.ReadUInt16();
             state.MultiSampleAntiAlias = reader.ReadBoolean();
@@ -27,20 +22,16 @@ namespace engenious.Content.Serialization
         #endregion
     }
 
-    [ContentTypeReaderAttribute(typeof(DepthStencilState))]
+    [ContentTypeReader(typeof(DepthStencilState))]
     public class DepthStencilStateTypeReader : ContentTypeReader<DepthStencilState>
     {
-        public DepthStencilStateTypeReader()
-        {
-        }
-
         #region implemented abstract members of ContentTypeReader
 
         public override DepthStencilState Read(ContentManager manager, ContentReader reader)
         {
             if (reader.ReadBoolean())
                 return null;
-            DepthStencilState state = new DepthStencilState();
+            var state = new DepthStencilState();
             state.DepthBufferEnable = reader.ReadBoolean();
             state.DepthBufferWriteEnable = reader.ReadBoolean();
             state.StencilEnable = reader.ReadBoolean();
@@ -59,21 +50,16 @@ namespace engenious.Content.Serialization
         #endregion
     }
 
-    [ContentTypeReaderAttribute(typeof(BlendState))]
+    [ContentTypeReader(typeof(BlendState))]
     public class BlendStateTypeReader : ContentTypeReader<BlendState>
     {
-        public BlendStateTypeReader()
-        {
-            
-        }
-
         #region implemented abstract members of ContentTypeReader
 
         public override BlendState Read(ContentManager manager, ContentReader reader)
         {
             if (reader.ReadBoolean())
                 return null;
-            BlendState state = new BlendState();
+            var state = new BlendState();
             state.AlphaBlendFunction = (BlendEquationMode)reader.ReadUInt16();
             state.AlphaDestinationBlend = (BlendingFactorDest)reader.ReadUInt16();
             state.AlphaSourceBlend = (BlendingFactorSrc)reader.ReadUInt16();

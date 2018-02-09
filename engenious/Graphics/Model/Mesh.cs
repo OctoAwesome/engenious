@@ -1,7 +1,4 @@
-﻿using System;
-using engenious.Graphics;
-
-namespace engenious.Graphics
+﻿namespace engenious.Graphics
 {
     public class Mesh:GraphicsResource
     {
@@ -19,7 +16,7 @@ namespace engenious.Graphics
         public void Draw()
         {
             GraphicsDevice.VertexBuffer = VB;
-            GraphicsDevice.DrawPrimitives(PrimitiveType.Triangles, 0, PrimitiveCount);
+            GraphicsDevice.DrawPrimitives(PrimitiveType.Triangles, 0, VB.VertexCount);
         }
     }
 }

@@ -1,66 +1,70 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections;
+using System.Collections.Generic;
+using engenious.Helper;
 
 namespace engenious.Graphics
 {
 	public sealed class EffectPassParameterCollection : IEnumerable<EffectPassParameter>
 	{
-		public List<EffectPassParameter> ParameterList;
-		private Dictionary<string,EffectPassParameter> parameters;
-		private EffectPass pass;
+		private readonly List<EffectPassParameter> _parameterList;
+		private readonly Dictionary<string,EffectPassParameter> _parameters;
+		private readonly EffectPass _pass;
 
 		internal EffectPassParameterCollection (EffectPass pass)
 		{
-			this.pass = pass;
-			ParameterList = new List<EffectPassParameter> ();
-			parameters = new Dictionary<string, EffectPassParameter> ();
+			_pass = pass;
+			_parameterList = new List<EffectPassParameter> ();
+			_parameters = new Dictionary<string, EffectPassParameter> ();
 		}
 
 		internal void Add (EffectPassParameter parameter)
 		{
-			ParameterList.Add (parameter);
-			parameters.Add (parameter.Name, parameter);
+			_parameterList.Add (parameter);
+			_parameters.Add (parameter.Name, parameter);
 		}
 
 		private EffectPassParameter CacheParameter (string name)
 		{
-            EffectPassParameter param=null;
+            EffectPassParameter param;
 		    using (Execute.OnUiContext)
 		    {
-		        int location = pass.GetUniformLocation(name);
-		        param = new EffectPassParameter(pass, name, location);
+		        var location = _pass.GetUniformLocation(name);
+		        param = new EffectPassParameter(_pass, name, location);
 		    }
 		    return param;
 		}
 
 		public EffectPassParameter this [int index] { 
 			get {
-				return ParameterList [index];
+				return _parameterList [index];
 			} 
 		}
 
 		public EffectPassParameter this [string name] { 
 			get {
 				EffectPassParameter val;
-				if (!parameters.TryGetValue (name, out val)) {
+				if (!_parameters.TryGetValue (name, out val)) {
 					val = CacheParameter (name);
-					parameters.Add (name, val);
+					_parameters.Add (name, val);
 				}
 				return val;
 			} 
 		}
         
-        [Obsolete("Use member " + nameof(ParameterList))]
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return ParameterList.GetEnumerator();
+            return _parameterList.GetEnumerator();
         }
 
-        [Obsolete("Use member " + nameof(ParameterList))]
-        public IEnumerator<EffectPassParameter> GetEnumerator()
+        IEnumerator<EffectPassParameter> IEnumerable<EffectPassParameter>.GetEnumerator()
         {
-            return ParameterList.GetEnumerator();
+            return _parameterList.GetEnumerator();
+        }
+
+        public List<EffectPassParameter>.Enumerator GetEnumerator()
+        {
+            return _parameterList.GetEnumerator();
         }
     }
 }

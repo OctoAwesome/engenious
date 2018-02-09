@@ -6,44 +6,39 @@ namespace engenious.Graphics
 {
     public sealed class EffectTechniqueCollection : IEnumerable<EffectTechnique>
     {
-		private Dictionary<string,EffectTechnique> techniques;
-		public List<EffectTechnique> TechniqueList;
+		private readonly Dictionary<string,EffectTechnique> _techniques;
+	    private readonly List<EffectTechnique> _techniqueList;
 
 		public EffectTechniqueCollection ()
 		{
-			techniques = new Dictionary<string, EffectTechnique> ();
-			TechniqueList = new List<EffectTechnique> ();
+			_techniques = new Dictionary<string, EffectTechnique> ();
+			_techniqueList = new List<EffectTechnique> ();
 		}
 
 		internal void Add (EffectTechnique technique)
 		{
-			techniques.Add (technique.Name, technique);
-			TechniqueList.Add (technique);
+			_techniques.Add (technique.Name, technique);
+			_techniqueList.Add (technique);
 		}
 
-		public EffectTechnique this [int index] { 
-			get {
-				return TechniqueList [index];
-			} 
-		}
+		public EffectTechnique this [int index] => _techniqueList [index];
 
-		public EffectTechnique this [string name] { 
-			get {
-				return techniques [name];
-			} 
-		}
+        public EffectTechnique this [string name] => _techniques [name];
 
-        [Obsolete("Use member " + nameof(TechniqueList))]
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return TechniqueList.GetEnumerator();
-        }
+	    IEnumerator<EffectTechnique> IEnumerable<EffectTechnique>.GetEnumerator()
+	    {
+		    return _techniqueList.GetEnumerator();
+	    }
 
-        [Obsolete("Use member " + nameof(TechniqueList))]
-        public IEnumerator<EffectTechnique> GetEnumerator()
-        {
-            return TechniqueList.GetEnumerator();
-        }
+	    IEnumerator IEnumerable.GetEnumerator()
+	    {
+		    return _techniqueList.GetEnumerator();
+	    }
+
+	    public List<EffectTechnique>.Enumerator GetEnumerator()
+	    {
+		    return _techniqueList.GetEnumerator();
+	    }
     }
 }
 

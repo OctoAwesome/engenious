@@ -1,5 +1,6 @@
 ﻿using System;
-using OpenTK.Graphics.OpenGL4;
+using engenious.Helper;
+using OpenTK.Graphics.OpenGL;
 
 
 namespace engenious.Graphics
@@ -16,28 +17,31 @@ namespace engenious.Graphics
 
     internal class Shader :IDisposable
     {
-        internal int shader;
+        public int BaseShader;
 
-        public Shader(ShaderType type, string source)
+        public Shader(GraphicsDevice graphicsDevice,ShaderType type, string source)
         {
             using (Execute.OnUiContext)
             {
-                shader = GL.CreateShader((OpenTK.Graphics.OpenGL4.ShaderType) type);
-                GL.ShaderSource(shader, source);
+                BaseShader = GL.CreateShader((OpenTK.Graphics.OpenGL.ShaderType) type);
+                if (!source.Contains("#version"))
+                    source = $"#version {(graphicsDevice.GlslVersion.Major*100+graphicsDevice.GlslVersion.Minor).ToString()}\r\n"+source;
+                GL.ShaderSource(BaseShader, source);
             }
         }
+        
 
         internal void Compile()
         {
             using (Execute.OnUiContext)
             {
-                GL.CompileShader(shader);
+                GL.CompileShader(BaseShader);
 
                 int compiled;
-                GL.GetShader(shader, ShaderParameter.CompileStatus, out compiled);
+                GL.GetShader(BaseShader, ShaderParameter.CompileStatus, out compiled);
                 if (compiled != 1)
                 {
-                    string error = GL.GetShaderInfoLog(shader);
+                    var error = GL.GetShaderInfoLog(BaseShader);
                     throw new Exception(error);
                 }
             }
@@ -45,7 +49,7 @@ namespace engenious.Graphics
 
         public void Dispose()
         {
-            GL.DeleteProgram(shader);
+            GL.DeleteProgram(BaseShader);
         }
 
     }

@@ -1,19 +1,13 @@
-﻿using System;
-using engenious.Graphics;
-using engenious.Content.Pipeline;
-using engenious.Content.Serialization;
+﻿using System.IO;
 using engenious.Content;
-using System.IO;
+using engenious.Content.Pipeline;
+using engenious.Graphics;
 
 namespace engenious.Pipeline
 {
-    [ContentImporterAttribute(".ego", DisplayName = "Model Importer", DefaultProcessor = "EgoModelProcessor")]
+    [ContentImporter(".ego", DisplayName = "Model Importer", DefaultProcessor = "EgoModelProcessor")]
     public class EgoImporter : ContentImporter<ModelContent>
     {
-        public EgoImporter()
-        {
-        }
-
         #region implemented abstract members of ContentImporter
 
         public override ModelContent Import(string filename, ContentImporterContext context)

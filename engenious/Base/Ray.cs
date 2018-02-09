@@ -1,5 +1,4 @@
-﻿using System;
-using OpenTK;
+﻿using OpenTK.Graphics.ES20;
 
 namespace engenious
 {
@@ -21,7 +20,14 @@ namespace engenious
 
         public static bool operator ==(Ray ray1, Ray ray2)
         {
-            return ray1.Position == ray2.Position && ray1.Direction.Normalized() == ray2.Direction.Normalized();//TODO: really normalized
+            
+            bool posEqual = ray1.Position == ray2.Position;
+                if (!posEqual)
+                return false;
+            //ray1.Direction.Normalized() == ray2.Direction.Normalized();
+            // test if direction is the same
+            var div = ray1.Direction * (ray2.Direction.X * ray2.Direction.Y * ray2.Direction.Z) / ray2.Direction;
+            return div.X > 0 && (int)div.X == (int)div.Y && (int)div.Y == (int)div.Z;
         }
 
         public static bool operator !=(Ray ray1, Ray ray2)
@@ -31,7 +37,10 @@ namespace engenious
 
         public override int GetHashCode()
         {
-            return Direction.GetHashCode() ^ Position.GetHashCode();
+            unchecked
+            {
+                return (Direction.GetHashCode()*397) ^ Position.GetHashCode();
+            }
         }
 
         public override bool Equals(object obj)
@@ -45,7 +54,7 @@ namespace engenious
 
         public override string ToString()
         {
-            return string.Format("[Position: {0},Direction: {1}]", Position.ToString(), Direction.ToString());
+            return $"[Position: {Position.ToString()},Direction: {Direction.ToString()}]";
         }
     }
 }

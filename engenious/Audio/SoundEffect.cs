@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
 using System.Runtime.CompilerServices;
 using OpenTK.Audio.OpenAL;
 
@@ -21,7 +20,7 @@ namespace engenious.Audio
         internal int Buffer;
         public SoundEffect(string fileName)
         {
-            using (FileStream fs = new FileStream(fileName, FileMode.Open, FileAccess.Read))
+            using (var fs = new FileStream(fileName, FileMode.Open, FileAccess.Read))
             {
                 LoadStream(fs);
             }
@@ -30,7 +29,7 @@ namespace engenious.Audio
         public enum AudioFormat
         {
             Ogg,
-            Wav,
+            Wav
         }
 
         public SoundEffect(Stream stream, AudioFormat format)
@@ -54,7 +53,7 @@ namespace engenious.Audio
             switch (format)
             {
                 case AudioFormat.Wav:
-                    using (BinaryReader reader = new BinaryReader(stream))
+                    using (var reader = new BinaryReader(stream))
                     {
                         ALFormat alFormat;
                         int size, frequency;
@@ -63,12 +62,12 @@ namespace engenious.Audio
                     }
                     break;
                 case AudioFormat.Ogg:
-                    using (OggStream ogg = new OggStream(stream))
+                    using (var ogg = new OggStream(stream))
                     {
-                        int bitsPerSample = 16;
-                        ALFormat alFormat = GetSoundFormat(ogg.Reader.Channels, bitsPerSample);
-                        int frequency = ogg.Reader.SampleRate;
-                        int samples = (int)(((long)ogg.Reader.TotalTime.TotalMilliseconds * ogg.Reader.SampleRate * ogg.Reader.Channels)/1000);
+                        var bitsPerSample = 16;
+                        var alFormat = GetSoundFormat(ogg.Reader.Channels, bitsPerSample);
+                        var frequency = ogg.Reader.SampleRate;
+                        var samples = (int)(((long)ogg.Reader.TotalTime.TotalMilliseconds * ogg.Reader.SampleRate * ogg.Reader.Channels)/1000);
 
                         var conversionBuffer = new float[samples];
                         var buffer = new byte[samples*bitsPerSample/8];
@@ -78,8 +77,8 @@ namespace engenious.Audio
                         {
                             fixed (byte* ptr = buffer)
                             {
-                                byte* ptr2 = ptr;
-                                for (int i = 0; i < samples; i++,ptr2+=(bitsPerSample/8))
+                                var ptr2 = ptr;
+                                for (var i = 0; i < samples; i++,ptr2+=(bitsPerSample/8))
                                 {
                                     ConvertShit(conversionBuffer[i],ptr2);
                                 }
@@ -97,7 +96,7 @@ namespace engenious.Audio
             val += 1;
             val = (val * ushort.MaxValue / 2) + short.MinValue;
 
-            short tmp = (short) val;
+            var tmp = (short) val;
             *ptr++ = (byte)(tmp & 0xFF);
             *ptr = (byte) (tmp >> 8);
         }
@@ -105,7 +104,7 @@ namespace engenious.Audio
         {
             if (stream.CanSeek)
             {
-                byte[] magic = new byte[4];
+                var magic = new byte[4];
                 stream.Read(magic, 0, magic.Length);
 
                 AudioFormat format;
@@ -124,17 +123,14 @@ namespace engenious.Audio
                 stream.Seek(-4, SeekOrigin.Current);
                 return format;
             }
-            else
-            {
-                throw new ArgumentException("Can't determine audio format of unseekable stream");
-            }
+            throw new ArgumentException("Can't determine audio format of unseekable stream");
         }
         private static ALFormat GetSoundFormat(int channels, int bits)
         {
             switch (channels)
             {
-                case 1: return bits == 8 ? OpenTK.Audio.OpenAL.ALFormat.Mono8 : OpenTK.Audio.OpenAL.ALFormat.Mono16;
-                case 2: return bits == 8 ? OpenTK.Audio.OpenAL.ALFormat.Stereo8 : OpenTK.Audio.OpenAL.ALFormat.Stereo16;
+                case 1: return bits == 8 ? ALFormat.Mono8 : ALFormat.Mono16;
+                case 2: return bits == 8 ? ALFormat.Stereo8 : ALFormat.Stereo16;
                 default: throw new NotSupportedException("The specified sound format is not supported.");
             }
         }
@@ -146,7 +142,7 @@ namespace engenious.Audio
             byte[] audioData;
 
             //header
-            string signature = new string(reader.ReadChars(4));
+            var signature = new string(reader.ReadChars(4));
             if (signature != "RIFF")
             {
                 throw new NotSupportedException("Specified stream is not a wave file.");
@@ -154,61 +150,61 @@ namespace engenious.Audio
 
             reader.ReadInt32(); // riff_chunck_size
 
-            string wformat = new string(reader.ReadChars(4));
+            var wformat = new string(reader.ReadChars(4));
             if (wformat != "WAVE")
             {
                 throw new NotSupportedException("Specified stream is not a wave file.");
             }
 
             // WAVE header
-            string format_signature = new string(reader.ReadChars(4));
-            while (format_signature != "fmt ")
+            var formatSignature = new string(reader.ReadChars(4));
+            while (formatSignature != "fmt ")
             {
                 reader.ReadBytes(reader.ReadInt32());
-                format_signature = new string(reader.ReadChars(4));
+                formatSignature = new string(reader.ReadChars(4));
             }
 
-            int format_chunk_size = reader.ReadInt32();
+            var formatChunkSize = reader.ReadInt32();
 
             // total bytes read: tbp
-            int audio_format = reader.ReadInt16(); // 2
-            int num_channels = reader.ReadInt16(); // 4
-            int sample_rate = reader.ReadInt32(); // 8
+            int audioFormat = reader.ReadInt16(); // 2
+            int numChannels = reader.ReadInt16(); // 4
+            var sampleRate = reader.ReadInt32(); // 8
             reader.ReadInt32(); // 12, byte_rate
             reader.ReadInt16(); // 14, block_align
-            int bits_per_sample = reader.ReadInt16(); // 16
+            int bitsPerSample = reader.ReadInt16(); // 16
 
-            if (audio_format != 1)
+            if (audioFormat != 1)
             {
                 throw new NotSupportedException("Wave compression is not supported.");
             }
 
             // reads residual bytes
-            if (format_chunk_size > 16)
-                reader.ReadBytes(format_chunk_size - 16);
+            if (formatChunkSize > 16)
+                reader.ReadBytes(formatChunkSize - 16);
 
-            string data_signature = new string(reader.ReadChars(4));
+            var dataSignature = new string(reader.ReadChars(4));
 
-            while (data_signature.ToLowerInvariant() != "data")
+            while (dataSignature.ToLowerInvariant() != "data")
             {
                 reader.ReadBytes(reader.ReadInt32());
-                data_signature = new string(reader.ReadChars(4));
+                dataSignature = new string(reader.ReadChars(4));
             }
 
-            if (data_signature != "data")
+            if (dataSignature != "data")
             {
                 throw new NotSupportedException("Specified wave file is not supported.");
             }
 
-            int data_chunk_size = reader.ReadInt32();
+            var dataChunkSize = reader.ReadInt32();
 
-            frequency = sample_rate;
-            format = GetSoundFormat(num_channels, bits_per_sample);
+            frequency = sampleRate;
+            format = GetSoundFormat(numChannels, bitsPerSample);
             audioData = reader.ReadBytes((int) reader.BaseStream.Length);
-            if (data_chunk_size == -1)
+            if (dataChunkSize == -1)
                 size = audioData.Length;
             else
-                size = data_chunk_size;
+                size = dataChunkSize;
 
             return audioData;
         }
@@ -217,9 +213,13 @@ namespace engenious.Audio
         {
             return null;
         }*/
+        public void Play()
+        {
+            SoundEffectInstancePool.Instance.Aquire(this).Play();
+        }
         public virtual SoundEffectInstance CreateInstance()
         {
-            return new SoundEffectInstance(this);
+            return SoundEffectInstancePool.Instance.Aquire(this);
         }
         #region IDisposable implementation
         public void Dispose()

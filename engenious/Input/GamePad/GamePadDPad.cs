@@ -4,32 +4,21 @@ namespace engenious.Input
 {
     public struct GamePadDPad : IEquatable<GamePadDPad>
     {
-
-        DPadButtons buttons;
+        private DPadButtons _buttons;
         //
         // Properties
         //
-        public ButtonState Down
-        {
-            get
-            {
-                if (!this.IsDown)
-                {
-                    return ButtonState.Released;
-                }
-                return ButtonState.Pressed;
-            }
-        }
+        public ButtonState Down => !IsDown ? ButtonState.Released : ButtonState.Pressed;
 
         public bool IsDown
         {
             get
             {
-                return (byte)(this.buttons & GamePadDPad.DPadButtons.Down) != 0;
+                return (byte)(_buttons & DPadButtons.Down) != 0;
             }
             internal set
             {
-                this.SetButton(GamePadDPad.DPadButtons.Down, value);
+                SetButton(DPadButtons.Down, value);
             }
         }
 
@@ -37,11 +26,11 @@ namespace engenious.Input
         {
             get
             {
-                return (byte)(this.buttons & GamePadDPad.DPadButtons.Left) != 0;
+                return (byte)(_buttons & DPadButtons.Left) != 0;
             }
             internal set
             {
-                this.SetButton(GamePadDPad.DPadButtons.Left, value);
+                SetButton(DPadButtons.Left, value);
             }
         }
 
@@ -49,11 +38,11 @@ namespace engenious.Input
         {
             get
             {
-                return (byte)(this.buttons & GamePadDPad.DPadButtons.Right) != 0;
+                return (byte)(_buttons & DPadButtons.Right) != 0;
             }
             internal set
             {
-                this.SetButton(GamePadDPad.DPadButtons.Right, value);
+                SetButton(DPadButtons.Right, value);
             }
         }
 
@@ -61,56 +50,26 @@ namespace engenious.Input
         {
             get
             {
-                return (byte)(this.buttons & GamePadDPad.DPadButtons.Up) != 0;
+                return (byte)(_buttons & DPadButtons.Up) != 0;
             }
             internal set
             {
-                this.SetButton(GamePadDPad.DPadButtons.Up, value);
+                SetButton(DPadButtons.Up, value);
             }
         }
 
-        public ButtonState Left
-        {
-            get
-            {
-                if (!this.IsLeft)
-                {
-                    return ButtonState.Released;
-                }
-                return ButtonState.Pressed;
-            }
-        }
+        public ButtonState Left => !IsLeft ? ButtonState.Released : ButtonState.Pressed;
 
-        public ButtonState Right
-        {
-            get
-            {
-                if (!this.IsRight)
-                {
-                    return ButtonState.Released;
-                }
-                return ButtonState.Pressed;
-            }
-        }
+        public ButtonState Right => !IsRight ? ButtonState.Released : ButtonState.Pressed;
 
-        public ButtonState Up
-        {
-            get
-            {
-                if (!this.IsUp)
-                {
-                    return ButtonState.Released;
-                }
-                return ButtonState.Pressed;
-            }
-        }
+        public ButtonState Up => !IsUp ? ButtonState.Released : ButtonState.Pressed;
 
         //
         // Constructors
         //
         internal GamePadDPad(Buttons state)
         {
-            this.buttons = (GamePadDPad.DPadButtons)(state & (Buttons.DPadUp | Buttons.DPadDown | Buttons.DPadLeft | Buttons.DPadRight));
+            _buttons = (DPadButtons)(state & (Buttons.DPadUp | Buttons.DPadDown | Buttons.DPadLeft | Buttons.DPadRight));
         }
 
         //
@@ -118,38 +77,32 @@ namespace engenious.Input
         //
         public override bool Equals(object obj)
         {
-            return obj is GamePadDPad && this.Equals((GamePadDPad)obj);
+            return obj is GamePadDPad && Equals((GamePadDPad)obj);
         }
 
         public bool Equals(GamePadDPad other)
         {
-            return this.buttons == other.buttons;
+            return _buttons == other._buttons;
         }
 
         public override int GetHashCode()
         {
-            return this.buttons.GetHashCode();
+            return _buttons.GetHashCode();
         }
 
-        private void SetButton(GamePadDPad.DPadButtons button, bool value)
+        private void SetButton(DPadButtons button, bool value)
         {
             if (value)
             {
-                this.buttons |= button;
+                _buttons |= button;
                 return;
             }
-            this.buttons &= ~button;
+            _buttons &= ~button;
         }
 
         public override string ToString()
         {
-            return string.Format("{{{0}{1}{2}{3}}}", new object[]
-                {
-                    this.IsUp ? "U" : string.Empty,
-                    this.IsLeft ? "L" : string.Empty,
-                    this.IsDown ? "D" : string.Empty,
-                    this.IsRight ? "R" : string.Empty
-                });
+            return string.Format("{{{0}{1}{2}{3}}}", IsUp ? "U" : string.Empty, IsLeft ? "L" : string.Empty, IsDown ? "D" : string.Empty, IsRight ? "R" : string.Empty);
         }
 
         //

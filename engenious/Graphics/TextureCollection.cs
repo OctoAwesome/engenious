@@ -1,30 +1,30 @@
 ﻿using System;
-using OpenTK.Graphics.OpenGL4;
+using OpenTK.Graphics.OpenGL;
 using System.Collections.Generic;
 
 namespace engenious.Graphics
 {
     public sealed class TextureCollection : ICollection<Texture>
     {
-        private Texture[] textures;
+        private readonly Texture[] _textures;
 
         public TextureCollection()
         {
-            int maxTextures = GL.GetInteger(GetPName.MaxTextureImageUnits);
-            textures = new Texture[maxTextures];
+            var maxTextures = GL.GetInteger(GetPName.MaxTextureImageUnits);
+            _textures = new Texture[maxTextures];
         }
 
         public Texture this [int index]
         { 
             get
             {
-                return textures[index];
+                return _textures[index];
             }
             set
             {
-                if (textures[index] != value)
+                if (_textures[index] != value)
                 {
-                    textures[index] = value;
+                    _textures[index] = value;
                     GL.ActiveTexture(TextureUnit.Texture0 + index);
                     if (value == null)
                         GL.BindTexture(TextureTarget.Texture2D, 0);
@@ -41,7 +41,7 @@ namespace engenious.Graphics
 
         public int InsertFree(Texture item)
         {
-            int ind = IndexOf(item);
+            var ind = IndexOf(item);
             if (ind != -1)
                 return ind;
             ind = IndexOf(null);
@@ -53,7 +53,7 @@ namespace engenious.Graphics
 
         public void Add(Texture item)
         {
-            int free = IndexOf(null);
+            var free = IndexOf(null);
             if (free == -1)
                 return;
             this[free] = item;
@@ -61,7 +61,7 @@ namespace engenious.Graphics
 
         public void Clear()
         {
-            for (int i = 0; i < textures.Length; i++)
+            for (var i = 0; i < _textures.Length; i++)
                 this[i] = null;
         }
 
@@ -72,8 +72,8 @@ namespace engenious.Graphics
 
         public int IndexOf(Texture item)
         {
-            for (int i = 0; i < textures.Length; i++)
-                if (textures[i] == item)
+            for (var i = 0; i < _textures.Length; i++)
+                if (_textures[i] == item)
                     return i;
             return -1;
         }
@@ -85,7 +85,7 @@ namespace engenious.Graphics
 
         public bool Remove(Texture item)
         {
-            int ind = IndexOf(item);
+            var ind = IndexOf(item);
             if (ind == -1)
                 return false;
             this[ind] = null;
@@ -96,7 +96,7 @@ namespace engenious.Graphics
         {
             get
             {
-                return textures.Length;
+                return _textures.Length;
             }
         }
 
@@ -115,7 +115,7 @@ namespace engenious.Graphics
 
         public IEnumerator<Texture> GetEnumerator()
         {
-            return (IEnumerator<Texture>)textures.GetEnumerator();
+            return (IEnumerator<Texture>)_textures.GetEnumerator();
         }
 
         #endregion
@@ -124,7 +124,7 @@ namespace engenious.Graphics
 
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
         {
-            return textures.GetEnumerator();
+            return _textures.GetEnumerator();
         }
 
         #endregion

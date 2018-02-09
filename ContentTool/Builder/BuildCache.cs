@@ -5,61 +5,61 @@ using System.Runtime.Serialization.Formatters.Binary;
 
 namespace ContentTool.Builder
 {
-    [Serializable()]
+    [Serializable]
     public class BuildCache
     {
-        public string OutputPath{ get; private set; }
+        public string CacheFilePath { get; private set; }
 
-        public BuildCache()
+        public Dictionary<string, BuildFile> Files { get; } = new Dictionary<string, BuildFile>();
+
+        protected BuildCache(string cacheFilePath)
         {
-            Files = new Dictionary<string,BuildInfo>();
+            CacheFilePath = cacheFilePath;
+            //Files
         }
 
-        public Dictionary<string,BuildInfo> Files{ get; private set; }
-
-        public void AddBuildInfo(BuildInfo info)
+        public void AddFile(string path, BuildFile file)
         {
-            Files[info.InputFile] = info;
+            Files[path] = file;
         }
 
         public void AddDependencies(string importDir, IEnumerable<string> dependencies)
         {
             foreach (var dependency in dependencies)
             {
-                if (Files.ContainsKey(dependency))
-                    Files[dependency].Refresh(importDir);
+                var absPath = Path.Combine(importDir, dependency);
+                if (Files.ContainsKey(absPath))
+                    Files[absPath].RefreshModifiedTime();
                 else
-                    Files.Add(dependency, new BuildInfo(importDir, dependency));
-                
+                    Files.Add(absPath, new BuildFile(absPath,null));
+
             }
         }
 
-        public bool NeedsRebuild(string importPath, string outputPath, string filename)
+        public bool NeedsRebuild(string inputPath)
         {
-            BuildInfo val;
-            if (Files.TryGetValue(filename, out val))
+            if(Files.TryGetValue(inputPath, out BuildFile val))
             {
-                if (val.NeedsRebuild(importPath, outputPath))
+                if (val.NeedsRebuild())
                     return true;
-
                 foreach (var dependency in val.Dependencies)
                 {
-                    if (NeedsRebuild(importPath, outputPath, dependency))
+                    if (NeedsRebuild(dependency))
                         return true;
                 }
-
                 return false;
             }
             return true;
         }
 
-        public bool CanClean(string outputPath)
+        public bool HasBuiltItems()
         {
             foreach (var file in Files)
             {
-                if (file.Value.IsBuilt(outputPath))
+                if (file.Value.IsBuilt())
                     return true;
             }
+
             return false;
         }
 
@@ -68,39 +68,70 @@ namespace ContentTool.Builder
             Files.Clear();
         }
 
-        public void Save(string file)
+        /// <summary>
+        /// Saves the cache to the original location
+        /// </summary>
+        public void Save()
         {
-            ContentBuilder.CreateFolderIfNeeded(file);
+            Save(CacheFilePath);
+        }
+
+        /// <summary>
+        /// Saves the cache to the specified location
+        /// </summary>
+        /// <param name="path"></param>
+        public void Save(string path)
+        {
+            Directory.CreateDirectory(Path.GetDirectoryName(path));
             try
             {
-                using (FileStream fs = new FileStream(file, FileMode.Create, FileAccess.Write))
+                using (var fs = new FileStream(path, FileMode.Create, FileAccess.Write))
                 {
-                    BinaryFormatter formatter = new BinaryFormatter();
+                    var formatter = new BinaryFormatter();
                     formatter.Serialize(fs, this);
                 }
+                CacheFilePath = path;
             }
             catch
             {
+                // ignored
             }
         }
 
-        public static BuildCache Load(string file)
+        /// <summary>
+        /// Loads the cache from the specified location or returns a new one if the file could not be found
+        /// </summary>
+        /// <param name="cacheFilePath">Location of the cache file</param>
+        /// <returns>The build cache</returns>
+        public static BuildCache Load(string cacheFilePath)
         {
-            if (!File.Exists(file))
-                return new BuildCache();
+            if (!File.Exists(cacheFilePath))
+            {
+                var cache = new BuildCache(cacheFilePath);
+
+                return cache;
+            }
+
             try
             {
-                using (FileStream fs = new FileStream(file, FileMode.Open, FileAccess.Read))
+                using (var fs = new FileStream(cacheFilePath, FileMode.Open, FileAccess.Read))
                 {
-                    BinaryFormatter formatter = new BinaryFormatter();
+                    var formatter = new BinaryFormatter();
                     return (BuildCache)formatter.Deserialize(fs);
                 }
             }
             catch
             {
+                try
+                {
+                    File.Delete(cacheFilePath);
+                }
+                catch
+                {
+                    // ignored
+                }
+                return Load(cacheFilePath);
             }
-            return new BuildCache();
         }
     }
 }
-

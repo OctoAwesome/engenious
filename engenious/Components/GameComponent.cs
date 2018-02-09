@@ -4,9 +4,9 @@ namespace engenious
 {
     public abstract class GameComponent : IGameComponent,IUpdateable,IDisposable
     {
-        public GameComponent(Game game)
+        protected GameComponent(Game game)
         {
-            this.Game = game;
+            Game = game;
             Enabled = true;
         }
 

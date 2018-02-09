@@ -1,15 +1,10 @@
-﻿using System;
-using engenious.Graphics;
+﻿using engenious.Graphics;
 
 namespace engenious.Content.Serialization
 {
-    [ContentTypeWriterAttribute()]
+    [ContentTypeWriter]
     public class RasterizerStateTypeWriter  : ContentTypeWriter<RasterizerState>
     {
-        public RasterizerStateTypeWriter()
-        {
-        }
-
         #region implemented abstract members of ContentTypeWriter
 
         public override void Write(ContentWriter writer, RasterizerState value)
@@ -27,24 +22,14 @@ namespace engenious.Content.Serialization
             writer.Write(value.ScissorTestEnable);
         }
 
-        public override string RuntimeReaderName
-        {
-            get
-            {
-                return typeof(RasterizerStateTypeReader).FullName;
-            }
-        }
+        public override string RuntimeReaderName => typeof(RasterizerStateTypeReader).FullName;
 
         #endregion
     }
 
-    [ContentTypeWriterAttribute()]
+    [ContentTypeWriter]
     public class DepthStencilStateTypeWriter  : ContentTypeWriter<DepthStencilState>
     {
-        public DepthStencilStateTypeWriter()
-        {
-        }
-
         #region implemented abstract members of ContentTypeWriter
 
         public override void Write(ContentWriter writer, DepthStencilState value)
@@ -69,24 +54,14 @@ namespace engenious.Content.Serialization
             writer.Write((ushort)value.StencilPass);
         }
 
-        public override string RuntimeReaderName
-        {
-            get
-            {
-                return typeof(DepthStencilStateTypeReader).FullName;
-            }
-        }
+        public override string RuntimeReaderName => typeof(DepthStencilStateTypeReader).FullName;
 
         #endregion
     }
 
-    [ContentTypeWriterAttribute()]
+    [ContentTypeWriter]
     public class BlendStateTypeWriter  : ContentTypeWriter<BlendState>
     {
-        public BlendStateTypeWriter()
-        {
-        }
-
         #region implemented abstract members of ContentTypeWriter
 
         public override void Write(ContentWriter writer, BlendState value)
@@ -108,13 +83,7 @@ namespace engenious.Content.Serialization
             writer.Write(value.BlendFactor);
         }
 
-        public override string RuntimeReaderName
-        {
-            get
-            {
-                return typeof(BlendStateTypeReader).FullName;
-            }
-        }
+        public override string RuntimeReaderName => typeof(BlendStateTypeReader).FullName;
 
         #endregion
     }

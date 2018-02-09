@@ -1,12 +1,15 @@
 init:
   - git config --global core.autocrlf true
+install:
+  # Install OpenGL
+  - "powershell ./install_tools.ps1"
 
 version: '{build}'
-
+image: Visual Studio 2017
 build_script:
-- ps: ./build
+  - ps: ./build
 
 # Build cache
 cache:
-- packages -> **\packages.config
-- tools -> tools\packages.config
+  - packages -> **\packages.config
+  - tools -> tools\packages.config

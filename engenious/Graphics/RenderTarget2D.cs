@@ -1,13 +1,15 @@
 ﻿using System;
-using OpenTK.Graphics.OpenGL4;
+using engenious.Helper;
+using OpenTK.Graphics.OpenGL;
 
 namespace engenious.Graphics
 {
     public class RenderTarget2D : Texture2D
     {
-        int fbo;
-        int depth;
-        private void setDefaultTextureParameters()
+        private readonly int _fbo;
+        private readonly int _depth;
+
+        private static void SetDefaultTextureParameters()
         {
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)All.Nearest);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)All.Nearest);
@@ -28,37 +30,37 @@ namespace engenious.Graphics
         {
             using (Execute.OnUiContext)
             {
-                bool isDepthTarget = ((int) surfaceFormat >= (int) PixelInternalFormat.DepthComponent16 &&
+                var isDepthTarget = ((int) surfaceFormat >= (int) PixelInternalFormat.DepthComponent16 &&
                                       (int) surfaceFormat <= (int) PixelInternalFormat.DepthComponent32Sgix);
                 if (!isDepthTarget)
                 {
-                    GL.GenRenderbuffers(1, out depth);
+                    GL.GenRenderbuffers(1, out _depth);
 
-                    GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, depth);
+                    GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, _depth);
                     GL.RenderbufferStorage(RenderbufferTarget.Renderbuffer, (RenderbufferStorage) All.DepthComponent32, width, height);
 
                 }
 
-                fbo = GL.GenFramebuffer();
-                GL.BindFramebuffer(FramebufferTarget.Framebuffer, fbo);
+                _fbo = GL.GenFramebuffer();
+                GL.BindFramebuffer(FramebufferTarget.Framebuffer, _fbo);
                 //GL.RenderbufferStorage(RenderbufferTarget.Renderbuffer, RenderbufferStorage.Rgba8, width, height);
                 //GL.FramebufferParameter(FramebufferTarget.Framebuffer, FramebufferDefaultParameter.FramebufferDefaultWidth, width);
                 //GL.FramebufferParameter(FramebufferTarget.Framebuffer, FramebufferDefaultParameter.FramebufferDefaultHeight, height);
 
                 if (isDepthTarget)
                 {
-                    GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, TextureTarget.Texture2D, texture, 0);
+                    GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, TextureTarget.Texture2D, Texture, 0);
                     Bind();
-                    setDefaultTextureParameters();
+                    SetDefaultTextureParameters();
                 }
                 else
                 {
-                    GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, texture, 0);
+                    GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, Texture, 0);
 
-                    GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, RenderbufferTarget.Renderbuffer, depth);
+                    GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, RenderbufferTarget.Renderbuffer, _depth);
                     GL.DrawBuffers(
                         1,
-                        new DrawBuffersEnum[] {
+                        new[] {
                             DrawBuffersEnum.ColorAttachment0
                         });
                 }
@@ -67,9 +69,9 @@ namespace engenious.Graphics
                 GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
             }
         }
-        internal void BindFBO()
+        internal void BindFbo()
         {
-            GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, fbo);
+            GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, _fbo);
         }
 
         private void ErrorHandling()
@@ -106,7 +108,7 @@ namespace engenious.Graphics
         {
             using (Execute.OnUiContext)
             {
-                GL.DeleteFramebuffer(fbo);
+                GL.DeleteFramebuffer(_fbo);
             }
             base.Dispose();
         }

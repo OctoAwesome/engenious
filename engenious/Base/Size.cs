@@ -1,19 +1,17 @@
-﻿using System;
-
-namespace engenious
+﻿namespace engenious
 {
-    public class Size
+    public struct Size
     {
         public Size(Point point)
         {
-            this.Width = point.X;
-            this.Height = point.Y;
+            Width = point.X;
+            Height = point.Y;
         }
 
         public Size(int width, int height)
         {
-            this.Width = width;
-            this.Height = height;
+            Width = width;
+            Height = height;
         }
 
         public int Width{ get; set; }
@@ -22,19 +20,19 @@ namespace engenious
 
         public override string ToString()
         {
-            return string.Format("[Size: Width={0}, Height={1}]", Width, Height);
+            return $"[Size: Width={Width}, Height={Height}]";
         }
 
         public override int GetHashCode()
         {
-            return (int)(Width ^ Height);//TODO
+            return Width ^ Height;//TODO
         }
 
         public override bool Equals(object obj)
         {
             if (obj is Size)
             {
-                Size sec = (Size)obj;
+                var sec = (Size)obj;
                 return Width == sec.Width && Height == sec.Height;
             }
             return false;

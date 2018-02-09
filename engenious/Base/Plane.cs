@@ -1,7 +1,4 @@
-﻿using System;
-using OpenTK;
-
-namespace engenious
+﻿namespace engenious
 {
     public struct Plane
     {
@@ -11,7 +8,7 @@ namespace engenious
         public Plane(float a, float b, float c, float d)
         {
             Normal = new Vector3(a, b, c);
-            float len = Normal.Length;
+            var len = Normal.Length;
             D = (d / len);
             Normal /= len;
         }

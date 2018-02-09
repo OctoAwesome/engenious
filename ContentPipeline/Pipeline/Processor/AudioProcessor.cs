@@ -1,26 +1,21 @@
-﻿using System;
-using System.ComponentModel;
-using engenious.Content.Pipeline;
+﻿using System.ComponentModel;
 using System.IO;
 using engenious.Audio;
+using engenious.Content.Pipeline;
 
 namespace engenious.Pipeline
 {
     [ContentProcessor(DisplayName = "Audio Processor")]
     public class AudioProcessor : ContentProcessor<FFmpegContent,AudioContent,AudioProcessorSettings>
     {
-        public AudioProcessor()
-        {
-        }
-
         #region implemented abstract members of ContentProcessor
 
         public override AudioContent Process(FFmpegContent input, string filename, ContentProcessorContext context)
         {
             try
             {
-                FFmpeg ff = new FFmpeg(context.SyncContext);
-                string args = "";
+                var ff = new FFmpeg(context.SyncContext);
+                string args = string.Empty;
                 switch (settings.OutputFormat)
                 {
                     case SoundEffect.AudioFormat.Ogg:
@@ -38,12 +33,12 @@ namespace engenious.Pipeline
                 var err = process.StandardError.ReadToEnd();//TODO: error handling
                 if (!string.IsNullOrEmpty(err))
                 {
-                    context.RaiseBuildMessage(filename, "ffmpeg: " + err, BuildMessageEventArgs.BuildMessageType.Error);
+                    context.RaiseBuildMessage(filename, "error: ffmpeg: " + err, BuildMessageEventArgs.BuildMessageType.Error);
                 }
                 return output;
             }catch (Win32Exception ex)
             {
-                context.RaiseBuildMessage(filename, "ffmpeg: " + ex.Message, BuildMessageEventArgs.BuildMessageType.Error);
+                context.RaiseBuildMessage(filename, "error: ffmpeg: " + ex.Message, BuildMessageEventArgs.BuildMessageType.Error);
                 return null;
             }
         }

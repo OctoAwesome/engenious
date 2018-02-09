@@ -2,48 +2,55 @@
 using OpenTK.Audio.OpenAL;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 
 namespace engenious.Audio
 {
-    public class SoundSourceManager
+    public class SoundSourceManager : IDisposable
     {
-        private static SoundSourceManager instance;
-        public static SoundSourceManager Instance{
-            get{
-                if (instance == null)
-                    instance = new SoundSourceManager();
-                return instance;
-            }
-        }
+
+        private static SoundSourceManager _instance;
+        public static SoundSourceManager Instance => _instance ?? (_instance = new SoundSourceManager());
 
 
-
-        private const int MAX_SOURCES=256;
-
-        private int[] sources;
-        private List<int> inUse;
-        private List<int> available;
-        private List<int> playing;
+        private const int MaxSources=256;
+        private readonly Thread _updateThread;
+        private readonly int[] _sources;
+        private readonly List<SoundEffectInstance> _playingInstances;
+        private readonly List<int> _inUse;
+        private readonly List<int> _available;
+        private readonly List<int> _playing;
         public SoundSourceManager()
         {
-            sources = AL.GenSources(MAX_SOURCES);
+            _sources = AL.GenSources(MaxSources);
 
-            inUse = new List<int>();
-            playing = new List<int>();
-            available = new List<int>(sources);
+            _inUse = new List<int>();
+            _playing = new List<int>();
+            _available = new List<int>(_sources);
+            _playingInstances = new List<SoundEffectInstance>();
+            _updateThread = new Thread(UpdateLoop){IsBackground = true};
+            _updateThread.Start();
         }
 
+        private void UpdateLoop()
+        {
+            while (true)
+            {
+                Update();
+                Thread.Sleep(100);
+            }
+        }
         public int Dequeue()
         {
-            int source = available.Last();
-            available.RemoveAt(available.Count-1);
-            inUse.Add(source);
+            var source = _available.Last();
+            _available.RemoveAt(_available.Count-1);
+            _inUse.Add(source);
             return source;
         }
         public void Enqueue(int source)
         {
-            inUse.Remove(source);
-            available.Add(source);
+            _inUse.Remove(source);
+            _available.Add(source);
         }
         public void Enqueue(int[] sources)
         {
@@ -55,17 +62,20 @@ namespace engenious.Audio
 
         public void Update()
         {
-            lock(playing){
-                for (int i=playing.Count-1;i>=0;i--)
+            lock(_playing){
+                for (var i=_playing.Count-1;i>=0;i--)
                 {
-                    int sid = playing[i];
+                    var sid = _playing[i];
+                    var sei = _playingInstances[i];
                     if (AL.GetSourceState(sid) == ALSourceState.Stopped)
                     {
-                        playing.RemoveAt(sid);
+                        _playing.RemoveAt(i);
                         AL.Source(sid, ALSourcei.Buffer, 0);
 
-                        inUse.Remove(sid);
-                        available.Add(sid);
+                        Enqueue(sid);
+                        sei.Sid = 0;
+                        sei.State = SoundState.Stopped;
+                        _playingInstances.RemoveAt(i);
                     }
                 }
             }
@@ -73,21 +83,39 @@ namespace engenious.Audio
 
         public void PlaySound(SoundEffectInstance inst)
         {
-            lock (playing)
+            lock (_playing)
             {
-                playing.Add(inst.sid);
+                _playing.Add(inst.Sid);
+                _playingInstances.Add(inst);
             }
-            AL.SourcePlay(inst.sid);
+            AL.SourcePlay(inst.Sid);
             inst.State = SoundState.Playing;
+
         }
         public void FreeSource(SoundEffectInstance inst)
         {
-            lock (playing) {
-                playing.Remove(inst.sid);
+            lock (_playing) {
+                _playing.Remove(inst.Sid);
             }
-            Enqueue(inst.sid);
-            inst.sid = 0;
+            AL.Source(inst.Sid, ALSourcei.Buffer, 0);
+            Enqueue(inst.Sid);
+            inst.Sid = 0;
             inst.State = SoundState.Stopped;
+        }
+        public void Dispose()
+        {
+            foreach(var inst in _playingInstances)
+                FreeSource(inst);
+            foreach(var sid in _inUse)
+            {
+                _playing.Remove(sid);
+
+            }
+            _inUse.Clear();
+            _playing.Clear();
+
+            AL.DeleteSources(_sources);
+            _updateThread.Abort();
         }
     }
 }

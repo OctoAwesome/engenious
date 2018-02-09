@@ -1,5 +1,4 @@
 ﻿using System;
-using OpenTK;
 
 namespace engenious
 {
@@ -7,10 +6,10 @@ namespace engenious
     {
         public RectangleF(float x, float y, float width, float height)
         {
-            this.X = x;
-            this.Y = y;
-            this.Width = width;
-            this.Height = height;
+            X = x;
+            Y = y;
+            Width = width;
+            Height = height;
         }
 
         public float X{ get; set; }
@@ -21,21 +20,21 @@ namespace engenious
 
         public float Height{ get; set; }
 
-        public float Left{ get { return X; } }
+        public float Left => X;
 
-        public float Right{ get { return X + Width; } }
+        public float Right => X + Width;
 
-        public float Top{ get { return Y; } }
+        public float Top => Y;
 
-        public float Bottom{ get { return Y + Height; } }
+        public float Bottom => Y + Height;
 
         public Vector2 Size
         { 
             get { return new Vector2(Width, Height); }
             set
             {
-                this.Width = value.X;
-                this.Height = value.Y;
+                Width = value.X;
+                Height = value.Y;
             }
         }
 
@@ -44,8 +43,8 @@ namespace engenious
             get { return new Vector2(X, Y); } 
             set
             {
-                this.X = value.X;
-                this.Y = value.Y;
+                X = value.X;
+                Y = value.Y;
             }
         }
 
@@ -80,15 +79,15 @@ namespace engenious
 
         public void Intersect(RectangleF rect)
         {
-            float x = Math.Max(X, rect.X);
-            float y = Math.Max(Y, rect.Y);
-            float right = Math.Max(Right, rect.Right);
-            float bottom = Math.Max(Bottom, rect.Bottom);
-            this.X = x;
-            this.Y = y;
+            var x = Math.Max(X, rect.X);
+            var y = Math.Max(Y, rect.Y);
+            var right = Math.Max(Right, rect.Right);
+            var bottom = Math.Max(Bottom, rect.Bottom);
+            X = x;
+            Y = y;
 
-            this.Width = right - x;
-            this.Height = bottom - y;
+            Width = right - x;
+            Height = bottom - y;
         }
 
         public bool IntersectsWith(RectangleF rect)
@@ -122,7 +121,7 @@ namespace engenious
         {
             if (obj is RectangleF)
             {
-                RectangleF sec = (RectangleF)obj;
+                var sec = (RectangleF)obj;
                 return X == sec.X && Y == sec.Y && Width == sec.Width && Height == sec.Height;
             }
             return false;
@@ -138,6 +137,7 @@ namespace engenious
             return a.X != b.X || a.Y != b.Y || a.Width != b.Width || a.Height != b.Height;
         }
 
+        // ReSharper disable once InconsistentNaming
         public static RectangleF FromLTRB(float left, float top, float right, float bottom)
         {
             return new RectangleF(left, top, right - left, bottom - top);
@@ -151,11 +151,11 @@ namespace engenious
 
         public static RectangleF Intersect(RectangleF a, RectangleF b)
         {
-            float x = Math.Max(a.X, b.X);
-            float y = Math.Max(a.Y, b.Y);
-            float right = Math.Max(a.Right, b.Right);
-            float bottom = Math.Max(a.Bottom, b.Bottom);
-            return RectangleF.FromLTRB(x, y, right, bottom);
+            var x = Math.Max(a.X, b.X);
+            var y = Math.Max(a.Y, b.Y);
+            var right = Math.Max(a.Right, b.Right);
+            var bottom = Math.Max(a.Bottom, b.Bottom);
+            return FromLTRB(x, y, right, bottom);
         }
 
         public static readonly RectangleF Empty = new RectangleF(0, 0, 0, 0);

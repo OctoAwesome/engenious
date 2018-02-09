@@ -1,7 +1,4 @@
-﻿using System;
-using OpenTK.Graphics.OpenGL4;
-
-namespace engenious.Graphics
+﻿namespace engenious.Graphics
 {
     public class SamplerState:GraphicsResource
     {
@@ -18,7 +15,7 @@ namespace engenious.Graphics
         public SamplerState()
         {
             //TODO: implement completly	
-            this.AddressU = this.AddressV = this.AddressW = TextureWrapMode.ClampToEdge;
+            AddressU = AddressV = AddressW = TextureWrapMode.ClampToEdge;
 
         }
 

@@ -1,21 +1,13 @@
-﻿using System;
-using engenious.Graphics;
-using engenious.Content.Pipeline;
+﻿using engenious.Content.Pipeline;
 
 namespace engenious.Content.Serialization
 {
-    [ContentTypeWriterAttribute()]
+    [ContentTypeWriter]
     public class SpriteFontTypeWriter : ContentTypeWriter<CompiledSpriteFont>
     {
-        public SpriteFontTypeWriter()
-        {
-
-        }
-
-
         public override void Write(ContentWriter writer, CompiledSpriteFont value)
         {
-            writer.WriteObject<TextureContent>(value.texture);
+            writer.WriteObject(value.Texture);
 
             writer.Write(value.Spacing);
             writer.Write(value.LineSpacing);
@@ -24,14 +16,14 @@ namespace engenious.Content.Serialization
             if (value.DefaultCharacter.HasValue)
                 writer.Write(value.DefaultCharacter.Value);
 
-            writer.Write(value.kernings.Count);
-            foreach (var kerning in value.kernings)
+            writer.Write(value.Kernings.Count);
+            foreach (var kerning in value.Kernings)
             {
                 writer.Write(kerning.Key);
                 writer.Write(kerning.Value);
             }
-            writer.Write(value.characterMap.Count);
-            foreach (var character in value.characterMap)
+            writer.Write(value.CharacterMap.Count);
+            foreach (var character in value.CharacterMap)
             {
                 writer.Write(character.Key);
                 writer.Write(character.Value.Offset);
@@ -43,7 +35,7 @@ namespace engenious.Content.Serialization
             }
         }
 
-        public override string RuntimeReaderName{ get { return typeof(SpriteFontTypeReader).FullName; } }
+        public override string RuntimeReaderName => typeof(SpriteFontTypeReader).FullName;
     }
 }
 

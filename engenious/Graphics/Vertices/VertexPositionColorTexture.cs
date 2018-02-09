@@ -1,6 +1,4 @@
-﻿using System;
-using System.Runtime.InteropServices;
-using OpenTK;
+﻿using System.Runtime.InteropServices;
 
 namespace engenious.Graphics
 {
@@ -11,29 +9,22 @@ namespace engenious.Graphics
 
         static VertexPositionColorTexture()
         {
-            VertexElement[] elements = new VertexElement[]
-            {
+            VertexElement[] elements = {
                 new VertexElement(0, VertexElementFormat.Vector3, VertexElementUsage.Position, 0),
                 new VertexElement(12, VertexElementFormat.Vector4, VertexElementUsage.Color, 0),
                 new VertexElement(28, VertexElementFormat.Vector2, VertexElementUsage.TextureCoordinate, 0)
             };
-            VertexDeclaration declaration = new VertexDeclaration(elements);
+            var declaration = new VertexDeclaration(elements);
             VertexDeclaration = declaration;
         }
 
-        VertexDeclaration IVertexType.VertexDeclaration
-        {
-            get
-            {
-                return VertexDeclaration;
-            }
-        }
+        VertexDeclaration IVertexType.VertexDeclaration => VertexDeclaration;
 
         public VertexPositionColorTexture(Vector3 position, Color color, Vector2 textureCoord)
         {
-            this.TextureCoordinate = textureCoord;
-            this.Position = position;
-            this.Color = color;
+            TextureCoordinate = textureCoord;
+            Position = position;
+            Color = color;
 
 
         }

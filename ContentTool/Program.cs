@@ -1,120 +1,58 @@
 ﻿using System;
-using engenious.Content.Serialization;
-using engenious.Content;
-using engenious.Graphics;
-using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
-using OpenTK;
-using OpenTK.Graphics;
+using System.Windows.Forms;
 using ContentTool.Builder;
-using ContentTool.Items;
-using System.Threading;
-using System.ComponentModel;
+using ContentTool.Forms;
+using ContentTool.Models;
+using ContentTool.Presenters;
+using engenious.Content.Pipeline;
 
 namespace ContentTool
 {
-    class Program
+    internal static class Program
     {
-
-        public static ToolConfiguration Configuration { get; set; }
-
-        internal static string MakePathRelative(string filename)
-        {
-            try
-            {
-                Uri root = new Uri(System.IO.Path.GetFullPath(Arguments.ProjectDir), UriKind.Absolute);
-                Uri uri = new Uri(System.IO.Path.GetFullPath(filename), UriKind.Absolute);
-                return root.MakeRelativeUri(uri).ToString();
-            }
-            catch
-            {
-                return filename;
-            }
-        }
-        public static Arguments Arguments { get; private set; }
-        [STAThread()]
-        public static int Main(string[] args)
+        [STAThread]
+        static int Main(string[] args)
         {
 
-            Arguments = new Arguments();
-            Arguments.ParseArguments(args);
+            //Console.WriteLine(@"D:\Projects\engenious\Sample\Content\simple.glsl(13) : error C2143: syntax error : missing';' before '}'");
 
-            Configuration = ToolConfiguration.Load();
-
-            if (Arguments.Hidden)
+            
+            var arguments = new Arguments();
+            arguments.ParseArguments(args);
+            
+            if (arguments.Hidden)
             {
-                var context = new engenious.GLSynchronizationContext();
-                SynchronizationContext.SetSynchronizationContext(context);
-                ContentBuilder builder = new ContentBuilder(ContentProject.Load(Arguments.ContentProject));
-                if (Arguments.Configuration.HasValue)
-                    builder.Project.Configuration = Arguments.Configuration.Value;
-                if (Arguments.OutputDirectory != null)
-                    builder.Project.OutputDir = Arguments.OutputDirectory;
-                builder.BuildMessage += (sender, e) =>
+                try
                 {
-                    if (e.MessageType == engenious.Content.Pipeline.BuildMessageEventArgs.BuildMessageType.Error)
-                        Console.Error.WriteLine(Program.MakePathRelative(e.FileName) + e.Message);
-                    else
-                        Console.WriteLine(Program.MakePathRelative(e.FileName) + e.Message);
-                };
-                builder.BuildStatusChanged += (sender, buildStep) =>
-                {
-                    string message = (buildStep & (BuildStep.Build | BuildStep.Clean)).ToString() + " ";
-                    bool error = false;
-                    if (buildStep.HasFlag(Builder.BuildStep.Abort))
-                    {
-                        message += "aborted!";
-                        error = true;
-                    }
-                    else if (buildStep.HasFlag(Builder.BuildStep.Finished))
-                    {
-                        message += "finished!";
-                        if (builder.FailedBuilds != 0)
-                        {
-                            message += " " + builder.FailedBuilds.ToString() + " files failed to build!";
-                            error = true;
-                        }
-                    }
-                    if (error)
-                        Console.Error.WriteLine(message);
-                    else
-                        Console.WriteLine(message);
-                };
-                builder.ItemProgress += (sender, e) =>
-                {
-                    string message = e.Item + " " + (e.BuildStep & (BuildStep.Build | BuildStep.Clean)).ToString().ToLower() + "ing ";
+                    var project = ContentProject.Load(string.IsNullOrEmpty(arguments.ContentProject) ? @"D:\Projects\engenious\Sample\Content\Content.ecp" : arguments.ContentProject);
 
-                    bool error = false;
-                    if (e.BuildStep.HasFlag(Builder.BuildStep.Abort))
+                    var builder = new ContentBuilder(project);
+
+                    builder.BuildMessage += eventArgs =>
                     {
-                        message += "failed!";
-                        error = true;
-                    }
-                    else if (e.BuildStep.HasFlag(Builder.BuildStep.Finished))
-                    {
-                        message += "finished!";
-                    }
-                    if (error)
-                        Console.Error.WriteLine(message);
-                    else
-                        Console.WriteLine(message);
-                };
-                builder.Build();
-                while (builder.IsBuilding)
-                {
-                    context.RunOnCurrentThread();
+                        if (eventArgs.MessageType != BuildMessageEventArgs.BuildMessageType.Information)
+                            Console.Error.WriteLine(eventArgs.Message);
+                    };
+                    
+                    
+                    builder.Build(builder.Project);
+                    builder.Join();
+                    
+                    return 0;
                 }
-                builder.Join();
-                if (builder.FailedBuilds != 0)
+                catch (Exception ex)
+                {
+                    Console.Error.WriteLine(ex.Message);
                     return -1;
-            }
-            else {
-                System.Windows.Forms.Application.EnableVisualStyles();
-                using (frmMain mainForm = new frmMain())
-                {
-                    System.Windows.Forms.Application.Run(mainForm);
                 }
             }
+            //TODO implement CommandLine
+            Application.SetCompatibleTextRenderingDefault(false);
+            Application.EnableVisualStyles();
+
+            var mainShell = new MainShell();
+            var mainShellPresenter = new MainShellPresenter(mainShell, arguments);
+            Application.Run(mainShell);
             return 0;
         }
     }

@@ -1,23 +1,12 @@
 ﻿using System;
 using engenious.Content.Pipeline;
 using engenious.Graphics;
-using System.Collections.Generic;
-using System.Linq;
-using System.ComponentModel;
 
 namespace engenious.Pipeline
 {
     [ContentProcessor(DisplayName = "Ego Model Processor")]
     public class EgoModelProcessor : ContentProcessor<ModelContent, ModelContent>
     {
-        public EgoModelProcessor()
-        {
-        }
-        private float diffToNextFrame(AnimationContent anim,int index)
-        {
-            //int 
-            return 0.0f;
-        }
         private void RemoveFrame(AnimationContent anim,int index)
         {
             foreach(var c in anim.Channels)

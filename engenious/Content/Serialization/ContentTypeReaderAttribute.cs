@@ -2,12 +2,12 @@
 
 namespace engenious.Content.Serialization
 {
-	[AttributeUsageAttribute (AttributeTargets.Class)]
+	[AttributeUsage (AttributeTargets.Class)]
 	public class ContentTypeReaderAttribute : Attribute
 	{
         public ContentTypeReaderAttribute (Type outputType)
 		{
-            this.OutputType = outputType;
+            OutputType = outputType;
 		}
         public Type OutputType{get;private set;}
 	}

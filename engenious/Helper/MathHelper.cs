@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace engenious
+namespace engenious.Helper
 {
     public static class MathHelper
     {
@@ -11,7 +11,7 @@ namespace engenious
 
         public static float WrapAngle(float angle)
         {
-            angle = (float)Math.IEEERemainder((double)angle, 6.2831854820251465);
+            angle = (float)Math.IEEERemainder(angle, 6.2831854820251465);
             if (angle <= -3.14159274f)
             {
                 angle += 6.28318548f;

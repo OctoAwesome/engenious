@@ -1,6 +1,4 @@
-﻿using System;
-using engenious.Graphics;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace engenious.Graphics
 {
@@ -65,7 +63,7 @@ namespace engenious.Graphics
                 return;
             effect.Texture = text;
 
-            foreach (var pass in effect.CurrentTechnique.Passes.PassesList)
+            foreach (var pass in effect.CurrentTechnique.Passes)
             {
                 pass.Apply();
                 

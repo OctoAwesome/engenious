@@ -24,14 +24,13 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 //
 #endregion
-using System;
 
 namespace engenious.Input
 {
     /// <summary>
     /// The available keyboard keys.
     /// </summary>
-    public enum Keys : int
+    public enum Keys
     {
         /// <summary>A key outside the known keys.</summary>
         Unknown = 0,
@@ -401,6 +400,7 @@ namespace engenious.Input
         /// <summary>The backslash key.</summary>
         BackSlash,
         /// <summary>The secondary backslash key.</summary>
+        // ReSharper disable once InconsistentNaming
         NonUSBackSlash,
         /// <summary>Indicates the last available keyboard key.</summary>
         LastKey

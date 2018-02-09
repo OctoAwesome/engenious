@@ -1,18 +1,16 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.26430.4
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "engenious", "engenious\engenious.csproj", "{E1FF7BDB-D631-4D4D-B5A1-988778AD15B6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sample", "Sample\Sample.csproj", "{9C6821E8-5880-4CD7-99D1-47ED811A99C2}"
 	ProjectSection(ProjectDependencies) = postProject
-		{D847088D-1484-469F-88A1-327AB0F8D5FB} = {D847088D-1484-469F-88A1-327AB0F8D5FB}
+		{E264C8BD-25AF-4A27-8396-DD8DA8414931} = {E264C8BD-25AF-4A27-8396-DD8DA8414931}
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "engenious.Pipeline", "ContentPipeline\engenious.Pipeline.csproj", "{9771E0FC-D752-4D7A-89E4-4F6FA2EC3C1D}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ContentTool", "ContentTool\ContentTool.csproj", "{D847088D-1484-469F-88A1-327AB0F8D5FB}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{BDF2FEF9-9A0C-4C88-AA7D-755B205500D0}"
 	ProjectSection(SolutionItems) = preProject
@@ -23,6 +21,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		engenious.pfx = engenious.pfx
 		SolutionInfo.cs = SolutionInfo.cs
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ContentTool", "ContentTool\ContentTool.csproj", "{E264C8BD-25AF-4A27-8396-DD8DA8414931}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -56,14 +56,14 @@ Global
 		{9771E0FC-D752-4D7A-89E4-4F6FA2EC3C1D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{9771E0FC-D752-4D7A-89E4-4F6FA2EC3C1D}.Release|x86.ActiveCfg = Release|Any CPU
 		{9771E0FC-D752-4D7A-89E4-4F6FA2EC3C1D}.Release|x86.Build.0 = Release|Any CPU
-		{D847088D-1484-469F-88A1-327AB0F8D5FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D847088D-1484-469F-88A1-327AB0F8D5FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D847088D-1484-469F-88A1-327AB0F8D5FB}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{D847088D-1484-469F-88A1-327AB0F8D5FB}.Debug|x86.Build.0 = Debug|Any CPU
-		{D847088D-1484-469F-88A1-327AB0F8D5FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D847088D-1484-469F-88A1-327AB0F8D5FB}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D847088D-1484-469F-88A1-327AB0F8D5FB}.Release|x86.ActiveCfg = Release|Any CPU
-		{D847088D-1484-469F-88A1-327AB0F8D5FB}.Release|x86.Build.0 = Release|Any CPU
+		{E264C8BD-25AF-4A27-8396-DD8DA8414931}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E264C8BD-25AF-4A27-8396-DD8DA8414931}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E264C8BD-25AF-4A27-8396-DD8DA8414931}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{E264C8BD-25AF-4A27-8396-DD8DA8414931}.Debug|x86.Build.0 = Debug|Any CPU
+		{E264C8BD-25AF-4A27-8396-DD8DA8414931}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E264C8BD-25AF-4A27-8396-DD8DA8414931}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E264C8BD-25AF-4A27-8396-DD8DA8414931}.Release|x86.ActiveCfg = Release|Any CPU
+		{E264C8BD-25AF-4A27-8396-DD8DA8414931}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

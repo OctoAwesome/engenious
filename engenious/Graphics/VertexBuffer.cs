@@ -1,51 +1,52 @@
 ﻿using System;
-using OpenTK.Graphics.OpenGL4;
 using System.Runtime.InteropServices;
+using engenious.Helper;
+using OpenTK.Graphics.OpenGL;
 
 namespace engenious.Graphics
 {
     public class VertexBuffer : GraphicsResource
     {
-        internal int vbo = -1;
-        internal int tempVBO = -1;
-        internal VertexAttributes vao = null;
+        internal int Vbo;
+        internal int TempVbo = -1;
+        internal VertexAttributes Vao;
 
         private VertexBuffer(GraphicsDevice graphicsDevice, int vertexCount, BufferUsageHint usage = BufferUsageHint.StaticDraw)
             : base(graphicsDevice)
         {
 
-            this.VertexCount = vertexCount;
-            this.BufferUsage = usage;
+            VertexCount = vertexCount;
+            BufferUsage = usage;
         }
 
         private static void ExchangeVao(object that)
         {
-            VertexBuffer vb = (VertexBuffer) that;
-            vb.vao = new VertexAttributes();
-            vb.vao.vbo = vb.vbo;
-            vb.vao.Bind();
-            GL.BindBuffer(BufferTarget.ArrayBuffer, vb.vbo);
-            VertexAttributes.ApplyAttributes(vb.vao, vb.VertexDeclaration);
+            var vb = (VertexBuffer) that;
+            vb.Vao = new VertexAttributes();
+            vb.Vao.Vbo = vb.Vbo;
+            vb.Vao.Bind();
+            GL.BindBuffer(BufferTarget.ArrayBuffer, vb.Vbo);
+            VertexAttributes.ApplyAttributes(vb.Vao, vb.VertexDeclaration);
 
             GL.BindVertexArray(0);
         }
         public VertexBuffer(GraphicsDevice graphicsDevice, Type vertexType, int vertexCount, BufferUsageHint usage = BufferUsageHint.StaticDraw)
             : this(graphicsDevice, vertexCount, usage)
         {
-            IVertexType tp = Activator.CreateInstance(vertexType) as IVertexType;
+            var tp = Activator.CreateInstance(vertexType) as IVertexType;
             if (tp == null)
                 throw new ArgumentException("must be a vertexType");
 			
-            this.VertexDeclaration = tp.VertexDeclaration;
+            VertexDeclaration = tp.VertexDeclaration;
             using (Execute.OnUiContext)
             {
-                vbo = GL.GenBuffer();
-                GL.BindBuffer(BufferTarget.ArrayBuffer, vbo);
+                Vbo = GL.GenBuffer();
+                GL.BindBuffer(BufferTarget.ArrayBuffer, Vbo);
                 GL.BufferData(
                     BufferTarget.ArrayBuffer,
                     new IntPtr(vertexCount * VertexDeclaration.VertexStride),
                     IntPtr.Zero,
-                    (OpenTK.Graphics.OpenGL4.BufferUsageHint) BufferUsage);
+                    (OpenTK.Graphics.OpenGL.BufferUsageHint) BufferUsage);
             }
             ThreadingHelper.OnUiThread(ExchangeVao,this);
             GraphicsDevice.CheckError();
@@ -53,9 +54,9 @@ namespace engenious.Graphics
 
         internal bool Bind()
         {
-            if (vao == null)
+            if (Vao == null)
                 return false;
-            vao.Bind();
+            Vao.Bind();
             GraphicsDevice.CheckError();
             return true;
         }
@@ -63,12 +64,12 @@ namespace engenious.Graphics
         public VertexBuffer(GraphicsDevice graphicsDevice, VertexDeclaration vertexDeclaration, int vertexCount, BufferUsageHint usage = BufferUsageHint.StaticDraw)
             : this(graphicsDevice, vertexCount, usage)
         {
-            this.VertexDeclaration = vertexDeclaration;
+            VertexDeclaration = vertexDeclaration;
             using (Execute.OnUiContext)
             {
-                vbo = GL.GenBuffer();
-                GL.BindBuffer(BufferTarget.ArrayBuffer, vbo);
-                GL.BufferData(BufferTarget.ArrayBuffer, new IntPtr(vertexCount * VertexDeclaration.VertexStride), IntPtr.Zero, (OpenTK.Graphics.OpenGL4.BufferUsageHint)BufferUsage);
+                Vbo = GL.GenBuffer();
+                GL.BindBuffer(BufferTarget.ArrayBuffer, Vbo);
+                GL.BufferData(BufferTarget.ArrayBuffer, new IntPtr(vertexCount * VertexDeclaration.VertexStride), IntPtr.Zero, (OpenTK.Graphics.OpenGL.BufferUsageHint)BufferUsage);
             }
             ThreadingHelper.OnUiThread(ExchangeVao,this);
             GraphicsDevice.CheckError();
@@ -76,26 +77,21 @@ namespace engenious.Graphics
 
         public void Resize(int vertexCount, bool keepData = false)
         {
-            
-            int tempVBO=0;
             using (Execute.OnUiContext)
             {
                 GL.BindVertexArray(0);
-                tempVBO = GL.GenBuffer();
-                GL.BindBuffer(BufferTarget.ArrayBuffer, tempVBO);
+                var tempVbo = GL.GenBuffer();
+                GL.BindBuffer(BufferTarget.ArrayBuffer, tempVbo);
                 GL.BufferData(
                     BufferTarget.ArrayBuffer,
                     new IntPtr(vertexCount * VertexDeclaration.VertexStride),
                     IntPtr.Zero,
-                    (OpenTK.Graphics.OpenGL4.BufferUsageHint) BufferUsage);
+                    (OpenTK.Graphics.OpenGL.BufferUsageHint) BufferUsage);
                 GraphicsDevice.CheckError();
-            }
 
-            using (Execute.OnUiContext)
-            {
-                this.VertexCount = vertexCount;
-                GL.DeleteBuffer(vbo);
-                vbo = tempVBO;
+                VertexCount = vertexCount;
+                GL.DeleteBuffer(Vbo);
+                Vbo = tempVbo;
                 GraphicsDevice.CheckError();
             }
             //ThreadingHelper.BlockOnUIThread(() =>
@@ -110,14 +106,14 @@ namespace engenious.Graphics
 
         }
 
-        internal void EnsureVAO()
+        internal void EnsureVao()
         {
-            if (vao != null && vao.vbo != vbo)
+            if (Vao != null && Vao.Vbo != Vbo)
             {
-                vao.vbo = vbo;
-                vao.Bind();
-                GL.BindBuffer(BufferTarget.ArrayBuffer, vbo);
-                VertexAttributes.ApplyAttributes(vao, VertexDeclaration);
+                Vao.Vbo = Vbo;
+                Vao.Bind();
+                GL.BindBuffer(BufferTarget.ArrayBuffer, Vbo);
+                VertexAttributes.ApplyAttributes(Vao, VertexDeclaration);
 
                 GL.BindVertexArray(0);
             }
@@ -133,9 +129,9 @@ namespace engenious.Graphics
         {
             using (Execute.OnUiContext)
             {
-                GL.BindBuffer(BufferTarget.ArrayBuffer, vbo);
+                GL.BindBuffer(BufferTarget.ArrayBuffer, Vbo);
 
-                GCHandle buffer = GCHandle.Alloc(data, GCHandleType.Pinned);
+                var buffer = GCHandle.Alloc(data, GCHandleType.Pinned);
                 GL.BufferSubData(BufferTarget.ArrayBuffer, IntPtr.Zero, new IntPtr(data.Length * VertexDeclaration.VertexStride), buffer.AddrOfPinnedObject());
                     //TODO use bufferusage
                 buffer.Free();
@@ -147,9 +143,9 @@ namespace engenious.Graphics
         {
             using (Execute.OnUiContext)
             {
-                GL.BindBuffer(BufferTarget.ArrayBuffer, vbo);
+                GL.BindBuffer(BufferTarget.ArrayBuffer, Vbo);
 
-                GCHandle buffer = GCHandle.Alloc(data, GCHandleType.Pinned);
+                var buffer = GCHandle.Alloc(data, GCHandleType.Pinned);
                 GL.BufferSubData(
                     BufferTarget.ArrayBuffer,
                     IntPtr.Zero,
@@ -166,9 +162,9 @@ namespace engenious.Graphics
             using (Execute.OnUiContext)
             {
                 //vao.Bind();//TODO: verify
-                GL.BindBuffer(BufferTarget.ArrayBuffer, vbo);
+                GL.BindBuffer(BufferTarget.ArrayBuffer, Vbo);
 
-                GCHandle buffer = GCHandle.Alloc(data, GCHandleType.Pinned);
+                var buffer = GCHandle.Alloc(data, GCHandleType.Pinned);
                 GL.BufferSubData(
                     BufferTarget.ArrayBuffer,
                     new IntPtr(offsetInBytes),
@@ -184,9 +180,9 @@ namespace engenious.Graphics
         {
             using (Execute.OnUiContext)
             {
-                    GL.DeleteBuffer(vbo);
+                    GL.DeleteBuffer(Vbo);
                 }
-            vao.Dispose();
+            Vao.Dispose();
             base.Dispose();
         }
     }

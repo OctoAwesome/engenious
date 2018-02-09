@@ -1,15 +1,10 @@
-﻿using System;
-using engenious.Content.Pipeline;
+﻿using engenious.Content.Pipeline;
 
 namespace engenious.Content.Serialization
 {
     [ContentTypeWriterAttribute()]
     public class TextureContentTypeWriter : ContentTypeWriter<TextureContent>
     {
-        public TextureContentTypeWriter()
-        {
-        }
-
         #region implemented abstract members of ContentTypeWriter
 
         public override void Write(ContentWriter writer, TextureContent value)
@@ -22,7 +17,7 @@ namespace engenious.Content.Serialization
             }
         }
 
-        public override string RuntimeReaderName{ get { return typeof(Texture2DTypeReader).FullName; } }
+        public override string RuntimeReaderName => typeof(Texture2DTypeReader).FullName;
 
         #endregion
     }

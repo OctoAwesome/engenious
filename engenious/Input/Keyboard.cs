@@ -1,4 +1,5 @@
 ﻿using System;
+using engenious.Helper;
 
 namespace engenious.Input
 {
@@ -7,18 +8,18 @@ namespace engenious.Input
         static Keyboard()
         {
             if (!WrappingHelper.ValidateStructs<OpenTK.Input.KeyboardState,KeyboardState>())
-                throw new Exception("test");
+                throw new TypeLoadException("Can't wrap OpenTK Keyboard two own internal struct");
         }
-        public unsafe static KeyboardState GetState()
+        public static unsafe KeyboardState GetState()
         {
-            OpenTK.Input.KeyboardState state = OpenTK.Input.Keyboard.GetState();
+            var state = OpenTK.Input.Keyboard.GetState();
             return *(KeyboardState*)(&state);
 
 
         }
-        public unsafe static KeyboardState GetState(int index)
+        public static unsafe KeyboardState GetState(int index)
         {
-            OpenTK.Input.KeyboardState state = OpenTK.Input.Keyboard.GetState(index);
+            var state = OpenTK.Input.Keyboard.GetState(index);
             return *(KeyboardState*)(&state);
 
 

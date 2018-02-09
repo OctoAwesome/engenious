@@ -1,33 +1,32 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Collections;
-
+using System.Collections.Generic;
+using engenious.Helper;
 
 namespace engenious.Graphics
 {
 	public sealed class EffectParameterCollection : IEnumerable<EffectParameter>
 	{
-		private Dictionary<string,EffectParameter> parameters;
-		public List<EffectParameter> ParameterList;
+		private readonly Dictionary<string,EffectParameter> _parameters;
+		private readonly List<EffectParameter> _parameterList;
 
 		public EffectParameterCollection (EffectTechniqueCollection techniques)
 		{
 		    using (Execute.OnUiContext)
 		    {
-		        parameters = new Dictionary<string, EffectParameter>();
-		        ParameterList = new List<EffectParameter>();
+		        _parameters = new Dictionary<string, EffectParameter>();
+		        _parameterList = new List<EffectParameter>();
 
-		        foreach (EffectTechnique technique in techniques.TechniqueList)
+		        foreach (var technique in techniques)
 		        {
-		            foreach (EffectPass pass in technique.Passes.PassesList)
+		            foreach (var pass in technique.Passes)
 		            {
 		                pass.CacheParameters();
 
-		                foreach (EffectPassParameter param in pass.Parameters.ParameterList)
+		                foreach (var param in pass.Parameters)
 		                {
-		                    EffectParameter current = null;
-		                    if (!parameters.TryGetValue(param.Name, out current))
+		                    EffectParameter current;
+		                    if (!_parameters.TryGetValue(param.Name, out current))
 		                    {
 		                        current = new EffectParameter(param.Name);
 		                        Add(current);
@@ -41,32 +40,34 @@ namespace engenious.Graphics
 
 		internal void Add (EffectParameter parameter)
 		{
-			ParameterList.Add (parameter);
-			parameters.Add (parameter.Name, parameter);
+			_parameterList.Add (parameter);
+			_parameters.Add (parameter.Name, parameter);
 		}
 
 		public EffectParameter this [int index] { 
 			get {
-				return ParameterList [index];
+				return _parameterList [index];
 			} 
 		}
 
 		public EffectParameter this [string name] { 
 			get {
-				return parameters [name];
+				return _parameters [name];
 			} 
 		}
 
-        [Obsolete("Use member " + nameof(ParameterList))]
-        IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        IEnumerator IEnumerable.GetEnumerator()
         {
-            return ParameterList.GetEnumerator();
+            return _parameterList.GetEnumerator();
         }
-        [Obsolete("Use member " + nameof(ParameterList))]
-        public IEnumerator<EffectParameter> GetEnumerator()
+        IEnumerator<EffectParameter> IEnumerable<EffectParameter>.GetEnumerator()
         {
-            return ParameterList.GetEnumerator();
+            return _parameterList.GetEnumerator();
         }
+		public List<EffectParameter>.Enumerator GetEnumerator()
+		{
+			return _parameterList.GetEnumerator();
+		}
     }
 }
 

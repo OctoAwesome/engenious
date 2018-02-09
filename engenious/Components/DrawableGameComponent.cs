@@ -1,14 +1,13 @@
-﻿using System;
-using engenious.Graphics;
+﻿using engenious.Graphics;
 
 namespace engenious
 {
     public abstract class DrawableGameComponent : GameComponent, IDrawable
     {
-        public DrawableGameComponent(Game game)
+        protected DrawableGameComponent(Game game)
             : base(game)
         {
-            this.GraphicsDevice = game.GraphicsDevice;
+            GraphicsDevice = game.GraphicsDevice;
             Visible = true;
         }
 

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace engenious
+namespace engenious.Graphics
 {
     [Flags()]
     public enum ClearBufferMask

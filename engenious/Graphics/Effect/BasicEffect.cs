@@ -1,13 +1,12 @@
-﻿using System;
-using OpenTK;
+﻿using engenious.Helper;
 
 namespace engenious.Graphics
 {
     public class BasicEffect : Effect,IModelEffect
     {
-        private const string vertexShader = 
+        private const string VertexShader =
             @"
-#version 440
+#if __VERSION__ >= 300
 
 in vec3 position;
 in vec4 color;
@@ -24,12 +23,44 @@ void main(void)
    psColor = color;
    psTexCoord = textureCoordinate;
 }
+#else
+attribute vec3 position;
+attribute vec4 color;
+attribute vec2 textureCoordinate;
+varying vec4 psColor;
+varying vec2 psTexCoord;
+
+uniform mat4 World;
+uniform mat4 View;
+uniform mat4 Proj;
+void main(void)
+{
+   gl_Position = Proj*View*World*vec4(position, 1.0);
+   psColor = color;
+   psTexCoord = textureCoordinate;
+}
+#endif
 ";
-        private const string pixelShader = 
+        private const string PixelShader =
             @"
-#version 440
+#if __VERSION__ >= 300
 in vec4 psColor;
 in vec2 psTexCoord;
+out vec4 outColor;
+uniform sampler2D text;
+uniform int textEnabled,colorEnabled;
+void main(void)
+{
+   outColor = vec4(1.0,1.0,1.0,1.0);
+   if (textEnabled == 1)
+     outColor = outColor * texture2D(text,psTexCoord);
+   if (colorEnabled == 1)
+     outColor = outColor * psColor;
+   
+}
+#else
+attribute vec4 psColor;
+attribute vec2 psTexCoord;
 uniform sampler2D text;
 uniform int textEnabled,colorEnabled;
 void main(void)
@@ -41,6 +72,7 @@ void main(void)
      gl_FragColor = gl_FragColor * psColor;
    
 }
+#endif
 ";
 
         public BasicEffect(GraphicsDevice graphicsDevice)
@@ -50,14 +82,14 @@ void main(void)
 
             using (Execute.OnUiContext)
             {
-                Shader[] shaders = new Shader[] {
-                    new Shader(ShaderType.VertexShader, vertexShader),
-                    new Shader(ShaderType.FragmentShader, pixelShader)
+                Shader[] shaders = {
+                    new Shader(graphicsDevice,ShaderType.VertexShader, VertexShader),
+                    new Shader(graphicsDevice,ShaderType.FragmentShader, PixelShader)
                 };
 
-                foreach (Shader shader in shaders)
+                foreach (var shader in shaders)
                     shader.Compile();
-                EffectPass pass = new EffectPass("Basic");
+                var pass = new EffectPass("Basic");
                 pass.AttachShaders(shaders);
                 pass.BindAttribute(VertexElementUsage.Color, "color");
                 pass.BindAttribute(VertexElementUsage.TextureCoordinate, "textureCoordinate");
@@ -79,19 +111,19 @@ void main(void)
 
         #region IEffectMatrices implementation
 
-        private Matrix world, view, projection;
+        private Matrix _world, _view, _projection;
 
         public Matrix Projection
         {
             get
             {
-                return projection;
+                return _projection;
             }
             set
             {
-                if (projection != value)
+                if (_projection != value)
                 {
-                    projection = value;
+                    _projection = value;
                     Parameters["Proj"].SetValue(value);
                 }
             }
@@ -101,13 +133,13 @@ void main(void)
         {
             get
             {
-                return view;
+                return _view;
             }
             set
             {
-                if (view != value)
+                if (_view != value)
                 {
-                    view = value;
+                    _view = value;
                     Parameters["View"].SetValue(value);
                 }
             }
@@ -117,13 +149,13 @@ void main(void)
         {
             get
             {
-                return world;
+                return _world;
             }
             set
             {
-                if (world != value)
+                if (_world != value)
                 {
-                    world = value;
+                    _world = value;
                     Parameters["World"].SetValue(value);
                 }
             }

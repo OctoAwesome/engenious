@@ -5,15 +5,15 @@ namespace engenious.Pipeline
     public class CustomProperty
     {
         public delegate void SetCustomProperty(object value);
-        private SetCustomProperty setter;
+        private readonly SetCustomProperty _setter;
         public CustomProperty(string name, object value, Type type, bool readOnly, bool visible,SetCustomProperty setter)
         {
-            this.Name = name;
-            this.Value = value;
-            this.Type = type;
-            this.ReadOnly = readOnly;
-            this.Visible = visible;
-            this.setter = setter;
+            Name = name;
+            Value = value;
+            Type = type;
+            ReadOnly = readOnly;
+            Visible = visible;
+            _setter = setter;
         }
 
         public string Name{get;private set;}
@@ -24,7 +24,7 @@ namespace engenious.Pipeline
             }
             internal set{
                 this.value = value;
-                setter(value);
+                _setter(value);
             }
             }
         public Type Type{get;private set;}

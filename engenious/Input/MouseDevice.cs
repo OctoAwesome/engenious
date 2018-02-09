@@ -1,19 +1,17 @@
-﻿using System;
-
-namespace engenious
+﻿namespace engenious
 {
     public class MouseDevice
     {
-        OpenTK.Input.MouseDevice dev;
+        private readonly OpenTK.Input.MouseDevice _dev;
 
         public MouseDevice(OpenTK.Input.MouseDevice dev)
         {
-            this.dev = dev;
+            _dev = dev;
         }
 
-        public int X{ get { return dev.X; } }
+        public int X => _dev.X;
 
-        public int Y{ get { return dev.Y; } }
+        public int Y => _dev.Y;
     }
 }
 

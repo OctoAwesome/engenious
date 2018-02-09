@@ -1,28 +1,23 @@
-﻿using System;
-using System.Drawing;
+﻿using System.Drawing;
 using System.Drawing.Imaging;
+using System.IO;
 using System.Runtime.InteropServices;
 
 namespace engenious.Content.Serialization
 {
-    [ContentTypeWriterAttribute()]
+    [ContentTypeWriter]
     public class BitmapTypeWriter : ContentTypeWriter<Bitmap>
     {
-        public BitmapTypeWriter()
-        {
-
-        }
-
-        private bool usePNG = true;
+        private readonly bool _usePng = true;
 
         public override void Write(ContentWriter writer, Bitmap bmp)
         {
-            if (usePNG)
+            if (_usePng)
             {
                 writer.Write((byte)1);
-                using (System.IO.MemoryStream str = new System.IO.MemoryStream())
+                using (var str = new MemoryStream())
                 {
-                    bmp.Save(str, System.Drawing.Imaging.ImageFormat.Png);
+                    bmp.Save(str, ImageFormat.Png);
 
                     writer.Write((int)str.Position);
                     str.Position = 0;
@@ -34,8 +29,8 @@ namespace engenious.Content.Serialization
                 writer.Write((byte)0);
                 writer.Write(bmp.Width);
                 writer.Write(bmp.Height);
-                int[] data = new int[bmp.Width * bmp.Height];
-                BitmapData bmpData = bmp.LockBits(new System.Drawing.Rectangle(new System.Drawing.Point(), bmp.Size), ImageLockMode.ReadOnly, bmp.PixelFormat);
+                var data = new int[bmp.Width * bmp.Height];
+                var bmpData = bmp.LockBits(new System.Drawing.Rectangle(new System.Drawing.Point(), bmp.Size), ImageLockMode.ReadOnly, bmp.PixelFormat);
 
                 Marshal.Copy(bmpData.Scan0, data, 0, data.Length);
 
@@ -45,7 +40,7 @@ namespace engenious.Content.Serialization
             }
         }
 
-        public override string RuntimeReaderName{ get { return typeof(Texture2DTypeReader).FullName; } }
+        public override string RuntimeReaderName => typeof(Texture2DTypeReader).FullName;
     }
 }
 

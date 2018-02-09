@@ -5,71 +5,86 @@ namespace engenious.Audio
 {
     public class SoundEffectInstance : AudioResource
     {
-        internal int sid;
-        private bool isLooped;
-        private float volume=1f,pitch=1f,pan;
-        private SoundEffect effect;
-        public SoundEffectInstance(SoundEffect effect)
+        internal int Sid;
+        protected bool _isLooped;
+        protected float _volume=1f,_pitch=1f,_pan;
+        protected SoundEffect _effect;
+
+        public SoundEffectInstance()
+            :this(null)
         {
-            this.effect = effect;
+
+        }
+        public SoundEffectInstance(SoundEffect effect)
+            : this(effect,TimeSpan.Zero)
+        {
+
+        }
+        public SoundEffectInstance(SoundEffect effect, TimeSpan duration)
+        {
+            _effect = effect;
+            Duration = duration;
         }
 
 
 
-        public TimeSpan Duration { get; }
+        public TimeSpan Duration { get; protected set; }
 
 
         public bool IsLooped
         { 
-            get { return isLooped; } 
+            get { return _isLooped; }
             set
             { 
-                if (value != isLooped && sid != 0)
+                if (value != _isLooped && Sid != 0)
                 {
-                    AL.Source(sid, ALSourceb.Looping, value);
+                    AL.Source(Sid, ALSourceb.Looping, value);
                 }
-                isLooped = value;
+                _isLooped = value;
             }
         }
 
         public float Volume{
-            get{return volume;}
+            get{return _volume;}
             set
             {
-                if (volume != value)
+                // ReSharper disable once CompareOfFloatsByEqualityOperator
+                if (_volume != value)
                 {
-                    AL.Source (sid, ALSourcef.Gain, value);
+                    AL.Source (Sid, ALSourcef.Gain, value);
                 }
-                volume = value;
+                _volume = value;
             }
             
         }
 
         public float Pitch{
-            get{return pitch;}
+            get{return _pitch;}
             set
             {
-                if (pitch != value)
+                // ReSharper disable once CompareOfFloatsByEqualityOperator
+                if (_pitch != value)
                 {
-                    AL.Source (sid, ALSourcef.Pitch,value);
+                    AL.Source (Sid, ALSourcef.Pitch,value);
                 }
-                pitch = value;
+                _pitch = value;
             }
         }
 
         public float Pan{
-            get{return pan;}
+            get{return _pan;}
             set
             {
-                if (pan != value)
+                // ReSharper disable once CompareOfFloatsByEqualityOperator
+                if (_pan != value)
                 {
-                    AL.Source (sid, ALSource3f.Position,value, 0, 0.1f);
+                    AL.Source (Sid, ALSource3f.Position,value, 0, 0.1f);
                 }
-                pan = value;
+                _pan = value;
             }
         }
 
-        public SoundState State { get; internal set; }
+        public virtual SoundState State { get; internal set; }
 
         public void Apply3D(AudioListener[] listeners, AudioEmitter emitter)
         {
@@ -80,19 +95,19 @@ namespace engenious.Audio
 
         private void Apply3D(AudioListener listener,AudioEmitter emitter)
         {
-            if (sid==0)
+            if (Sid==0)
                 return;
 
 
             float x, y, z;
             AL.GetListener(ALListener3f.Position, out x, out y, out z);
 
-            Vector3 posOffset = emitter.Position - listener.Position;
+            var posOffset = emitter.Position - listener.Position;
             // set up orientation matrix
-            Matrix orientation = Matrix.Identity;
-            Vector3 forward = listener.Forward.Normalized();
-            Vector3 right = Vector3.Cross(forward, listener.Up);
-            Vector3 up = Vector3.Cross(right,forward);
+            var orientation = Matrix.Identity;
+            var forward = listener.Forward.Normalized();
+            var right = Vector3.Cross(forward, listener.Up);
+            var up = Vector3.Cross(right,forward);
             orientation.M11 = right.X;
             orientation.M12 = right.Y;
             orientation.M13 = right.Z;
@@ -104,34 +119,34 @@ namespace engenious.Audio
             orientation.M33 = -forward.Z;
 
             // set up our final position and velocity according to orientation of listener
-            Vector3 finalPos = new Vector3(x + posOffset.X, y + posOffset.Y, z + posOffset.Z);
+            var finalPos = new Vector3(x + posOffset.X, y + posOffset.Y, z + posOffset.Z);
             finalPos = Vector3.Transform(finalPos, orientation);
-            Vector3 finalVel = emitter.Velocity;
+            var finalVel = emitter.Velocity;
             finalVel = Vector3.Transform(finalVel, orientation);
 
             // set the position based on relative positon
-            AL.Source(sid, ALSource3f.Position, finalPos.X, finalPos.Y, finalPos.Z);
-            AL.Source(sid, ALSource3f.Velocity, finalVel.X, finalVel.Y, finalVel.Z);
+            AL.Source(Sid, ALSource3f.Position, finalPos.X, finalPos.Y, finalPos.Z);
+            AL.Source(Sid, ALSource3f.Velocity, finalVel.X, finalVel.Y, finalVel.Z);
         }
 
 
         public virtual void Play()
         {
-            if (sid==0)
+            if (Sid==0)
             {
-                sid = SoundSourceManager.Instance.Dequeue();
-                int bufferId = effect.Buffer;
-                AL.Source(sid, ALSourcei.Buffer, bufferId);
+                Sid = SoundSourceManager.Instance.Dequeue();
+                var bufferId = _effect.Buffer;
+                AL.Source(Sid, ALSourcei.Buffer, bufferId);
             }
 
-            if (sid==0)
+            if (Sid==0)
                 return;
 
             AL.DistanceModel (ALDistanceModel.InverseDistanceClamped);
-            AL.Source (sid, ALSource3f.Position,Pan, 0, 0.1f);
-            AL.Source (sid, ALSourcef.Gain, Volume);
-            AL.Source (sid, ALSourceb.Looping, IsLooped);
-            AL.Source (sid, ALSourcef.Pitch,Pitch);
+            AL.Source (Sid, ALSource3f.Position,Pan, 0, 0.1f);
+            AL.Source (Sid, ALSourcef.Gain, Volume);
+            AL.Source (Sid, ALSourceb.Looping, IsLooped);
+            AL.Source (Sid, ALSourcef.Pitch,Pitch);
 
             SoundSourceManager.Instance.PlaySound(this);
         }
@@ -140,7 +155,7 @@ namespace engenious.Audio
         {
             State = SoundState.Paused;
 
-            AL.SourcePause(sid);
+            AL.SourcePause(Sid);
         }
 
         public void Resume()
@@ -154,8 +169,8 @@ namespace engenious.Audio
         {
             //if (immediate)
             {
-                AL.SourceStop(sid);
-                AL.Source(sid, ALSourcei.Buffer, 0);
+                AL.SourceStop(Sid);
+                AL.Source(Sid, ALSourcei.Buffer, 0);
                 SoundSourceManager.Instance.FreeSource(this);
             }
             //else

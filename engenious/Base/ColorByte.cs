@@ -1,17 +1,17 @@
-﻿using System;
+﻿using System.Runtime.InteropServices;
 
 namespace engenious
 {
-    [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 1)]
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct ColorByte
     {
 
         public ColorByte(byte r, byte g, byte b, byte a = 255)
         {
-            this.r = r;
-            this.g = g;
-            this.b = b;
-            this.a = a;
+            R = r;
+            G = g;
+            B = b;
+            A = a;
         }
 
         public ColorByte(float r, float g, float b, float a = 1.0f)
@@ -30,19 +30,17 @@ namespace engenious
         {
         }
 
-        private byte r, g, b, a;
+        public byte R { get; }
 
-        public byte R{ get { return r; } }
+        public byte G { get; }
 
-        public byte G{ get { return g; } }
+        public byte B { get; }
 
-        public byte B{ get { return b; } }
-
-        public byte A{ get { return a; } }
+        public byte A { get; }
 
         public override int GetHashCode()
         {
-            return (int)(A << 24 | R << 16 | G << 8 | B);//TODO?
+            return A << 24 | R << 16 | G << 8 | B;//TODO?
         }
 
         public static implicit operator Color(ColorByte col)

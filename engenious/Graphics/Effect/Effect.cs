@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace engenious.Graphics
+﻿namespace engenious.Graphics
 {
 	public class Effect:GraphicsResource,IEffect
 	{
@@ -11,9 +9,13 @@ namespace engenious.Graphics
 
 		}
 
-		internal void Initialize ()
+		protected internal virtual void Initialize ()
 		{
 			Parameters = new EffectParameterCollection (Techniques);
+			foreach (var technique in Techniques)
+			{
+				technique.Initialize();
+			}
 		}
 
 		public EffectParameterCollection Parameters {
@@ -33,7 +35,7 @@ namespace engenious.Graphics
 
 		protected internal virtual void OnApply ()
 		{
-			foreach (EffectPass pass in CurrentTechnique.Passes.PassesList) {
+			foreach (var pass in CurrentTechnique.Passes) {
 				pass.Apply ();
 			}
 		}

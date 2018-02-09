@@ -1,17 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using engenious.Pipeline;
 
 namespace engenious.Content.Pipeline
 {
     public class ContentImporterContext : ContentContext
     {
-        public ContentImporterContext()
-        {
-        }
-        
         public override void Dispose()
         {
         }
+        public List<SourceFile> SourceFiles { get; set; }
     }
 }
 

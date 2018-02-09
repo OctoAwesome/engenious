@@ -4,13 +4,13 @@ namespace engenious.Graphics
 {
     public abstract class GraphicsResource : IDisposable
     {
-        public GraphicsResource()
+        protected GraphicsResource()
         {
         }
 
-        public GraphicsResource(GraphicsDevice graphicsDevice)
+        protected GraphicsResource(GraphicsDevice graphicsDevice)
         {
-            this.GraphicsDevice = graphicsDevice;
+            GraphicsDevice = graphicsDevice;
         }
 
         public GraphicsDevice GraphicsDevice{ get; internal set; }
@@ -19,7 +19,7 @@ namespace engenious.Graphics
 
         public object Tag{ get; set; }
 
-        public bool IsDisposed{ get; private set; }=false;
+        public bool IsDisposed{ get; private set; }
 
         public virtual void Dispose()
         {

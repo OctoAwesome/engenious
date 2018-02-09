@@ -5,7 +5,7 @@ namespace engenious.Audio
 {
     internal class OggStream : IDisposable
     {
-        internal VorbisReader Reader { get; private set; }
+        internal VorbisReader Reader { get; }
         public OggStream(System.IO.Stream stream,bool closeStreamOnDispose=false)
         {
             Reader = new VorbisReader(stream,closeStreamOnDispose);

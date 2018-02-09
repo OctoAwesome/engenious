@@ -4,10 +4,6 @@ namespace engenious.Content.Pipeline
 {
     public abstract class ContentImporter<T> : IContentImporter
     {
-        public ContentImporter()
-        {
-        }
-
         public Type ExportType => _exportType;
         protected static readonly Type _exportType = typeof (T);
 

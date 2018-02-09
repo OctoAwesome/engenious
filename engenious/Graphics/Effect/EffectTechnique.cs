@@ -1,17 +1,20 @@
-﻿using System;
-
-namespace engenious.Graphics
+﻿namespace engenious.Graphics
 {
-	public sealed class EffectTechnique
+	public class EffectTechnique
 	{
-		internal EffectTechnique (string name)
+		protected internal EffectTechnique (string name)
 		{
-			this.Name = name;
+			Name = name;
 			Passes = new EffectPassCollection ();
 		}
 
 		public string Name { get; private set;}
 		public EffectPassCollection Passes{ get; private set; }
+
+		protected internal virtual void Initialize()
+		{
+			
+		}
 	}
 }
 

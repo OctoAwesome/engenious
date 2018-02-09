@@ -4,35 +4,24 @@ namespace engenious.Input
 {
     public struct GamePadTriggers : IEquatable<GamePadTriggers>
     {
-        const float ConversionFactor = 1.0f / byte.MaxValue;
-        byte left;
-        byte right;
+        private const float ConversionFactor = 1.0f / byte.MaxValue;
+        private readonly byte _left;
+
+        private readonly byte _right;
         //
         // Properties
         //
-        public float Left
-        {
-            get
-            {
-                return (float)this.left * ConversionFactor;
-            }
-        }
+        public float Left => _left * ConversionFactor;
 
-        public float Right
-        {
-            get
-            {
-                return (float)this.right * ConversionFactor;
-            }
-        }
+        public float Right => _right * ConversionFactor;
 
         //
         // Constructors
         //
         internal GamePadTriggers(byte left, byte right)
         {
-            this.left = left;
-            this.right = right;
+            _left = left;
+            _right = right;
         }
 
         //
@@ -40,22 +29,22 @@ namespace engenious.Input
         //
         public override bool Equals(object obj)
         {
-            return obj is GamePadTriggers && this.Equals((GamePadTriggers)obj);
+            return obj is GamePadTriggers && Equals((GamePadTriggers)obj);
         }
 
         public bool Equals(GamePadTriggers other)
         {
-            return this.left == other.left && this.right == other.right;
+            return _left == other._left && _right == other._right;
         }
 
         public override int GetHashCode()
         {
-            return this.left.GetHashCode() ^ this.right.GetHashCode();
+            return _left.GetHashCode() ^ _right.GetHashCode();
         }
 
         public override string ToString()
         {
-            return string.Format("{{Left: {0:f2}; Right: {1:f2}}}", this.Left, this.Right);
+            return string.Format("{{Left: {0:f2}; Right: {1:f2}}}", Left, Right);
         }
 
         //

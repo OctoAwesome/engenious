@@ -3,13 +3,13 @@
 /// </summary>
 
 // Install tools
-#tool GitVersion.CommandLine&prerelease
+#tool "nuget:?package=GitVersion.CommandLine"
 
 // *********************
 //      ARGUMENTS
 // *********************
 var Target = Argument("target", "default");
-var Configuration = Argument("configuration", "release");
+var Configuration = Argument("configuration", "Release");
 var IsPrerelease = HasArgument("pre");
 
 // *********************
@@ -75,8 +75,7 @@ Task("pack")
     {
         var artifacts = Directory("./output/artifacts");
         CreateDirectory(artifacts);
-
-        NuGetPack("./engenious.nuspec", new NuGetPackSettings
+        NuGetPack("./engenious.ci.nuspec", new NuGetPackSettings
         {
             Version                 = IsPrerelease ? Version.NuGetVersion : Version.MajorMinorPatch,
             OutputDirectory         = artifacts

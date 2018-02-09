@@ -1,37 +1,38 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{D847088D-1484-469F-88A1-327AB0F8D5FB}</ProjectGuid>
+    <ProjectGuid>{E264C8BD-25AF-4A27-8396-DD8DA8414931}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <RootNamespace>ContentTool</RootNamespace>
     <AssemblyName>ContentTool</AssemblyName>
-    <StartupObject>ContentTool.Program</StartupObject>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug</OutputPath>
-    <DefineConstants>DEBUG;</DefineConstants>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <ConsolePause>false</ConsolePause>
     <Prefer32Bit>false</Prefer32Bit>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>full</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release</OutputPath>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <Externalconsole>true</Externalconsole>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
     <SignAssembly>true</SignAssembly>
@@ -40,75 +41,180 @@
     <AssemblyOriginatorKeyFile>engenious.pfx</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Xml" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="OpenTK">
+    <Reference Include="CommandLine, Version=2.0.275.0, Culture=neutral, PublicKeyToken=de6f01bd326f8c32, processorArchitecture=MSIL">
+      <HintPath>..\packages\CommandLineParser.2.1.1-beta\lib\net45\CommandLine.dll</HintPath>
+    </Reference>
+    <Reference Include="OpenTK, Version=2.0.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
       <HintPath>..\packages\OpenTK.2.0.0\lib\net20\OpenTK.dll</HintPath>
     </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Console, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Console.4.0.0-rc2-24027\lib\net46\System.Console.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Core" />
+    <Reference Include="System.Reflection.TypeExtensions, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Reflection.TypeExtensions.4.1.0-rc2-24027\lib\net46\System.Reflection.TypeExtensions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\SolutionInfo.cs" />
-    <Compile Include="ToolConfiguration.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Commands\AddExistingFolder.cs" />
-    <Compile Include="Commands\AddExistingItem.cs" />
-    <Compile Include="Commands\AddNewFolder.cs" />
-    <Compile Include="Commands\BuildItem.cs" />
-    <Compile Include="Commands\DeleteItem.cs" />
-    <Compile Include="Commands\RenameItem.cs" />
-    <Compile Include="Items\ContentItemCollection.cs" />
-    <Compile Include="Dialog\frmEditReferences.cs">
+    <Compile Include="Arguments.cs" />
+    <Compile Include="Builder\BuildCache.cs" />
+    <Compile Include="Builder\BuildFile.cs" />
+    <Compile Include="Builder\ContentBuilder.cs" />
+    <Compile Include="Commandline\Options.cs" />
+    <Compile Include="Controls\ConsoleView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\ConsoleView.Designer.cs">
+      <DependentUpon>ConsoleView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\FontComboBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\ImporterEditor.cs" />
+    <Compile Include="Controls\ItemPropertyView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\ItemPropertyView.Designer.cs">
+      <DependentUpon>ItemPropertyView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\ProcessorEditor.cs" />
+    <Compile Include="Controls\ProjectTreeView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\ProjectTreeView.Designer.cs">
+      <DependentUpon>ProjectTreeView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Events\Delegates.cs" />
+    <Compile Include="FileHelper.cs" />
+    <Compile Include="Forms\AboutBox.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Dialog\frmEditReferences.Designer.cs">
-      <DependentUpon>frmEditReferences.cs</DependentUpon>
+    <Compile Include="Forms\AboutBox.Designer.cs">
+      <DependentUpon>AboutBox.cs</DependentUpon>
     </Compile>
-    <Compile Include="Dialog\ImporterEditor.cs" />
-    <Compile Include="Dialog\NewFolderDialog.cs">
+    <Compile Include="Forms\Dialogs\LoadingDialog.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Dialog\NewFolderDialog.Designer.cs">
-      <DependentUpon>NewFolderDialog.cs</DependentUpon>
+    <Compile Include="Forms\Dialogs\LoadingDialog.Designer.cs">
+      <DependentUpon>LoadingDialog.cs</DependentUpon>
     </Compile>
-    <Compile Include="Dialog\ProcessorEditor.cs" />
-    <Compile Include="Dialog\ReferenceCollectionEditor.cs" />
+    <Compile Include="Forms\Dialogs\OverwriteDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Dialogs\OverwriteDialog.Designer.cs">
+      <DependentUpon>OverwriteDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\IMainShell.cs" />
+    <Compile Include="Forms\MainShell.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\MainShell.Designer.cs">
+      <DependentUpon>MainShell.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Models\ContentFile.cs" />
+    <Compile Include="Models\ContentFolder.cs" />
+    <Compile Include="Models\ContentItem.cs" />
+    <Compile Include="Models\ContentItemCollection.cs" />
+    <Compile Include="Models\ContentProject.cs" />
+    <Compile Include="Models\History\History.cs" />
+    <Compile Include="Models\History\HistoryCollectionChange.cs" />
+    <Compile Include="Models\History\HistoryItem.cs" />
+    <Compile Include="Models\History\HistoryPropertyChange.cs" />
+    <Compile Include="Models\History\HistoryUnion.cs" />
+    <Compile Include="Models\History\IHistory.cs" />
+    <Compile Include="Models\History\IHistoryItem.cs" />
+    <Compile Include="Models\ObservableList.cs" />
+    <Compile Include="Observer\INotifyPropertyValueChanged.cs" />
+    <Compile Include="Observer\NotifyPropertyValueChangedEventArgs.cs" />
+    <Compile Include="PipelineHelper.cs" />
+    <Compile Include="Presenters\MainShellPresenter.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Items\ContentFile.cs" />
-    <Compile Include="Items\ContentFolder.cs" />
-    <Compile Include="Items\ContentProject.cs" />
-    <Compile Include="Items\ContentItem.cs" />
-    <Compile Include="ObservableList.cs" />
-    <Compile Include="frmMain.Designer.cs">
-      <DependentUpon>frmMain.cs</DependentUpon>
+    <Compile Include="Viewer\IViewer.cs" />
+    <Compile Include="Viewer\ViewerInfo.cs" />
+    <Compile Include="Viewer\ViewerManager.cs" />
+    <Compile Include="Viewer\Viewers\BitmapViewer.cs">
+      <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="PipelineHelper.cs" />
-    <Compile Include="Arguments.cs" />
-    <Compile Include="Builder\ContentBuilder.cs" />
-    <Compile Include="frmMain.cs">
-      <SubType>Form</SubType>
+    <Compile Include="Viewer\Viewers\BitmapViewer.Designer.cs">
+      <DependentUpon>BitmapViewer.cs</DependentUpon>
     </Compile>
-    <Compile Include="Builder\ItemProgressEventArgs.cs" />
-    <Compile Include="Builder\BuildStep.cs" />
+    <Compile Include="Viewer\Viewers\SpriteFontViewer.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Viewer\Viewers\SpriteFontViewer.Designer.cs">
+      <DependentUpon>SpriteFontViewer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Viewer\Viewers\TextViewer.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Viewer\Viewers\TextViewer.Designer.cs">
+      <DependentUpon>TextViewer.cs</DependentUpon>
+    </Compile>
+    <EmbeddedResource Include="Controls\ConsoleView.resx">
+      <DependentUpon>ConsoleView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\ItemPropertyView.resx">
+      <DependentUpon>ItemPropertyView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\ProjectTreeView.resx">
+      <DependentUpon>ProjectTreeView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\AboutBox.resx">
+      <DependentUpon>AboutBox.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Dialogs\LoadingDialog.resx">
+      <DependentUpon>LoadingDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Dialogs\OverwriteDialog.resx">
+      <DependentUpon>OverwriteDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\MainShell.resx">
+      <DependentUpon>MainShell.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Builder\BuildCache.cs" />
-    <Compile Include="Builder\BuildInfo.cs" />
-  </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <ItemGroup>
-    <None Include="..\libs\Assimp64.so">
-      <Link>Assimp64.so</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    <EmbeddedResource Include="Viewer\Viewers\BitmapViewer.resx">
+      <DependentUpon>BitmapViewer.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Viewer\Viewers\SpriteFontViewer.resx">
+      <DependentUpon>SpriteFontViewer.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Viewer\Viewers\TextViewer.resx">
+      <DependentUpon>TextViewer.cs</DependentUpon>
+    </EmbeddedResource>
+    <None Include="OpenTK.dll.config" />
+    <None Include="packages.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
     <None Include="app.config" />
     <None Include="engenious.pfx" />
     <None Include="OpenTK.dll.config" />
@@ -117,43 +223,37 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ContentPipeline\engenious.Pipeline.csproj">
-      <Project>{9771E0FC-D752-4D7A-89E4-4F6FA2EC3C1D}</Project>
+      <Project>{9771e0fc-d752-4d7a-89e4-4f6fa2ec3c1d}</Project>
       <Name>engenious.Pipeline</Name>
     </ProjectReference>
     <ProjectReference Include="..\engenious\engenious.csproj">
-      <Project>{E1FF7BDB-D631-4D4D-B5A1-988778AD15B6}</Project>
+      <Project>{e1ff7bdb-d631-4d4d-b5a1-988778ad15b6}</Project>
       <Name>engenious</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Dialog\frmEditReferences.resx">
-      <DependentUpon>frmEditReferences.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Dialog\NewFolderDialog.resx">
-      <DependentUpon>NewFolderDialog.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="frmMain.resx">
-      <DependentUpon>frmMain.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <None Include="Resources\folder.png">
-      <LogicalName>folder</LogicalName>
-    </None>
-    <None Include="Resources\project.png">
-      <LogicalName>project</LogicalName>
-    </None>
+    <None Include="Resources\Licenses.txt" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="..\libs\Assimp32.dll">
-      <Link>Assimp32.dll</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="..\libs\Assimp64.dll">
-      <Link>Assimp64.dll</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    <Content Include="Resources\Add_folder.png" />
+    <Content Include="Resources\Close_file.png" />
+    <Content Include="Resources\Create.png" />
+    <Content Include="Resources\Equipment.png" />
+    <Content Include="Resources\Erase.png" />
+    <Content Include="Resources\Eraser.png" />
+    <Content Include="Resources\Folder.png" />
+    <Content Include="Resources\Import.png" />
+    <Content Include="Resources\New_file.png" />
+    <Content Include="Resources\Objects.png" />
+    <Content Include="Resources\Open_folder.png" />
+    <Content Include="Resources\Save.png" />
+    <Content Include="Resources\Transparency.png" />
+    <Content Include="Resources\Warning.png" />
   </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Target Name="SharpFontDependencies" BeforeTargets="PrepareForBuild">
+    <!-- TODO try and make this smarter, at least pick x86/x64, maybe see which MSVC redist is available -->
+    <Copy SourceFiles="..\packages\SharpFont.Dependencies.2.6\bin\msvc12\x64\freetype6.dll" DestinationFolder="$(OutputPath)\x64" Condition="Exists('..\packages\SharpFont.Dependencies.2.6\bin\msvc12\x64\freetype6.dll')" />
+    <Copy SourceFiles="..\packages\SharpFont.Dependencies.2.6\bin\msvc12\x86\freetype6.dll" DestinationFolder="$(OutputPath)\x86" Condition="Exists('..\packages\SharpFont.Dependencies.2.6\bin\msvc12\x86\freetype6.dll')" />
+  </Target>
 </Project>

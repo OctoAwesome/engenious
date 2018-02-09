@@ -13,9 +13,9 @@
             </Attributes>
         </Pass>
     </Technique>
-    <Technique name="Compute">
+    <!--<Technique name="Compute">
         <Pass name="p1">
             <Shader type="ComputeShader" filename="simple/simple.cs" />
         </Pass>
-    </Technique>
+    </Technique>-->
 </Effect>

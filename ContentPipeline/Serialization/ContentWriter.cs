@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using engenious.Graphics;
 
 namespace engenious.Content.Serialization
 {
@@ -20,7 +21,7 @@ namespace engenious.Content.Serialization
 
         public void WriteObject<T>(T value)
         {
-            WriteObject<T>(value, SerializationManager.Instance.GetWriter(typeof(T)));
+            WriteObject(value, SerializationManager.Instance.GetWriter(typeof(T)));
         }
 
         public void WriteObject<T>(T value, IContentTypeWriter typeWriter)
@@ -31,9 +32,9 @@ namespace engenious.Content.Serialization
 
         public void Write(Stream stream, int length = -1)
         {
-            System.IO.Stream buffered = new BufferedStream(stream);
+            Stream buffered = new BufferedStream(stream);
             byte[] buffer = new byte[1024*1024];
-            int readLen = length == -1 ? (int)buffer.Length : (int)stream.Length;
+            int readLen = length == -1 ? buffer.Length : (int)stream.Length;
             int toRead = Math.Min(readLen, buffer.Length);
             int read;
             while ((read = buffered.Read(buffer, 0, toRead)) > 0)
@@ -46,27 +47,27 @@ namespace engenious.Content.Serialization
             buffered.Dispose();
         }
 
-        public void Write(engenious.Graphics.VertexPositionNormalTexture v)
+        public void Write(VertexPositionNormalTexture v)
         {
             Write(v.Position);
             Write(v.Normal);
             Write(v.TextureCoordinate);
         }
 
-        public void Write(engenious.Graphics.VertexPositionColor v)
+        public void Write(VertexPositionColor v)
         {
             Write(v.Position);
             Write(v.Color);
         }
 
-        public void Write(engenious.Graphics.VertexPositionColorTexture v)
+        public void Write(VertexPositionColorTexture v)
         {
             Write(v.Position);
             Write(v.Color);
             Write(v.TextureCoordinate);
         }
 
-        public void Write(engenious.Graphics.VertexPositionTexture v)
+        public void Write(VertexPositionTexture v)
         {
             Write(v.Position);
             Write(v.TextureCoordinate);

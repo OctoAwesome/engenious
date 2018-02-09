@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace engenious
+﻿namespace engenious
 {
     public enum TextureWrapMode
     {

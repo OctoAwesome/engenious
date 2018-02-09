@@ -4,89 +4,53 @@ namespace engenious.Input
 {
     public struct GamePadState : IEquatable<GamePadState>
     {
-        const float RangeMultiplier = 1.0f / (short.MaxValue + 1);
+        private const float RangeMultiplier = 1.0f / (short.MaxValue + 1);
 
-        Buttons buttons;
-        int packet_number;
-        short left_stick_x;
-        short left_stick_y;
-        short right_stick_x;
-        short right_stick_y;
-        byte left_trigger;
-        byte right_trigger;
-        bool is_connected;
+        private Buttons _buttons;
+        private int _packetNumber;
+        private short _leftStickX;
+        private short _leftStickY;
+        private short _rightStickX;
+        private short _rightStickY;
+        private byte _leftTrigger;
+        private byte _rightTrigger;
+        private bool _isConnected;
         //
         // Properties
         //
-        public GamePadButtons Buttons
-        {
-            get
-            {
-                return new GamePadButtons(this.buttons);
-            }
-        }
+        public GamePadButtons Buttons => new GamePadButtons(_buttons);
 
-        public GamePadDPad DPad
-        {
-            get
-            {
-                return new GamePadDPad(this.buttons);
-            }
-        }
+        public GamePadDPad DPad => new GamePadDPad(_buttons);
 
-        public bool IsConnected
-        {
-            get
-            {
-                return this.is_connected;
-            }
-        }
+        public bool IsConnected => _isConnected;
 
-        public int PacketNumber
-        {
-            get
-            {
-                return this.packet_number;
-            }
-        }
+        public int PacketNumber => _packetNumber;
 
-        public GamePadThumbSticks ThumbSticks
-        {
-            get
-            {
-                return new GamePadThumbSticks(this.left_stick_x, this.left_stick_y, this.right_stick_x, this.right_stick_y);
-            }
-        }
+        public GamePadThumbSticks ThumbSticks => new GamePadThumbSticks(_leftStickX, _leftStickY, _rightStickX, _rightStickY);
 
-        public GamePadTriggers Triggers
-        {
-            get
-            {
-                return new GamePadTriggers(this.left_trigger, this.right_trigger);
-            }
-        }
+        public GamePadTriggers Triggers => new GamePadTriggers(_leftTrigger, _rightTrigger);
 
         //
         // Methods
         //
         public bool Equals(GamePadState other)
         {
-            return this.ThumbSticks == other.ThumbSticks && this.Buttons == other.Buttons && this.DPad == other.DPad && this.IsConnected == other.IsConnected;
+            return ThumbSticks == other.ThumbSticks && Buttons == other.Buttons && DPad == other.DPad && IsConnected == other.IsConnected;
         }
 
         public override bool Equals(object obj)
         {
-            return obj is GamePadState && this.Equals((GamePadState)obj);
+            return obj is GamePadState && Equals((GamePadState)obj);
         }
 
         public override int GetHashCode()
         {
-            return this.ThumbSticks.GetHashCode() ^ this.Buttons.GetHashCode() ^ this.DPad.GetHashCode() ^ this.IsConnected.GetHashCode();
+            return ThumbSticks.GetHashCode() ^ Buttons.GetHashCode() ^ DPad.GetHashCode() ^ IsConnected.GetHashCode();
         }
 
         private bool IsAxisValid(GamePadAxes axis)
         {
-            return axis >= (GamePadAxes)0 && axis < (GamePadAxes.LeftY | GamePadAxes.RightX);
+            return axis >= 0 && axis < (GamePadAxes.LeftY | GamePadAxes.RightX);
         }
 
         private bool IsDPadValid(int index)
@@ -98,27 +62,27 @@ namespace engenious.Input
         {
             if ((byte)(axis & GamePadAxes.LeftX) != 0)
             {
-                this.left_stick_x = value;
+                _leftStickX = value;
             }
             if ((byte)(axis & GamePadAxes.LeftY) != 0)
             {
-                this.left_stick_y = value;
+                _leftStickY = value;
             }
             if ((byte)(axis & GamePadAxes.RightX) != 0)
             {
-                this.right_stick_x = value;
+                _rightStickX = value;
             }
             if ((byte)(axis & GamePadAxes.RightY) != 0)
             {
-                this.right_stick_y = value;
+                _rightStickY = value;
             }
             if ((byte)(axis & GamePadAxes.LeftTrigger) != 0)
             {
-                this.left_trigger = (byte)(value - -32768 >> 8);
+                _leftTrigger = (byte)(value - -32768 >> 8);
             }
             if ((byte)(axis & GamePadAxes.RightTrigger) != 0)
             {
-                this.right_trigger = (byte)(value - -32768 >> 8);
+                _rightTrigger = (byte)(value - -32768 >> 8);
             }
         }
 
@@ -126,37 +90,31 @@ namespace engenious.Input
         {
             if (pressed)
             {
-                this.buttons |= button;
+                _buttons |= button;
                 return;
             }
-            this.buttons &= ~button;
+            _buttons &= ~button;
         }
 
         internal void SetConnected(bool connected)
         {
-            this.is_connected = connected;
+            _isConnected = connected;
         }
 
         internal void SetPacketNumber(int number)
         {
-            this.packet_number = number;
+            _packetNumber = number;
         }
 
         internal void SetTriggers(byte left, byte right)
         {
-            this.left_trigger = left;
-            this.right_trigger = right;
+            _leftTrigger = left;
+            _rightTrigger = right;
         }
 
         public override string ToString()
         {
-            return string.Format("{{Sticks: {0}; Buttons: {1}; DPad: {2}; IsConnected: {3}}}", new object[]
-                {
-                    this.ThumbSticks,
-                    this.Buttons,
-                    this.DPad,
-                    this.IsConnected
-                });
+            return $"{{Sticks: {ThumbSticks}; Buttons: {Buttons}; DPad: {DPad}; IsConnected: {IsConnected}}}";
         }
     }
 }
