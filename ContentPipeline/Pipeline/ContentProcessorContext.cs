@@ -15,15 +15,23 @@ namespace engenious.Content.Pipeline
 {
     public class ContentProcessorContext : ContentContext
     {
-        private static readonly INativeWindow Window;
+        private static INativeWindow Window;
 
         static ContentProcessorContext()
         {
             
             //BaseWindow = new GameWindow();
             //_window = new NativeWindow(100,100,"Test",GameWindowFlags.Default, GraphicsMode.Default, DisplayDevice.Default);
+
+        }
+
+        public ContentProcessorContext(SynchronizationContext syncContext, string workingDirectory = "")
+        {
+            SyncContext = syncContext;
+            WorkingDirectory = workingDirectory;
+            
             var window = new GameWindow(100, 100);
-            Window = window;
+            ContentProcessorContext.Window = window;
             var windowInfo = window.WindowInfo;
             var context = window.Context;
 
@@ -31,12 +39,6 @@ namespace engenious.Content.Pipeline
             (context as IGraphicsContextInternal)?.LoadAll();
 
             ThreadingHelper.Initialize(null, null, 0, 0, GraphicsContextFlags.Debug);
-        }
-
-        public ContentProcessorContext(SynchronizationContext syncContext, string workingDirectory = "")
-        {
-            SyncContext = syncContext;
-            WorkingDirectory = workingDirectory;
 
             GraphicsDevice = new GraphicsDevice(null, ThreadingHelper.Context);
         }

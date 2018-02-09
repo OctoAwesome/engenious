@@ -29,7 +29,6 @@ namespace engenious.Graphics
 
         internal Game Game;
         internal Dictionary<string, bool> Extensions = new Dictionary<string, bool>();
-        internal int MajorVersion, MinorVersion;
         internal Version DriverVersion;
         internal Version GlslVersion;
 
@@ -37,7 +36,6 @@ namespace engenious.Graphics
         {
             _context = context;
             Game = game;
-
 
             int count;
             GL.GetInteger(GetPName.NumExtensions, out count);
