@@ -59,8 +59,8 @@ void main(void)
    
 }
 #else
-attribute vec4 psColor;
-attribute vec2 psTexCoord;
+varying vec4 psColor;
+varying vec2 psTexCoord;
 uniform sampler2D text;
 uniform int textEnabled,colorEnabled;
 void main(void)
