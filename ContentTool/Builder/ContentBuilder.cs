@@ -120,6 +120,9 @@ namespace ContentTool.Builder
                     sources.Add(i.Source);
                 }
             }
+
+            if (sources.Count == 0)
+                return new List<CompilerError>(0);
             //var sources = _cache.Files.SelectMany(x => x.Value?.Sources?.Select(i => i?.Source)).ToArray();
             // Invoke compilation.
             var cr = provider.CompileAssemblyFromSource(cp, sources.ToArray());//CompileAssemblyFromFile(cp, sourceFile);
