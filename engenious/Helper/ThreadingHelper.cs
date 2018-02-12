@@ -19,7 +19,7 @@ namespace engenious.Helper
                 try
                 {
                     GL.Flush();
-
+                    GL.Finish();
                     try
                     {
                         ThreadingHelper.Context.MakeCurrent(null);

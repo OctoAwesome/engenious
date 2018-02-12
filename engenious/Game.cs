@@ -69,9 +69,22 @@ namespace engenious
 
             _context.MakeCurrent(windowInfo);
             (_context as IGraphicsContextInternal)?.LoadAll();
-            ThreadingHelper.Initialize(_context.GraphicsMode,windowInfo, 0,0, ContextFlags);
-            _context.MakeCurrent(windowInfo);
 
+
+        }
+
+        private void CreateSharedContext()
+        {
+            if (GraphicsDevice?.DriverVendor == null || GraphicsDevice.DriverVendor.IndexOf("intel", StringComparison.InvariantCultureIgnoreCase) == -1)
+            {
+                var secondwindow = new GameWindow();
+                ThreadingHelper.Initialize(_context.GraphicsMode,secondwindow.WindowInfo, 0,0, ContextFlags);
+            }
+            else
+            {
+                ThreadingHelper.Initialize(_context.GraphicsMode,Window.BaseWindow.WindowInfo, 0,0, ContextFlags);
+            }
+            _context.MakeCurrent(Window.BaseWindow.WindowInfo);
         }
         public Game()
         {
@@ -83,6 +96,9 @@ namespace engenious
             ConstructContext();
 
             GraphicsDevice = new GraphicsDevice(this, _context);
+
+            CreateSharedContext();
+            
             GraphicsDevice.Viewport = new Viewport(window.ClientRectangle);
             window.Context.MakeCurrent(window.WindowInfo);
             window.Context.LoadAll();

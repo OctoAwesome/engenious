@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Remoting.Channels;
 using engenious.Helper;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
@@ -29,6 +30,7 @@ namespace engenious.Graphics
 
         internal Game Game;
         internal Dictionary<string, bool> Extensions = new Dictionary<string, bool>();
+        internal string DriverVendor;
         internal Version DriverVersion;
         internal Version GlslVersion;
 
@@ -68,11 +70,12 @@ namespace engenious.Graphics
             try
             {
                 fullVersion = GL.GetString(StringName.Version);
-                versionString = fullVersion.Split(' ').FirstOrDefault();
+                var splt = fullVersion.Split(' ');
+                versionString = splt.FirstOrDefault();
                 if (versionString == null)
                     return;
                 DriverVersion = new Version(versionString);
-
+                DriverVendor = GL.GetString(StringName.Vendor);
                 fullVersion = GL.GetString(StringName.ShadingLanguageVersion);
                 versionString = fullVersion.Split(' ').FirstOrDefault();
                 if (versionString == null)
