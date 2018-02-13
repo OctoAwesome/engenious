@@ -52,6 +52,8 @@ namespace engenious.Graphics
                     GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, TextureTarget.Texture2D, Texture, 0);
                     Bind();
                     SetDefaultTextureParameters();
+                    
+                    GL.DrawBuffer(DrawBufferMode.None);
                 }
                 else
                 {
