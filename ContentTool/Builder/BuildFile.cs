@@ -45,13 +45,13 @@ namespace ContentTool.Builder
             return true;
         }
 
-        public bool NeedsRebuild()
+        public bool NeedsRebuild(DateTime? parentOutputModifiedTime = null)
         {
             //RefreshModifiedTime();
 
             if (!IsBuilt())
                 return true;
-            return (!File.Exists(InputFilePath) || InputFileModifiedTime != new FileInfo(InputFilePath).LastWriteTimeUtc || (OutputFilePath != null && (!File.Exists(OutputFilePath) || OutputFileModifiedTime != new FileInfo(OutputFilePath).LastWriteTimeUtc)));
+            return (!File.Exists(InputFilePath) || InputFileModifiedTime != new FileInfo(InputFilePath).LastWriteTimeUtc || (OutputFilePath != null && (!File.Exists(OutputFilePath) || OutputFileModifiedTime != new FileInfo(OutputFilePath).LastWriteTimeUtc)) || (parentOutputModifiedTime != null && parentOutputModifiedTime.Value != InputFileModifiedTime));
                 
         }
     }
