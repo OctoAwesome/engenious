@@ -25,7 +25,7 @@ namespace engenious.Graphics
             {
                 BaseShader = GL.CreateShader((OpenTK.Graphics.OpenGL.ShaderType) type);
                 if (!source.Contains("#version"))
-                    source = $"#version {(graphicsDevice.GlslVersion.Major*100+graphicsDevice.GlslVersion.Minor).ToString()}\r\n"+source;
+                    source = $"#version {(graphicsDevice.GlslVersion.Major*100+graphicsDevice.GlslVersion.Minor).ToString()}\r\n#line 1\r\n"+source;
                 GL.ShaderSource(BaseShader, source);
             }
         }
