@@ -74,14 +74,14 @@ namespace engenious.Content.Pipeline
         }
 
 
-        private void GenerateEffectSource(EffectContent input, string name, ContentProcessorContext context)
+        private void GenerateEffectSource(EffectContent input, string @namespace,string name, ContentProcessorContext context)
         {
             using(var csSource = new StringWriter())
             using (var csSourceWriter = new IndentedTextWriter(csSource, "    "))
             {
-                input.UserEffectName = "engenious.UserEffects." + name;
+                input.UserEffectName = "engenious.UserEffects." + @namespace + "." + name;
                 csSourceWriter.WriteLine("using engenious.Graphics;");
-                csSourceWriter.WriteLine("namespace engenious.UserEffects");
+                csSourceWriter.WriteLine("namespace engenious.UserEffects" + (string.IsNullOrEmpty(@namespace) ? string.Empty : "."+@namespace));
                 csSourceWriter.WriteLine("{");
                 csSourceWriter.Indent++;
                 csSourceWriter.WriteLine($"public class {name} : engenious.Graphics.Effect");
@@ -120,7 +120,7 @@ namespace engenious.Content.Pipeline
                 csSourceWriter.WriteLine("}");
 
 
-                context.SourceFiles.Add(new SourceFile(name, csSource.ToString()));
+                context.SourceFiles.Add(new SourceFile((string.IsNullOrEmpty(@namespace) ? string.Empty : @namespace + ".") + name, csSource.ToString()));
             }
         }
 
@@ -316,10 +316,15 @@ namespace engenious.Content.Pipeline
 
                 if (!success)
                     return null;
-                
+
                 if (input.CreateUserEffect)
-                    GenerateEffectSource(input, Path.GetFileNameWithoutExtension(filename), context);
-                
+                {
+                    string rel = context.GetRelativePath(filename);
+                    string namespce = Path.GetDirectoryName(rel);
+                    namespce = namespce.Replace(Path.DirectorySeparatorChar, '.').Replace(Path.AltDirectorySeparatorChar, '.');
+                    GenerateEffectSource(input, namespce,Path.GetFileNameWithoutExtension(rel) , context);
+                }
+
                 return input;
             }
             catch (Exception ex)

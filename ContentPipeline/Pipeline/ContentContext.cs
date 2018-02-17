@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 
 namespace engenious.Content.Pipeline
 {
@@ -6,9 +8,18 @@ namespace engenious.Content.Pipeline
 	{
         public event BuildMessageDel BuildMessage;
 
-	    protected ContentContext ()
+	    protected ContentContext (string workingDirectory = "")
 		{
 			Dependencies = new List<string> ();
+			if (workingDirectory.Length > 0)
+			{
+				char lastChar = workingDirectory[workingDirectory.Length - 1];
+				workingDirectory = (lastChar == Path.DirectorySeparatorChar || lastChar == Path.AltDirectorySeparatorChar)
+					? workingDirectory
+					: workingDirectory + Path.DirectorySeparatorChar;
+			}
+
+			WorkingDirectory = workingDirectory;
 		}
 
 		public List<string> Dependencies{ get; }
@@ -27,6 +38,23 @@ namespace engenious.Content.Pipeline
         {
             BuildMessage?.Invoke(this, new BuildMessageEventArgs(filename,message, messageType));
         }
+		
+		public string WorkingDirectory { get; }
+		
+		public string GetRelativePath(string subPath)
+		{
+			try
+			{
+				var parentUri = new Uri(WorkingDirectory);
+				var subUri = new Uri(subPath);
+				var relUri = parentUri.MakeRelativeUri(subUri);
+				return relUri.ToString();
+			}
+			catch (Exception ex)
+			{
+				return subPath;
+			}
+		}
     }
 }
 

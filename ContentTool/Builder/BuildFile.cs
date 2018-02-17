@@ -51,7 +51,7 @@ namespace ContentTool.Builder
 
             if (!IsBuilt())
                 return true;
-            return (!File.Exists(InputFilePath) || InputFileModifiedTime != new FileInfo(InputFilePath).LastWriteTimeUtc || (OutputFilePath != null && (!File.Exists(OutputFilePath) || OutputFileModifiedTime != new FileInfo(OutputFilePath).LastWriteTimeUtc)) || (parentOutputModifiedTime != null && parentOutputModifiedTime.Value != InputFileModifiedTime));
+            return (!File.Exists(InputFilePath) || InputFileModifiedTime != new FileInfo(InputFilePath).LastWriteTimeUtc || (OutputFilePath != null && (!File.Exists(OutputFilePath) || OutputFileModifiedTime != new FileInfo(OutputFilePath).LastWriteTimeUtc)) || (parentOutputModifiedTime != null && parentOutputModifiedTime.Value < InputFileModifiedTime));
                 
         }
     }
