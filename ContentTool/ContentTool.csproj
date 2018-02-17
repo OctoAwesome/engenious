@@ -75,14 +75,14 @@
     <Compile Include="Controls\FontComboBox.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Controls\ImporterEditor.cs" />
+    <Compile Include="Controls\ImporterNameDropDown.cs" />
     <Compile Include="Controls\ItemPropertyView.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Controls\ItemPropertyView.Designer.cs">
       <DependentUpon>ItemPropertyView.cs</DependentUpon>
     </Compile>
-    <Compile Include="Controls\ProcessorEditor.cs" />
+    <Compile Include="Controls\ProcessorNameDropDown.cs" />
     <Compile Include="Controls\ProjectTreeView.cs">
       <SubType>UserControl</SubType>
     </Compile>

@@ -1,6 +1,10 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.Drawing.Design;
 using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Xml.Linq;
 using ContentTool.Controls;
 using engenious.Content.Pipeline;
@@ -30,7 +34,7 @@ namespace ContentTool.Models
         /// Name of the importer
         /// </summary>
         [RefreshProperties(RefreshProperties.All)]
-        [Editor(typeof(ImporterEditor), typeof(UITypeEditor))]
+        [TypeConverter(typeof(ImporterNameDropDown))]
         public string ImporterName { get => importerName;
             set
             {
@@ -48,7 +52,7 @@ namespace ContentTool.Models
         /// Name of the processor
         /// </summary
         [RefreshProperties(RefreshProperties.All)]
-        [Editor(typeof(ProcessorEditor), typeof(UITypeEditor))]
+        [TypeConverter(typeof(ProcessorNameDropDown))]
         public string ProcessorName { get => processorName;
             set
             {
@@ -65,12 +69,14 @@ namespace ContentTool.Models
                 OnPropertyChanged(old,value);
             }
         }
+
         private string processorName;
+
 
         /// <summary>
         /// Settings for the processor
         /// </summary>
-        [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
         public ProcessorSettings Settings
         {
             get
@@ -81,6 +87,7 @@ namespace ContentTool.Models
             {
                 if (Processor == null)
                     return;
+                
                 Processor.Settings = value;
             }
         }
@@ -126,6 +133,7 @@ namespace ContentTool.Models
             {
                 Settings.Read(element.Element("Settings"));
             }
+
             SupressChangedEvent = false;
             return this;
         }

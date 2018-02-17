@@ -2,13 +2,20 @@
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
+using System.Reflection;
 using System.Xml.Linq;
 
 namespace engenious.Content.Pipeline
 {
     [Serializable]
+    [TypeConverter(typeof(CustomExpandableObjectConverter))]
     public class ProcessorSettings
     {
+        public override string ToString()
+        {
+            return string.Empty;
+        }
+
         #region Serialization
         private static void SetPrimitive(PropertyDescriptor property,object obj,string val)
         {

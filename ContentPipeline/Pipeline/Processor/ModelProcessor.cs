@@ -233,6 +233,7 @@ namespace engenious.Pipeline
         }
 
     }
+    [Serializable]
     public class ModelProcessorSettings : ProcessorSettings
     {
         [Category("Settings")]
