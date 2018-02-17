@@ -150,8 +150,12 @@ namespace ContentTool.Models
             element.Add(new XElement("Processor", ProcessorName));
             element.Add(new XElement("Importer", ImporterName));
 
-            
-            Settings?.Write(element);
+            if (Settings != null)
+            {
+                var settingsElement = new XElement("Settings");
+                Settings.Write(settingsElement);
+                element.Add(settingsElement);
+            }
 
 
             return element;
