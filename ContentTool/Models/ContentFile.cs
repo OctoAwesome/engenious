@@ -34,7 +34,8 @@ namespace ContentTool.Models
         public string ImporterName { get => importerName;
             set
             {
-                if (importerName == value) return;
+                if (importerName == value)
+                    return;
                 var old = importerName;
                 importerName = value;
                 Importer = PipelineHelper.CreateImporter(Path.GetExtension(FilePath), ref importerName);
@@ -118,7 +119,7 @@ namespace ContentTool.Models
             if (!string.IsNullOrWhiteSpace(processorName) && Importer != null)
                 Processor = PipelineHelper.CreateProcessor(Importer.GetType(), processorName);
 
-            if (Importer == null)
+            if (Processor == null)
                 Error |= ContentErrorType.ProcessorError;
 
             if (Settings != null && element.Element("Settings") != null)
@@ -138,8 +139,8 @@ namespace ContentTool.Models
             var element = new XElement("ContentFile");
 
             element.Add(new XElement("Name", Name));
-            element.Add(new XElement("Processor", Processor?.GetType().Name));
-            element.Add(new XElement("Importer", Importer?.GetType().Name));
+            element.Add(new XElement("Processor", ProcessorName));
+            element.Add(new XElement("Importer", ImporterName));
 
             
             Settings?.Write(element);
