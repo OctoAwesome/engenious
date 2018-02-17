@@ -35,10 +35,14 @@ namespace ContentTool.Builder
             Project = project;
             _syncContext = SynchronizationContext.Current;
 
-            _cache = BuildCache.Load(Path.Combine(Path.GetDirectoryName(project.ContentProjectPath), "obj",
+            _cache = BuildCache.Load(Path.Combine(Path.GetDirectoryName(project.ContentProjectPath), "obj",project.Configuration,
                 project.Name + ".dat"));
         }
 
+        public void Build()
+        {
+            Build(Project);
+        }
         public void Build(ContentItem item)
         {
             _buildThread = new Thread(() =>
@@ -175,6 +179,15 @@ namespace ContentTool.Builder
             {
                 if (File.Exists(item.Value.OutputFilePath))
                     File.Delete(item.Value.OutputFilePath);
+            }
+
+            try
+            {
+                Directory.Delete(Path.Combine(Path.GetDirectoryName(Project.ContentProjectPath), "obj"), true);
+            }
+            catch(Exception ex)//TODO perhaps other delete, to delete all possible files?
+            {
+                
             }
         }
 

@@ -26,16 +26,32 @@ namespace ContentTool
                 {
                     var project = ContentProject.Load(string.IsNullOrEmpty(arguments.ContentProject) ? @"D:\Projects\engenious\Sample\Content\Content.ecp" : arguments.ContentProject);
 
+                    project.OutputDirectory = arguments.OutputDirectory ?? project.OutputDirectory;
+                    project.Configuration = arguments.Configuration ?? project.Configuration;
+                    
                     var builder = new ContentBuilder(project);
+
+                    
 
                     builder.BuildMessage += eventArgs =>
                     {
                         if (eventArgs.MessageType != BuildMessageEventArgs.BuildMessageType.Information)
                             Console.Error.WriteLine(eventArgs.Message);
                     };
+
+                    switch (arguments.BuildAction)
+                    {
+                        case BuildAction.Clean:
+                            builder.Clean();
+                            break;
+                        case BuildAction.Build:
+                            builder.Build();
+                            break;
+                        case BuildAction.Rebuild:
+                            builder.Rebuild();
+                            break;
+                    }
                     
-                    
-                    builder.Build(builder.Project);
                     builder.Join();
                     
                     return 0;

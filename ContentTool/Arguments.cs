@@ -1,7 +1,9 @@
 ﻿using System;
+using ContentTool.Builder;
 
 namespace ContentTool
 {
+    
     public class Arguments
     {
         public string OutputDirectory{get;private set;}
@@ -9,11 +11,13 @@ namespace ContentTool
         public string ProjectDir { get; private set; }
         public bool Hidden{get;private set;}
         public string Configuration{ get; set; }
+        public BuildAction BuildAction { get; set; }
         public Arguments()
         {
             Configuration = null;
             OutputDirectory = null;
             ProjectDir = Environment.CurrentDirectory;
+            BuildAction = BuildAction.Build;
         }
         private static string ParsePath(string dir)
         {
@@ -56,6 +60,14 @@ namespace ContentTool
                     //Configuration configuration;
                     //if (Enum.TryParse(arg.Substring("/configuration:".Length),out configuration))
                     //    Configuration = configuration;
+                }
+                else if (arg.StartsWith("/clean"))
+                {
+                    BuildAction = BuildAction.Clean;
+                }
+                else if (arg.StartsWith("/rebuild"))
+                {
+                    BuildAction = BuildAction.Rebuild;
                 }
             }
         }

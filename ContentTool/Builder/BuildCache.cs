@@ -63,6 +63,11 @@ namespace ContentTool.Builder
             return false;
         }
 
+        public void Clean()
+        {
+            
+        }
+
         public void Clear()
         {
             Files.Clear();

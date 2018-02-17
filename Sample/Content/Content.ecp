@@ -2,12 +2,17 @@
 <Content>
   <Name>Sample</Name>
   <Configuration>Debug</Configuration>
-  <OutputDir>bin/{Configuration}/</OutputDir>
+  <OutputDir>/home/julian/Projects/engenious/Sample/Content/bin/Debug</OutputDir>
   <Contents>
     <ContentFile>
       <Name>brick.jpg</Name>
-      <Processor />
-      <Importer />
+      <Processor>BitmapProcessor</Processor>
+      <Importer>Bitmap Importer</Importer>
+      <Settings>
+        <AutoGenerateMipMaps>False</AutoGenerateMipMaps>
+        <MipMapCount>1</MipMapCount>
+        <Format>0</Format>
+      </Settings>
     </ContentFile>
     <ContentFile>
       <Name>test.spritefont</Name>
@@ -18,12 +23,17 @@
       <Name>simple.glsl</Name>
       <Processor>EffectProcessor</Processor>
       <Importer>Effect Importer</Importer>
+      <Settings>
+        <CreateUserEffect>True</CreateUserEffect>
+      </Settings>
     </ContentFile>
     <ContentFile>
       <Name>blub_x.ogg</Name>
       <Processor>AudioProcessor</Processor>
       <Importer>Wave Importer</Importer>
-      <OutputFormat>0</OutputFormat>
+      <Settings>
+        <OutputFormat>0</OutputFormat>
+      </Settings>
     </ContentFile>
   </Contents>
 </Content>

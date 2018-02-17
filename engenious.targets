@@ -35,7 +35,7 @@
 
       <EngeniousContentBuilderExe Condition="'$(EngeniousContentBuilderExe)' == ''">$(MSBuildThisFileDirectory)../tools/net40/ContentTool.exe</EngeniousContentBuilderExe>
 
-      <Header>/outputDir:&quot;$(ParentOutputDir)&quot; /intermediateDir:&quot;$(ParentIntermediateDir)&quot; /projectDir:&quot;$(ProjectDir)/&quot; /hidden:true</Header>
+      <Header>/configuration:$(Configuration) /outputDir:&quot;$(ParentOutputDir)&quot; /intermediateDir:&quot;$(ParentIntermediateDir)&quot; /projectDir:&quot;$(ProjectDir)/&quot; /hidden:true</Header>
 
       <MonoExe Condition=" '$(OS)' != 'Windows_NT' And Exists ('/Library/Frameworks/Mono.framework/Versions/Current/bin/mono') ">/Library/Frameworks/Mono.framework/Versions/Current/bin/mono</MonoExe>
       <MonoExe Condition=" '$(OS)' != 'Windows_NT' And Exists ('/usr/local/bin/mono') ">/usr/local/bin/mono</MonoExe>
@@ -48,8 +48,19 @@
 
   </Target>
 
+  <PropertyGroup>
+    <CleanDependsOn>
+      $(CleanDependsOn);
+      CleanContent;
+    </CleanDependsOn>
+    <RebuildDependsOn>
+      $(RebuildDependsOn);
+      RebuildContent;
+    </RebuildDependsOn>
+  </PropertyGroup>
+
   <Target Name="BuildContent"
-        BeforeTargets="BeforeBuild;BeforeRebuild;PreBuildEvent;Rebuild"
+        BeforeTargets="BeforeBuild;PreBuildEvent"
         DependsOnTargets="Prepare">
 
 
@@ -61,5 +72,12 @@
     </ItemGroup>
     <Copy SourceFiles="@(ExtraContent)" DestinationFolder="$(ProjectDir)\$(OutputPath)\Content\%(RecursiveDir)" SkipUnchangedFiles="true" />
   </Target>
-
+  <Target Name="CleanContent" BeforeTargets="BeforeClean;Clean" DependsOnTargets="Prepare"> 
+    <Exec Command="$(MonoExe) &quot;$(EngeniousContentBuilderExe)&quot; /@:&quot;%(ContentReferences.FullPath)&quot; $(Header) /clean"
+          WorkingDirectory="%(ContentReferences.RootDir)%(ContentReferences.Directory)" Condition="Exists('%(ContentReferences.FullPath)')" />
+  </Target>
+  <Target Name="RebuildContent" BeforeTargets="BeforeRebuild;Rebuild" DependsOnTargets="Prepare"> 
+    <Exec Command="$(MonoExe) &quot;$(EngeniousContentBuilderExe)&quot; /@:&quot;%(ContentReferences.FullPath)&quot; $(Header) /rebuild"
+          WorkingDirectory="%(ContentReferences.RootDir)%(ContentReferences.Directory)" Condition="Exists('%(ContentReferences.FullPath)')" />
+  </Target>
 </Project>

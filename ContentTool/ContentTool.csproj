@@ -62,6 +62,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Arguments.cs" />
+    <Compile Include="Builder\BuildAction.cs" />
     <Compile Include="Builder\BuildCache.cs" />
     <Compile Include="Builder\BuildFile.cs" />
     <Compile Include="Builder\ContentBuilder.cs" />

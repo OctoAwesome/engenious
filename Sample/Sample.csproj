@@ -50,7 +50,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <Import Project="targets\engenious.0.0.1.14\build\engenious.targets" Condition="Exists('targets\engenious.0.0.1.14\build\engenious.targets')" />
+  <Import Project="targets\engenious.VERSION\build\engenious.targets" Condition="Exists('targets\engenious.VERSION\build\engenious.targets')" />
   <ItemGroup>
     <Content Include="Content\brick.jpg" />
     <Content Include="Content\test.png" />

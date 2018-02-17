@@ -13,14 +13,14 @@ namespace Sample
 
         private RenderTarget2D _target;
 
-        private readonly engenious.UserEffects.simple _effect;
+        private readonly engenious.UserDefined.simple _effect;
         private SoundEffect _testSoundEffect;
         private SoundEffectInstance _testSound,_testSound2;
         public TestGame()
         {
             _texture = new Texture2D(GraphicsDevice, 512, 512); //Content.Load<Texture2D>("brick");
             _font = Content.Load<SpriteFont>("test");
-            _effect = Content.Load<engenious.UserEffects.simple>("simple");
+            _effect = Content.Load<engenious.UserDefined.simple>("simple");
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
 
