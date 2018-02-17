@@ -1,6 +1,10 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.Drawing.Design;
 using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Xml.Linq;
 using ContentTool.Controls;
 using engenious.Content.Pipeline;
@@ -30,11 +34,12 @@ namespace ContentTool.Models
         /// Name of the importer
         /// </summary>
         [RefreshProperties(RefreshProperties.All)]
-        [Editor(typeof(ImporterEditor), typeof(UITypeEditor))]
+        [TypeConverter(typeof(ImporterNameDropDown))]
         public string ImporterName { get => importerName;
             set
             {
-                if (importerName == value) return;
+                if (importerName == value)
+                    return;
                 var old = importerName;
                 importerName = value;
                 Importer = PipelineHelper.CreateImporter(Path.GetExtension(FilePath), ref importerName);
@@ -47,7 +52,7 @@ namespace ContentTool.Models
         /// Name of the processor
         /// </summary
         [RefreshProperties(RefreshProperties.All)]
-        [Editor(typeof(ProcessorEditor), typeof(UITypeEditor))]
+        [TypeConverter(typeof(ProcessorNameDropDown))]
         public string ProcessorName { get => processorName;
             set
             {
@@ -64,12 +69,14 @@ namespace ContentTool.Models
                 OnPropertyChanged(old,value);
             }
         }
+
         private string processorName;
+
 
         /// <summary>
         /// Settings for the processor
         /// </summary>
-        [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
         public ProcessorSettings Settings
         {
             get
@@ -80,6 +87,7 @@ namespace ContentTool.Models
             {
                 if (Processor == null)
                     return;
+                
                 Processor.Settings = value;
             }
         }
@@ -118,13 +126,14 @@ namespace ContentTool.Models
             if (!string.IsNullOrWhiteSpace(processorName) && Importer != null)
                 Processor = PipelineHelper.CreateProcessor(Importer.GetType(), processorName);
 
-            if (Importer == null)
+            if (Processor == null)
                 Error |= ContentErrorType.ProcessorError;
 
             if (Settings != null && element.Element("Settings") != null)
             {
                 Settings.Read(element.Element("Settings"));
             }
+
             SupressChangedEvent = false;
             return this;
         }
@@ -138,11 +147,15 @@ namespace ContentTool.Models
             var element = new XElement("ContentFile");
 
             element.Add(new XElement("Name", Name));
-            element.Add(new XElement("Processor", Processor?.GetType().Name));
-            element.Add(new XElement("Importer", Importer?.GetType().Name));
+            element.Add(new XElement("Processor", ProcessorName));
+            element.Add(new XElement("Importer", ImporterName));
 
-            
-            Settings?.Write(element);
+            if (Settings != null)
+            {
+                var settingsElement = new XElement("Settings");
+                Settings.Write(settingsElement);
+                element.Add(settingsElement);
+            }
 
 
             return element;

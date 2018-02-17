@@ -26,9 +26,9 @@ namespace engenious.Content.Pipeline
         }
 
         public ContentProcessorContext(SynchronizationContext syncContext, string workingDirectory = "")
+            : base(workingDirectory)
         {
             SyncContext = syncContext;
-            WorkingDirectory = workingDirectory;
             
             var window = new GameWindow(100, 100);
             ContentProcessorContext.Window = window;
@@ -46,8 +46,8 @@ namespace engenious.Content.Pipeline
         public SynchronizationContext SyncContext { get; private set; }
         public GraphicsDevice GraphicsDevice { get; private set; }
 
-        public string WorkingDirectory { get; private set; }
         public List<SourceFile> SourceFiles { get; set; }
+
 
         public override void Dispose()
         {

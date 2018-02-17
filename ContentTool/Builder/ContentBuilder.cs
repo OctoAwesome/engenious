@@ -113,13 +113,18 @@ namespace ContentTool.Builder
             {
                 if (x.Sources == null)
                     continue;
-                foreach (var i in x.Sources)
+                for (int i = x.Sources.Count - 1; i >= 0; i--)//reverse(newer files first)
                 {
-                    if (i?.Source == null)
+                    var s = x.Sources[i];
+                    if (s?.Source == null)
                         continue;
-                    sources.Add(i.Source);
+                    sources.Add(s.Source);
                 }
+
             }
+
+            if (sources.Count == 0)
+                return new List<CompilerError>(0);
             //var sources = _cache.Files.SelectMany(x => x.Value?.Sources?.Select(i => i?.Source)).ToArray();
             // Invoke compilation.
             var cr = provider.CompileAssemblyFromSource(cp, sources.ToArray());//CompileAssemblyFromFile(cp, sourceFile);
@@ -144,7 +149,7 @@ namespace ContentTool.Builder
             
             
             using (var iContext = new ContentImporterContext())
-            using (var pContext = new ContentProcessorContext(_syncContext))
+            using (var pContext = new ContentProcessorContext(_syncContext,Path.GetDirectoryName(Project.ContentProjectPath)))
             {
                 //Console.WriteLine($"GL Version: {pContext.GraphicsDevice.DriverVersion.ToString()}");
                 //Console.WriteLine($"GLSL Version: {pContext.GraphicsDevice.GlslVersion.ToString()}");

@@ -36,15 +36,15 @@ namespace ContentTool.Builder
             }
         }
 
-        public bool NeedsRebuild(string inputPath)
+        public bool NeedsRebuild(string inputPath,DateTime? parentModifiedTime=null)
         {
             if(Files.TryGetValue(inputPath, out BuildFile val))
             {
-                if (val.NeedsRebuild())
+                if (val.NeedsRebuild(parentModifiedTime))
                     return true;
                 foreach (var dependency in val.Dependencies)
                 {
-                    if (NeedsRebuild(dependency))
+                    if (NeedsRebuild(dependency,parentModifiedTime ?? val.OutputFileModifiedTime))
                         return true;
                 }
                 return false;

@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.IO;
 using engenious.Audio;
 using engenious.Content.Pipeline;
@@ -45,7 +46,7 @@ namespace engenious.Pipeline
 
         #endregion
     }
-
+    [Serializable]
     public class AudioProcessorSettings : ProcessorSettings
     {
         [Category("Settings")]

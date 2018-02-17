@@ -147,7 +147,7 @@ namespace ContentTool.Controls
             switch (e.Action)
             {
                 case NotifyCollectionChangedAction.Add:
-                    if (node.IsExpanded)
+                    if (node.IsExpanded || node.Nodes.Count == 0)
                     {
                         var nodes = new List<TreeNode>(e.NewItems.Count);
                         foreach (var nI in e.NewItems.OfType<ContentItem>())
