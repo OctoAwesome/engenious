@@ -79,7 +79,7 @@ namespace engenious.Content.Pipeline
             using(var csSource = new StringWriter())
             using (var csSourceWriter = new IndentedTextWriter(csSource, "    "))
             {
-                input.UserEffectName = "engenious.UserDefined." + @namespace + "." + name;
+                input.UserEffectName = "engenious.UserDefined" + (string.IsNullOrEmpty(@namespace) ? string.Empty : "."+@namespace) + "." + name;
                 csSourceWriter.WriteLine("using engenious.Graphics;");
                 csSourceWriter.WriteLine("namespace engenious.UserDefined" + (string.IsNullOrEmpty(@namespace) ? string.Empty : "."+@namespace));
                 csSourceWriter.WriteLine("{");
