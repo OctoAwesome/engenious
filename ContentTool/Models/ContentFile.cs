@@ -99,6 +99,11 @@ namespace ContentTool.Models
         /// <param name="parent">Parent item</param>
         public ContentFile(string name, ContentItem parent) : base(name, parent)
         {
+            Importer = PipelineHelper.CreateImporter(Path.GetExtension(name), ref importerName);
+            if (string.IsNullOrWhiteSpace(processorName))
+                processorName = PipelineHelper.GetProcessor(Name, importerName);
+            if (!string.IsNullOrWhiteSpace(processorName) && Importer != null)
+                Processor = PipelineHelper.CreateProcessor(Importer.GetType(), processorName);
         }
 
         /// <summary>

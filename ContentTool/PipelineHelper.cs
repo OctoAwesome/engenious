@@ -73,6 +73,8 @@ namespace ContentTool
         }
         public static List<string> GetProcessors(Type tp)
         {
+            if (ProcessorsByType == null)
+                DefaultInit();
             var fitting = new List<string>();
             foreach (var pair in ProcessorsByType)
             {
@@ -86,7 +88,10 @@ namespace ContentTool
 
         public static List<string> GetImporters(string extension)
         {
+            if (_importers == null)
+                DefaultInit();
             var fitting = new List<string>();
+            // ReSharper disable once PossibleNullReferenceException
             foreach (var type in _importers)
             {
                 var attribute =
@@ -99,8 +104,11 @@ namespace ContentTool
 
         public static ContentEditorWrapper GetContentEditor(string extension, Type inputType, Type outputType)
         {
+            if (EditorsByType == null)
+                DefaultInit();
             var key = extension + "$" + inputType.FullName + "$" + outputType.FullName;
             ContentEditorWrapper editorWrap;
+            // ReSharper disable once PossibleNullReferenceException
             if (EditorsByType.TryGetValue(key, out editorWrap))
                 return editorWrap;
             var genericType = typeof(IContentEditor<,>).MakeGenericType(inputType, outputType);
@@ -198,6 +206,9 @@ namespace ContentTool
         }
         public static Type GetImporterType(string extension, string importerName)
         {
+            if (_importers == null)
+                DefaultInit();
+            // ReSharper disable once PossibleNullReferenceException
             foreach (var type in _importers)
             {
                 var attribute = (ContentImporterAttribute)type.GetCustomAttributes(typeof(ContentImporterAttribute), true).First();
@@ -232,10 +243,13 @@ namespace ContentTool
 
         public static IContentProcessor CreateProcessor(Type importerType, string processorName)
         {
+            if (Processors == null)
+                DefaultInit();
             Type type;
+            // ReSharper disable once PossibleNullReferenceException
             if (!string.IsNullOrEmpty(processorName) && Processors.TryGetValue(processorName, out type))
                 return (IContentProcessor)Activator.CreateInstance(type);
-
+            // ReSharper disable once PossibleNullReferenceException
             var attribute = (ContentImporterAttribute)importerType.GetCustomAttributes(typeof(ContentImporterAttribute), true).First();
             if (Processors.TryGetValue(attribute.DefaultProcessor, out type))
                 return (IContentProcessor)Activator.CreateInstance(type);
