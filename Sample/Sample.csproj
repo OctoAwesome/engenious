@@ -46,7 +46,9 @@
   <ItemGroup>
     <EngeniousContentReference Include="Content\Content.ecp" />
     <None Include="Content\test.fnt" />
-    <None Include="OpenTK.dll.config" />
+    <None Include="OpenTK.dll.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
