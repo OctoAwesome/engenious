@@ -139,6 +139,21 @@ namespace engenious.Graphics
             GraphicsDevice.CheckError();
         }
 
+        public void SetData(IntPtr ptr, int sizeInBytes)
+        {
+            SetData(ptr, 0, sizeInBytes);
+        }
+        public void SetData(IntPtr ptr,int offsetInBytes,int sizeInBytes)
+        {
+            using (Execute.OnUiContext)
+            {
+                GL.BindBuffer(BufferTarget.ArrayBuffer, Vbo);
+
+                GL.BufferSubData(BufferTarget.ArrayBuffer, new IntPtr(offsetInBytes), new IntPtr(sizeInBytes), ptr);
+            }
+            GraphicsDevice.CheckError();
+        }
+
         public void SetData<T>(T[] data, int startIndex, int elementCount) where T : struct
         {
             using (Execute.OnUiContext)

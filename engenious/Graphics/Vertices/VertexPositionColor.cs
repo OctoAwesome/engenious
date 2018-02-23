@@ -3,7 +3,7 @@
 namespace engenious.Graphics
 {
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public struct VertexPositionColor:IVertexType
+    public struct VertexPositionColor:IPositionVertex,IColorVertex
     {
         public static readonly VertexDeclaration VertexDeclaration;
 
@@ -22,8 +22,8 @@ namespace engenious.Graphics
             Position = position;
         }
 
-        public Vector3 Position;
-        public Color Color;
+        public Vector3 Position { get; set; }
+        public Color Color { get; set; }
         //public Vector3 Position{ get; private set;}
         //public Color Color{ get; private set;}
     }

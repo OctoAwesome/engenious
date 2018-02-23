@@ -11,7 +11,7 @@ namespace engenious.Graphics
             Transform = Matrix.Identity;
         }
 
-        public Mesh[] Meshes{ get; set; }
+        public IMesh[] Meshes{ get; set; }
 
         internal Node RootNode{ get; set; }
 

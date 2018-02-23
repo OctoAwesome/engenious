@@ -3,7 +3,7 @@
 namespace engenious.Graphics
 {
 	[StructLayout(LayoutKind.Sequential, Pack=1)]
-	public struct VertexPositionNormalTexture:IVertexType
+	public struct VertexPositionNormalTexture:IPositionVertex,INormalVertex,ITextureCoordinatesVertex
 	{
 		public static readonly VertexDeclaration VertexDeclaration;
 
@@ -22,9 +22,9 @@ namespace engenious.Graphics
 			TextureCoordinate = textureCoord;
 		}
 			
-		public Vector3 Position{ get; private set;}
-		public Vector3 Normal{ get; private set;}
-		public Vector2 TextureCoordinate{ get; private set;}
+		public Vector3 Position{ get; set;}
+		public Vector3 Normal{ get; set;}
+		public Vector2 TextureCoordinate{ get; set;}
 	}
 }
 

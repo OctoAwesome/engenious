@@ -22,9 +22,32 @@ namespace engenious.Content.Serialization
             foreach (var m in value.Meshes)
             {
                 writer.Write(m.PrimitiveCount);
+                writer.Write(m.Vertices.HasPositions);
+                writer.Write(m.Vertices.HasColors);
+                writer.Write(m.Vertices.HasNormals);
+                writer.Write(m.Vertices.HasTextureCoordinates);
                 writer.Write(m.Vertices.Length);
-                foreach (var v in m.Vertices)
-                    writer.Write(v);
+                for (int i = 0; i < m.Vertices.Length; i++)
+                {
+                    if (m.Vertices.HasPositions)
+                    {
+                        writer.Write(m.Vertices.AsPosition[i]);
+                    }
+                    if (m.Vertices.HasColors)
+                    {
+                        writer.Write(m.Vertices.AsColor[i]);
+                    }
+
+                    if (m.Vertices.HasNormals)
+                    {
+                        writer.Write(m.Vertices.AsNormal[i]);
+                    }
+
+                    if (m.Vertices.HasTextureCoordinates)
+                    {
+                        writer.Write(m.Vertices.AsTextureCoordinate[i]);
+                    }
+                }
             }
             writer.Write(value.Nodes.Count);
             foreach (var n in value.Nodes)

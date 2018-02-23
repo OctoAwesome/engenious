@@ -3,29 +3,25 @@
 namespace engenious.Graphics
 {
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public struct VertexPositionNormal:IVertexType
+    public struct VertexPosition:IPositionVertex
     {
         public static readonly VertexDeclaration VertexDeclaration;
 
-        static VertexPositionNormal()
+        static VertexPosition()
         {
-            VertexElement[] elements = { new VertexElement(0, VertexElementFormat.Vector3, VertexElementUsage.Position, 0), new VertexElement(12, VertexElementFormat.Vector3, VertexElementUsage.Normal, 0) };
+            VertexElement[] elements = { new VertexElement(0, VertexElementFormat.Vector3, VertexElementUsage.Position, 0) };
             var declaration = new VertexDeclaration(elements);
             VertexDeclaration = declaration;
         }
 
         VertexDeclaration IVertexType.VertexDeclaration => VertexDeclaration;
 
-        public VertexPositionNormal(Vector3 position, Vector3 normal)
+        public VertexPosition(Vector3 position)
         {
-            Normal = normal;
             Position = position;
         }
 
-        public Vector3 Position;
-        public Vector3 Normal;
-        //public Vector3 Position{ get; private set;}
-        //public Color Color{ get; private set;}
+        public Vector3 Position { get; set; }
     }
 }
 

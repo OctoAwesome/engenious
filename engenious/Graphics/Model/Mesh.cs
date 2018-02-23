@@ -1,19 +1,15 @@
 ﻿namespace engenious.Graphics
 {
-    public class Mesh:GraphicsResource
+    public class Mesh:BaseMesh
     {
         public Mesh(GraphicsDevice graphicsDevice)
             : base(graphicsDevice)
         {
         }
-
-        public int PrimitiveCount{ get; set; }
-
         public VertexBuffer VB{ get; set; }
 
-        public BoundingBox BoundingBox{get;internal set;}
 
-        public void Draw()
+        public override void Draw()
         {
             GraphicsDevice.VertexBuffer = VB;
             GraphicsDevice.DrawPrimitives(PrimitiveType.Triangles, 0, VB.VertexCount);

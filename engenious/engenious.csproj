@@ -57,10 +57,20 @@
     <Compile Include="Audio\SoundEffectInstancePool.cs" />
     <Compile Include="Content\Serialization\Readers\SoundEffectTypeReader.cs" />
     <Compile Include="Graphics\Effect\IEffect.cs" />
+    <Compile Include="Graphics\Model\BaseMesh.cs" />
+    <Compile Include="Graphics\Model\ConditionalVertexArray.cs" />
+    <Compile Include="Graphics\Model\IMesh.cs" />
     <Compile Include="Graphics\Model\IModelEffect.cs" />
     <Compile Include="Graphics\Effect\ITextureEffect.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Graphics\Model\MeshIndexed.cs" />
+    <Compile Include="Graphics\Vertices\IColorVertex.cs" />
+    <Compile Include="Graphics\Vertices\INormalVertex.cs" />
+    <Compile Include="Graphics\Vertices\IPositionVertex.cs" />
+    <Compile Include="Graphics\Vertices\ITextureCoordinatesVertex.cs" />
+    <Compile Include="Graphics\Vertices\VertexPositionNormalColor.cs" />
+    <Compile Include="Graphics\Vertices\VertexPositionNormalColorTexture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Graphics\GraphicsDevice.cs" />
     <Compile Include="Game.cs" />

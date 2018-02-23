@@ -5,6 +5,7 @@ using System.Linq;
 using Assimp;
 using engenious.Content.Pipeline;
 using engenious.Graphics;
+using engenious.Pipeline.Collada;
 using Node = Assimp.Node;
 
 namespace engenious.Pipeline
@@ -146,26 +147,47 @@ namespace engenious.Pipeline
                 for (int meshIndex = 0; meshIndex < scene.MeshCount; meshIndex++)
                 {
                     var sceneMesh = scene.Meshes[meshIndex];
+                    if (!sceneMesh.HasVertices)
+                        continue;
                     var meshContent = new MeshContent();
                     meshContent.PrimitiveCount = sceneMesh.FaceCount;
 
-                    meshContent.Vertices = new VertexPositionNormalTexture[meshContent.PrimitiveCount * 3];
+                    meshContent.Vertices = new ConditionalVertexArray(meshContent.PrimitiveCount*3,sceneMesh.HasVertices,sceneMesh.HasVertexColors(0),sceneMesh.HasNormals,sceneMesh.HasTextureCoords(0));
+                    
                     int vertex=0;
                     //TODO: indexing
+                    
                     foreach(var f in sceneMesh.Faces)
                     {
                         foreach(var i in f.Indices)
                         {
-                            var pos = sceneMesh.Vertices[i];
-                            var norm = sceneMesh.Normals[i];
-                            Vector3D tex = new Vector3D();
-                            if (sceneMesh.TextureCoordinateChannels.Length > 0 && sceneMesh.TextureCoordinateChannels[0].Count >i)
-                                tex = sceneMesh.TextureCoordinateChannels[0][i];
-                            var translated = new Vector3(pos.X, pos.Y, pos.Z)+settings.Translate;
-                            meshContent.Vertices[vertex++] = new VertexPositionNormalTexture(
-                                new Vector3(translated.X*settings.Scale.X,translated.Y*settings.Scale.Y,translated.Z*settings.Scale.Z),
-                                new Vector3(norm.X, norm.Y, norm.Z),
-                                new Vector2(tex.X, -tex.Y));
+
+                            if (meshContent.Vertices.HasPositions)
+                            {
+                                var pos = sceneMesh.Vertices[i];
+                                var translated = new Vector3(pos.X, pos.Y, pos.Z)+settings.Translate;
+                                meshContent.Vertices.AsPosition[vertex] =new Vector3(translated.X*settings.Scale.X,translated.Y*settings.Scale.Y,translated.Z*settings.Scale.Z);
+                            }
+
+                            if (meshContent.Vertices.HasNormals)
+                            {
+                                var norm = sceneMesh.Normals[i];
+                                meshContent.Vertices.AsNormal[vertex] = new Vector3(norm.X, norm.Y, norm.Z);   
+                            }
+
+                            if (meshContent.Vertices.HasColors)
+                            {
+                                var col = sceneMesh.VertexColorChannels[0][i];
+                                meshContent.Vertices.AsColor[vertex] = new Color(col.R,col.G,col.B,col.A);
+                            }
+                            if (meshContent.Vertices.HasTextureCoordinates && sceneMesh.TextureCoordinateChannels.Length > 0 && sceneMesh.TextureCoordinateChannels[0].Count > i)
+                            {
+                                var tex = sceneMesh.TextureCoordinateChannels[0][i];
+                                
+                                meshContent.Vertices.AsTextureCoordinate[vertex] =new Vector2(tex.X, -tex.Y);
+                            }
+
+                            ++vertex;
                         }
                     }
                     /*for (int i = 0; i < sceneMesh.VertexCount; i++)

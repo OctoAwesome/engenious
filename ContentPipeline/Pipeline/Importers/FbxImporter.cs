@@ -50,7 +50,7 @@ namespace engenious.Pipeline
             try
             {
                 AssimpContext c = new AssimpContext();
-                return c.ImportFile(filename,PostProcessSteps.Triangulate | PostProcessSteps.OptimizeMeshes | PostProcessSteps.OptimizeGraph);
+                return c.ImportFile(filename,PostProcessSteps.JoinIdenticalVertices | PostProcessSteps.FindInstances | PostProcessSteps.Triangulate | PostProcessSteps.OptimizeMeshes | PostProcessSteps.OptimizeGraph);
             }
             catch (Exception ex)
             {

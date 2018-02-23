@@ -11,7 +11,7 @@ namespace engenious.Graphics
 
         public string Name{ get; set; }
 
-        public List<Mesh> Meshes{ get; set; }
+        public List<IMesh> Meshes{ get; set; }
 
         public Matrix Transformation{ get; set; }
 

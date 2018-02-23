@@ -27,30 +27,52 @@ namespace engenious.Content.Serialization
             {
                 var m = new MeshContent();
                 m.PrimitiveCount = reader.ReadInt32();
+                bool hasPositions = reader.ReadBoolean();
+                bool hasColors = reader.ReadBoolean();
+                bool hasNormals = reader.ReadBoolean();
+                bool hasTextureCoordinates = reader.ReadBoolean();
                 var vertexCount = reader.ReadInt32();
-                var vertices = new VertexPositionNormalTexture[vertexCount];
+                m.Vertices = new ConditionalVertexArray(vertexCount,hasPositions,hasColors,hasNormals,hasTextureCoordinates);
+
+
                 Vector3 minVertex=new Vector3(float.MaxValue),maxVertex=new Vector3(float.MinValue);
                 for (var vertexIndex = 0; vertexIndex < vertexCount; vertexIndex++)
                 {
-                    var vertex = reader.ReadVertexPositionNormalTexture();
-                    if (vertex.Position.X < minVertex.X)
-                        minVertex.X = vertex.Position.X;
-                    else if(vertex.Position.X > maxVertex.X)
-                        maxVertex.X = vertex.Position.X;
+                    if (hasPositions)
+                    {
+                        var position = reader.ReadVector3();
+                        m.Vertices.AsPosition[vertexIndex] = position;
+                        if (position.X < minVertex.X)
+                            minVertex.X = position.X;
+                        else if(position.X > maxVertex.X)
+                            maxVertex.X = position.X;
 
-                    if (vertex.Position.Y < minVertex.Y)
-                        minVertex.Y = vertex.Position.Y;
-                    else if(vertex.Position.Y > maxVertex.Y)
-                        maxVertex.Y = vertex.Position.Y;
+                        if (position.Y < minVertex.Y)
+                            minVertex.Y = position.Y;
+                        else if(position.Y > maxVertex.Y)
+                            maxVertex.Y = position.Y;
 
-                    if (vertex.Position.Z < minVertex.Z)
-                        minVertex.Z = vertex.Position.Z;
-                    else if(vertex.Position.Z > maxVertex.Z)
-                        maxVertex.Z = vertex.Position.Z;
+                        if (position.Z < minVertex.Z)
+                            minVertex.Z = position.Z;
+                        else if(position.Z > maxVertex.Z)
+                            maxVertex.Z = position.Z;
+                    }
 
-                    vertices[vertexIndex] = vertex;
+                    if (hasColors)
+                    {
+                        m.Vertices.AsColor[vertexIndex] = reader.ReadColor();
+                    }
+
+                    if (hasNormals)
+                    {
+                        m.Vertices.AsNormal[vertexIndex] = reader.ReadVector3();
+                    }
+
+                    if (hasTextureCoordinates)
+                    {
+                        m.Vertices.AsTextureCoordinate[vertexIndex] = reader.ReadVector2();
+                    }
                 }
-                m.Vertices = vertices;
                 //m.BoundingBox = new BoundingBox(minVertex,maxVertex);
                 model.Meshes[meshIndex] = m;
             }

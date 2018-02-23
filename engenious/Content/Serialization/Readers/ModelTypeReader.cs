@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using engenious.Graphics;
+using OpenTK.Graphics.OpenGL4;
 
 namespace engenious.Content.Serialization
 {
@@ -27,31 +29,56 @@ namespace engenious.Content.Serialization
             {
                 var m = new Mesh(model.GraphicsDevice);
                 m.PrimitiveCount = reader.ReadInt32();
+                bool hasPositions = reader.ReadBoolean();
+                bool hasColors = reader.ReadBoolean();
+                bool hasNormals = reader.ReadBoolean();
+                bool hasTextureCoordinates = reader.ReadBoolean();
                 var vertexCount = reader.ReadInt32();
-                var vertices = new VertexPositionNormalTexture[vertexCount];
+                var vertices = new ConditionalVertexArray(vertexCount,hasPositions,hasColors,hasNormals,hasTextureCoordinates);
                 Vector3 minVertex=new Vector3(float.MaxValue),maxVertex=new Vector3(float.MinValue);
                 for (var vertexIndex = 0; vertexIndex < vertexCount; vertexIndex++)
                 {
-                    var vertex = reader.ReadVertexPositionNormalTexture();
-                    if (vertex.Position.X < minVertex.X)
-                        minVertex.X = vertex.Position.X;
-                    else if(vertex.Position.X > maxVertex.X)
-                        maxVertex.X = vertex.Position.X;
+                    if (hasPositions)
+                    {
+                        var position = reader.ReadVector3();
+                        vertices.AsPosition[vertexIndex] = position;
+                        if (position.X < minVertex.X)
+                            minVertex.X = position.X;
+                        else if(position.X > maxVertex.X)
+                            maxVertex.X = position.X;
 
-                    if (vertex.Position.Y < minVertex.Y)
-                        minVertex.Y = vertex.Position.Y;
-                    else if(vertex.Position.Y > maxVertex.Y)
-                        maxVertex.Y = vertex.Position.Y;
+                        if (position.Y < minVertex.Y)
+                            minVertex.Y = position.Y;
+                        else if(position.Y > maxVertex.Y)
+                            maxVertex.Y = position.Y;
 
-                    if (vertex.Position.Z < minVertex.Z)
-                        minVertex.Z = vertex.Position.Z;
-                    else if(vertex.Position.Z > maxVertex.Z)
-                        maxVertex.Z = vertex.Position.Z;
+                        if (position.Z < minVertex.Z)
+                            minVertex.Z = position.Z;
+                        else if(position.Z > maxVertex.Z)
+                            maxVertex.Z = position.Z;
+                    }
 
-                    vertices[vertexIndex] = vertex;
+                    if (hasColors)
+                    {
+                        vertices.AsColor[vertexIndex] = reader.ReadColor();
+                    }
+
+                    if (hasNormals)
+                    {
+                        vertices.AsNormal[vertexIndex] = reader.ReadVector3();
+                    }
+
+                    if (hasTextureCoordinates)
+                    {
+                        vertices.AsTextureCoordinate[vertexIndex] = reader.ReadVector2();
+                    }
                 }
-                m.VB = new VertexBuffer(m.GraphicsDevice, VertexPositionNormalTexture.VertexDeclaration, vertexCount);
-                m.VB.SetData(vertices);
+                m.VB = new VertexBuffer(m.GraphicsDevice, vertices.VertexDeclaration, vertexCount);
+                var verticesArray = vertices.GetVertices();
+                var buffer = GCHandle.Alloc(verticesArray, GCHandleType.Pinned);
+                m.VB.SetData(buffer.AddrOfPinnedObject(),vertices.Length*vertices.VertexDeclaration.VertexStride);
+                buffer.Free();
+                
                 m.BoundingBox = new BoundingBox(minVertex,maxVertex);
                 model.Meshes[meshIndex] = m;
             }
@@ -63,7 +90,7 @@ namespace engenious.Content.Serialization
                 node.Name = reader.ReadString();
                 node.Transformation = reader.ReadMatrix();
                 var nodeMeshCount = reader.ReadInt32();
-                node.Meshes = new List<Mesh>();
+                node.Meshes = new List<IMesh>();
                 for (var meshIndex = 0; meshIndex < nodeMeshCount; meshIndex++)
                 {
                     node.Meshes.Add(model.Meshes[reader.ReadInt32()]);
