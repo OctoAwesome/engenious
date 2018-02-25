@@ -372,22 +372,23 @@ namespace engenious.Graphics
             {
                 if (_rasterizerState != value)
                 {
-                    _rasterizerState = value == null ? RasterizerState.CullClockwise : value;
+                    _rasterizerState = value ?? RasterizerState.CullClockwise;
                     //TODO:apply more
                     using (Execute.OnUiContext)
                     {
                         //GL.FrontFace(FrontFaceDirection.
                         if (_rasterizerState.CullMode == CullMode.None)
+                        {
                             GL.Disable(EnableCap.CullFace);
+                            GL.PolygonMode(MaterialFace.FrontAndBack,(OpenTK.Graphics.OpenGL.PolygonMode) _rasterizerState.FillMode);
+                        }
                         else
                         {
                             GL.Enable(EnableCap.CullFace);
                             GL.FrontFace((FrontFaceDirection) _rasterizerState.CullMode);
+                            GL.PolygonMode(_rasterizerState.CullMode == CullMode.CounterClockwise ? MaterialFace.Back : MaterialFace.Front,(OpenTK.Graphics.OpenGL.PolygonMode) _rasterizerState.FillMode);
                         }
 
-
-                        GL.PolygonMode(MaterialFace.Back,
-                            (OpenTK.Graphics.OpenGL.PolygonMode) _rasterizerState.FillMode);
 
                         if (_rasterizerState.MultiSampleAntiAlias)
                             GL.Enable(EnableCap.Multisample);
