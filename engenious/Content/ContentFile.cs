@@ -31,7 +31,7 @@ namespace engenious.Content
             var tp = manager.GetReaderByOutput(type.FullName);
             if (tp == null)
                 tp = manager.GetReader(readName);
-            return tp.Read(manager, reader);
+            return tp.Read(manager, reader, type);
         }
     }
 }

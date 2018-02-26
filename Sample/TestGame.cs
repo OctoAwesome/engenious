@@ -20,7 +20,7 @@ namespace Sample
         {
             _texture = new Texture2D(GraphicsDevice, 512, 512); //Content.Load<Texture2D>("brick");
             _font = Content.Load<SpriteFont>("test");
-            _effect = Content.Load<engenious.UserDefined.simple>("simple");
+            _effect = Content.Load<TestShader>("simple");
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
 

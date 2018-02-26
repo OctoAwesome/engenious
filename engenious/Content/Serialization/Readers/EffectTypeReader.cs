@@ -58,31 +58,48 @@ namespace engenious.Content.Serialization
                 }
             }
         }
-        public override Effect Read(ContentManager manager, ContentReader reader)
+        public override Effect Read(ContentManager manager, ContentReader reader, Type customType = null)
         {
             var useCustomType = reader.ReadBoolean();
             bool canUseCustomType = false;
             var effectType = typeof(Effect);
             if (useCustomType)
             {
+                RecacheAssemblies();
+                canUseCustomType = true;
+                var customTypeName = reader.ReadString();
+                canUseCustomType = _effectTypes.TryGetValue(customTypeName, out effectType);
+                effectType = effectType ?? typeof(Effect);
+            }
+            
+            Effect effect = null;
+            if (customType != null && effectType.IsAssignableFrom(customType))
+            {
                 try
                 {
-                    RecacheAssemblies();
-                    canUseCustomType = true;
-                    var customTypeName = reader.ReadString();
-                    effectType = _effectTypes[customTypeName];
-                    
+                    effect = (Effect) Activator.CreateInstance(customType, manager.GraphicsDevice);
+                    effectType = customType;
+                    useCustomType = true;
                 }
                 catch (Exception ex)
                 {
-                    canUseCustomType = false;
+                    
                 }
-                
             }
-            Effect effect = null;
-            if (canUseCustomType)
-                effect = (Effect)Activator.CreateInstance(effectType,manager.GraphicsDevice);
-            else
+
+            if (canUseCustomType && effect == null)
+            {
+                try
+                {
+                    effect = (Effect) Activator.CreateInstance(effectType, manager.GraphicsDevice);
+                }
+                catch (Exception ex)
+                {
+
+                }
+            }
+
+            if (effect == null)
                 effect= new Effect(manager.GraphicsDevice);
 
             var techniqueCount = reader.ReadInt32();
