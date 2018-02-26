@@ -20,6 +20,9 @@ namespace engenious.Content.Serialization
 
             writer.Write(value.MultiSampleAntiAlias);
             writer.Write(value.ScissorTestEnable);
+            
+            writer.Write(value.DepthBias);
+            writer.Write(value.SlopeScaleDepthBias);
         }
 
         public override string RuntimeReaderName => typeof(RasterizerStateTypeReader).FullName;
@@ -52,6 +55,12 @@ namespace engenious.Content.Serialization
             writer.Write((ushort)value.StencilDepthBufferFail);
             writer.Write((ushort)value.StencilFail);
             writer.Write((ushort)value.StencilPass);
+            
+            writer.Write(value.TwoSidedStencilMode);
+            writer.Write((ushort)value.CounterClockwiseStencilFunction);
+            writer.Write((ushort)value.CounterClockwiseStencilDepthBufferFail);
+            writer.Write((ushort)value.CounterClockwiseStencilFail);
+            writer.Write((ushort)value.CounterClockwiseStencilPass);
         }
 
         public override string RuntimeReaderName => typeof(DepthStencilStateTypeReader).FullName;
@@ -80,7 +89,10 @@ namespace engenious.Content.Serialization
             writer.Write((ushort)value.ColorDestinationBlend);
             writer.Write((ushort)value.ColorSourceBlend);
 
-            writer.Write(value.BlendFactor);
+            writer.Write((byte)value.ColorWriteChannels);
+            writer.Write((byte)value.ColorWriteChannels1);
+            writer.Write((byte)value.ColorWriteChannels2);
+            writer.Write((byte)value.ColorWriteChannels3);
         }
 
         public override string RuntimeReaderName => typeof(BlendStateTypeReader).FullName;

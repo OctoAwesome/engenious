@@ -173,7 +173,7 @@ namespace engenious
             Window.Visible = true;
             GL.Enable(EnableCap.Blend);
             GraphicsDevice.BlendState = BlendState.AlphaBlend;
-            GraphicsDevice.DepthStencilState = new DepthStencilState();
+            GraphicsDevice.DepthStencilState = DepthStencilState.Default;
             GraphicsDevice.RasterizerState = RasterizerState.CullClockwise;
             //GraphicsDevice.SamplerStates = new SamplerStateCollection(GraphicsDevice);
 

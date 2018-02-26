@@ -33,7 +33,7 @@ namespace engenious.Graphics
                                       (int) internalFormat <= (int) PixelInternalFormat.DepthComponent32Sgix);
                 if (isDepthTarget)
                     GL.TexImage2D(
-                        TextureTarget.Texture2D,
+                        Target,
                         0,
                         (OpenTK.Graphics.OpenGL.PixelInternalFormat) internalFormat,
                         width,
@@ -50,28 +50,28 @@ namespace engenious.Graphics
                         width,
                         height);
 
-                //GL.TexImage2D(TextureTarget.Texture2D, 0, (OpenTK.Graphics.OpenGL.PixelInternalFormat)internalFormat, width, height, 0, (OpenTK.Graphics.OpenGL.PixelFormat)Format, PixelType.UnsignedByte, IntPtr.Zero);
+                //GL.TexImage2D(Target, 0, (OpenTK.Graphics.OpenGL.PixelInternalFormat)internalFormat, width, height, 0, (OpenTK.Graphics.OpenGL.PixelFormat)Format, PixelType.UnsignedByte, IntPtr.Zero);
             }
         }
 
-        private static void SetDefaultTextureParameters()
+        private void SetDefaultTextureParameters()
         {
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int) All.Linear);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int) All.Linear);
+            GL.TexParameter(Target, TextureParameterName.TextureMinFilter, (int) All.Linear);
+            GL.TexParameter(Target, TextureParameterName.TextureMagFilter, (int) All.Linear);
             //if (GL.SupportsExtension ("Version12")) {
-            //GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Repeat);
-            //GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);
+            //GL.TexParameter(Target, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Repeat);
+            //GL.TexParameter(Target, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);
 
 
             /*} else {
-				GL.TexParameter (TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)All.Clamp);
-				GL.TexParameter (TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)All.Clamp);
+				GL.TexParameter (Target, TextureParameterName.TextureWrapS, (int)All.Clamp);
+				GL.TexParameter (Target, TextureParameterName.TextureWrapT, (int)All.Clamp);
 			}*/
         }
 
         internal override void Bind()
         {
-            GL.BindTexture(TextureTarget.Texture2D, Texture);
+            GL.BindTexture(Target, Texture);
         }
 
         public override void BindComputation(int unit = 0)
@@ -80,17 +80,7 @@ namespace engenious.Graphics
                 (SizedInternalFormat) _internalFormat);
         }
 
-        internal override void SetSampler(SamplerState state)
-        {
-            using (Execute.OnUiContext)
-            {
-                state = state ?? SamplerState.LinearClamp;
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int) state.AddressU);
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int) state.AddressV);
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int) state.TextureFilter);
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int) state.TextureFilter);
-            }
-        }
+        internal override TextureTarget Target => TextureTarget.Texture2D;
 
         public int Width { get; }
 
@@ -137,21 +127,21 @@ namespace engenious.Graphics
                         ? 8
                         : 16;
                     var mipSize = ((width + 3) / 4) * ((height + 3) / 4) * blockSize;
-                    GL.CompressedTexSubImage2D(TextureTarget.Texture2D, level, 0, 0, width, height,
+                    GL.CompressedTexSubImage2D(Target, level, 0, 0, width, height,
                         format, mipSize, handle.AddrOfPinnedObject());
                 }
                 else
-                    GL.TexSubImage2D(TextureTarget.Texture2D, level, 0, 0, width, height, format, pxType,
+                    GL.TexSubImage2D(Target, level, 0, 0, width, height, format, pxType,
                         handle.AddrOfPinnedObject());
             }
             handle.Free();
-            //GL.TexSubImage2D<T> (TextureTarget.Texture2D, 0, 0, 0, Width, Height, OpenTK.Graphics.OpenGL.PixelFormat.Bgra, getPixelType (typeof(T)), data);
+            //GL.TexSubImage2D<T> (Target, 0, 0, 0, Width, Height, OpenTK.Graphics.OpenGL.PixelFormat.Bgra, getPixelType (typeof(T)), data);
         }
 
         public void SetData<T>(T[] data, int startIndex, int elementCount) where T : struct
         {
             throw new NotImplementedException("Need to implement offset");
-            //TODO:GL.TexSubImage2D<T> (TextureTarget.Texture2D, 0, 0, 0, Width, Height, OpenTK.Graphics.OpenGL.PixelFormat.Rgba, PixelType.UnsignedByte, data);
+            //TODO:GL.TexSubImage2D<T> (Target, 0, 0, 0, Width, Height, OpenTK.Graphics.OpenGL.PixelFormat.Rgba, PixelType.UnsignedByte, data);
         }
 
         public void SetData<T>(int level, Rectangle? rect, T[] data, int startIndex, int elementCount)
@@ -159,9 +149,9 @@ namespace engenious.Graphics
         {
             throw new NotImplementedException("Need to implement offset"); //TODO:
             /*if (rect.HasValue)
-				GL.TexSubImage2D<T> (TextureTarget.Texture2D, level, rect.Value.X, rect.Value.Y, rect.Value.Width, rect.Value.Height, OpenTK.Graphics.OpenGL.PixelFormat.Rgba, PixelType.UnsignedByte, data);
+				GL.TexSubImage2D<T> (Target, level, rect.Value.X, rect.Value.Y, rect.Value.Width, rect.Value.Height, OpenTK.Graphics.OpenGL.PixelFormat.Rgba, PixelType.UnsignedByte, data);
 			else
-				GL.TexSubImage2D<T> (TextureTarget.Texture2D, level, 0, 0, Width, Height, OpenTK.Graphics.OpenGL.PixelFormat.Rgba, PixelType.UnsignedByte, data);*/
+				GL.TexSubImage2D<T> (Target, level, 0, 0, Width, Height, OpenTK.Graphics.OpenGL.PixelFormat.Rgba, PixelType.UnsignedByte, data);*/
         }
 
         public void GetData<T>(T[] data) where T : struct //ValueType
@@ -179,7 +169,7 @@ namespace engenious.Graphics
                 {
                     //TODO:
                     var temp = new T[this.Width * this.Height];
-                    GL.GetTexImage(TextureTarget.Texture2D, level, OpenTK.Graphics.OpenGL.PixelFormat.Bgra,
+                    GL.GetTexImage(Target, level, OpenTK.Graphics.OpenGL.PixelFormat.Bgra,
                         PixelType.UnsignedByte, temp);
                     int z = 0, w = 0;
 
@@ -196,7 +186,7 @@ namespace engenious.Graphics
                 }
                 else*/
                 {
-                    GL.GetTexImage(TextureTarget.Texture2D, level, OpenTK.Graphics.OpenGL.PixelFormat.Bgra,
+                    GL.GetTexImage(Target, level, OpenTK.Graphics.OpenGL.PixelFormat.Bgra,
                         PixelType.UnsignedByte, data);
                 }
             }
@@ -213,7 +203,7 @@ namespace engenious.Graphics
                 {
                     //TODO: use ? GL.CopyImageSubData(
                     var temp = new T[Width * Height];
-                    GL.GetTexImage(TextureTarget.Texture2D, level, OpenTK.Graphics.OpenGL.PixelFormat.Bgra,
+                    GL.GetTexImage(Target, level, OpenTK.Graphics.OpenGL.PixelFormat.Bgra,
                         PixelType.UnsignedByte, temp);
                     int z = 0, w = 0;
 
@@ -230,7 +220,7 @@ namespace engenious.Graphics
                 }
                 else
                 {
-                    GL.GetTexImage(TextureTarget.Texture2D, level, OpenTK.Graphics.OpenGL.PixelFormat.Bgra,
+                    GL.GetTexImage(Target, level, OpenTK.Graphics.OpenGL.PixelFormat.Bgra,
                         PixelType.UnsignedByte, data);
                 }
             }
@@ -239,6 +229,14 @@ namespace engenious.Graphics
         public static Texture2D FromStream(GraphicsDevice graphicsDevice, Stream stream)
         {
             using (var bmp = new Bitmap(stream))
+            {
+                return FromBitmap(graphicsDevice, bmp);
+            }
+        }
+
+        public static Texture2D FromFile(GraphicsDevice graphicsDevice, string filename)
+        {
+            using (var bmp = new Bitmap(filename))
             {
                 return FromBitmap(graphicsDevice, bmp);
             }
@@ -253,7 +251,7 @@ namespace engenious.Graphics
             using (Execute.OnUiContext)
             {
                 text.Bind();
-                GL.TexSubImage2D(TextureTarget.Texture2D, 0, 0, 0, text.Width, text.Height,
+                GL.TexSubImage2D(text.Target, 0, 0, 0, text.Width, text.Height,
                     OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, bmpData.Scan0);
             }
             bmp.UnlockBits(bmpData);
@@ -270,7 +268,7 @@ namespace engenious.Graphics
             using (Execute.OnUiContext)
             {
                 text.Bind();
-                GL.GetTexImage(TextureTarget.Texture2D, 0, OpenTK.Graphics.OpenGL.PixelFormat.Bgra,
+                GL.GetTexImage(text.Target, 0, OpenTK.Graphics.OpenGL.PixelFormat.Bgra,
                     PixelType.UnsignedByte, bmpData.Scan0);
             }
             //System.Runtime.InteropServices.Marshal.Copy (bmpData.Scan0, data, 0, data.Length);//TODO: performance

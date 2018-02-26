@@ -139,15 +139,15 @@ namespace engenious.Content.Pipeline
                     blendState.AlphaDestinationBlend = (BlendingFactorDest)Enum.Parse(typeof(BlendingFactorDest), el.InnerText);
                 else if (el.Name == "AlphaSourceBlend")
                     blendState.AlphaSourceBlend = (BlendingFactorSrc)Enum.Parse(typeof(BlendingFactorSrc), el.InnerText);
-                else if (el.Name == "BlendFactor")
-                    blendState.BlendFactor = ParseColor(el);
+                /*else if (el.Name == "BlendFactor")
+                    blendState.BlendFactor = ParseColor(el);*/
                 else if (el.Name == "ColorBlendFunction")
                     blendState.ColorBlendFunction = (BlendEquationMode)Enum.Parse(typeof(BlendEquationMode), el.InnerText);
                 else if (el.Name == "ColorDestinationBlend")
                     blendState.ColorDestinationBlend = (BlendingFactorDest)Enum.Parse(typeof(BlendingFactorDest), el.InnerText);
                 else if (el.Name == "ColorSourceBlend")
                     blendState.ColorSourceBlend = (BlendingFactorSrc)Enum.Parse(typeof(BlendingFactorSrc), el.InnerText);
-                /*else if (el.Name == "ColorWriteChannels")
+                else if (el.Name == "ColorWriteChannels")
                     blendState.ColorWriteChannels = (ColorWriteChannels)Enum.Parse(typeof(ColorWriteChannels), el.InnerText);
                 else if (el.Name == "ColorWriteChannels1")
                     blendState.ColorWriteChannels1 = (ColorWriteChannels)Enum.Parse(typeof(ColorWriteChannels), el.InnerText);
@@ -155,7 +155,7 @@ namespace engenious.Content.Pipeline
                     blendState.ColorWriteChannels2 = (ColorWriteChannels)Enum.Parse(typeof(ColorWriteChannels), el.InnerText);
                 else if (el.Name == "ColorWriteChannels3")
                     blendState.ColorWriteChannels3 = (ColorWriteChannels)Enum.Parse(typeof(ColorWriteChannels), el.InnerText);
-                else if (el.Name == "IndependentBlendEnable")
+                /*else if (el.Name == "IndependentBlendEnable")
                     blendState.IndependentBlendEnable = bool.Parse(el.InnerText);
                 else if (el.Name == "MultiSampleMask")
                     blendState.MultiSampleMask = int.Parse(el.InnerText);*/
@@ -173,15 +173,15 @@ namespace engenious.Content.Pipeline
             DepthStencilState depthStencilState = new DepthStencilState();
             foreach (XmlElement el in element.ChildNodes.OfType<XmlElement>())
             {
-                /*if (el.Name == "CounterClockwiseStencilDepthBufferFail")
+                if (el.Name == "CounterClockwiseStencilDepthBufferFail")
                     depthStencilState.CounterClockwiseStencilDepthBufferFail = (StencilOp)Enum.Parse(typeof(StencilOp), el.InnerText);
                 else if (el.Name == "CounterClockwiseStencilFail")
                     depthStencilState.CounterClockwiseStencilFail = (StencilOp)Enum.Parse(typeof(StencilOp), el.InnerText);
                 else if (el.Name == "CounterClockwiseStencilFunction")
-                    depthStencilState.CounterClockwiseStencilFunction = (CompareFunction)Enum.Parse(typeof(CompareFunction), el.InnerText);
+                    depthStencilState.CounterClockwiseStencilFunction = (StencilFunction)Enum.Parse(typeof(StencilFunction), el.InnerText);
                 else if (el.Name == "CounterClockwiseStencilPass")
-                    depthStencilState.CounterClockwiseStencilPass = (StencilOp)Enum.Parse(typeof(StencilOp), el.InnerText);*/
-                if (el.Name == "DepthBufferEnable")
+                    depthStencilState.CounterClockwiseStencilPass = (StencilOp)Enum.Parse(typeof(StencilOp), el.InnerText);
+                else if (el.Name == "DepthBufferEnable")
                     depthStencilState.DepthBufferEnable = bool.Parse(el.InnerText);
                 else if (el.Name == "DepthBufferFunction")
                     depthStencilState.DepthBufferFunction = (DepthFunction)Enum.Parse(typeof(DepthFunction), el.InnerText);
@@ -202,9 +202,9 @@ namespace engenious.Content.Pipeline
                 else if (el.Name == "StencilPass")
                     depthStencilState.StencilPass = (StencilOp)Enum.Parse(typeof(StencilOp), el.InnerText);
                 /*else if (el.Name == "DepthBufferFunction")
-                    depthStencilState.StencilWriteMask = int.Parse(el.InnerText);
+                    depthStencilState.StencilWriteMask = int.Parse(el.InnerText);*/
                 else if (el.Name == "TwoSidedStencilMode")
-                    depthStencilState.TwoSidedStencilMode = bool.Parse(el.InnerText);*/
+                    depthStencilState.TwoSidedStencilMode = bool.Parse(el.InnerText);
                 else
                     throw new Exception("'" + el.Name + "' is not an option of the DepthStencilState");
             }
@@ -226,11 +226,11 @@ namespace engenious.Content.Pipeline
                     rasterizerState.MultiSampleAntiAlias = bool.Parse(el.InnerText);
                 else if (el.Name == "ScissorTestEnable")
                     rasterizerState.ScissorTestEnable = bool.Parse(el.InnerText);
-                /*else if (el.Name == "SlopeScaleDepthBias")
+                else if (el.Name == "SlopeScaleDepthBias")
                     rasterizerState.SlopeScaleDepthBias = float.Parse(el.InnerText);
                 else if (el.Name == "DepthBias")
                     rasterizerState.DepthBias = float.Parse(el.InnerText);
-                else if (el.Name == "DepthClipEnable")
+                /*else if (el.Name == "DepthClipEnable")
                     rasterizerState.DepthClipEnable = bool.Parse(el.InnerText);*/
                 else
                     throw new Exception("'" + el.Name + "' is not an option of the RasterizerState");

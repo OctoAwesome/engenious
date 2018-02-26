@@ -57,6 +57,7 @@
     <Compile Include="Audio\SoundEffectInstancePool.cs" />
     <Compile Include="Content\Serialization\Readers\SoundEffectTypeReader.cs" />
     <Compile Include="Graphics\Effect\IEffect.cs" />
+    <Compile Include="Graphics\GraphicsCapabilities.cs" />
     <Compile Include="Graphics\Model\BaseMesh.cs" />
     <Compile Include="Graphics\Model\ConditionalVertexArray.cs" />
     <Compile Include="Graphics\Model\IMesh.cs" />
@@ -65,6 +66,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Graphics\Model\MeshIndexed.cs" />
+    <Compile Include="Graphics\RenderStates\ColorWriteChannels.cs" />
     <Compile Include="Graphics\Vertices\IColorVertex.cs" />
     <Compile Include="Graphics\Vertices\INormalVertex.cs" />
     <Compile Include="Graphics\Vertices\IPositionVertex.cs" />

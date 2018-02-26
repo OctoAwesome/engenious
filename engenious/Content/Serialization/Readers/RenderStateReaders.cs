@@ -1,4 +1,5 @@
-﻿using engenious.Graphics;
+﻿using System.Threading;
+using engenious.Graphics;
 
 namespace engenious.Content.Serialization
 {
@@ -16,6 +17,9 @@ namespace engenious.Content.Serialization
             state.FillMode = (PolygonMode)reader.ReadUInt16();
             state.MultiSampleAntiAlias = reader.ReadBoolean();
             state.ScissorTestEnable = reader.ReadBoolean();
+            
+            state.DepthBias = reader.ReadSingle();
+            state.SlopeScaleDepthBias = reader.ReadSingle();
             return state;
         }
 
@@ -44,6 +48,12 @@ namespace engenious.Content.Serialization
             state.StencilDepthBufferFail = (StencilOp)reader.ReadUInt16();
             state.StencilFail = (StencilOp)reader.ReadUInt16();
             state.StencilPass = (StencilOp)reader.ReadUInt16();
+
+            state.TwoSidedStencilMode = reader.ReadBoolean();
+            state.CounterClockwiseStencilFunction = (StencilFunction) reader.ReadUInt16();
+            state.CounterClockwiseStencilDepthBufferFail= (StencilOp) reader.ReadUInt16();
+            state.CounterClockwiseStencilFail= (StencilOp) reader.ReadUInt16();
+            state.CounterClockwiseStencilPass= (StencilOp) reader.ReadUInt16();
             return state;
         }
 
@@ -68,7 +78,11 @@ namespace engenious.Content.Serialization
             state.ColorDestinationBlend = (BlendingFactorDest)reader.ReadUInt16();
             state.ColorSourceBlend = (BlendingFactorSrc)reader.ReadUInt16();
 
-            state.BlendFactor = reader.ReadColor();
+            //state.BlendFactor = reader.ReadColor();
+            state.ColorWriteChannels = (ColorWriteChannels) reader.ReadByte();
+            state.ColorWriteChannels1 = (ColorWriteChannels) reader.ReadByte();
+            state.ColorWriteChannels2 = (ColorWriteChannels) reader.ReadByte();
+            state.ColorWriteChannels3 = (ColorWriteChannels) reader.ReadByte();
             return state;
         }
 

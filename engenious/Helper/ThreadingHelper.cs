@@ -42,7 +42,7 @@ namespace engenious.Helper
             {
                 var ex = new UiExecutor();
 
-                if (ThreadingHelper.UiThreadId == Thread.CurrentThread.ManagedThreadId)
+                if (ThreadingHelper.UiThreadId == Thread.CurrentThread.ManagedThreadId || ThreadingHelper.Context.IsCurrent)
                 {
                     ex.WasOnUiThread = true;
                     return ex;

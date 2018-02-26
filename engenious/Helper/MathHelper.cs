@@ -29,6 +29,11 @@ namespace engenious.Helper
         {
             return (float)(degrees * Math.PI / 180);
         }
+
+        public static float Clamp(float val, float min, float max)
+        {
+            return val > max ? max : (val < min ? min : val);
+        }
     }
 }
 

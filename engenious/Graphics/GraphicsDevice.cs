@@ -29,11 +29,12 @@ namespace engenious.Graphics
         }*/
 
         internal Game Game;
-        internal Dictionary<string, bool> Extensions = new Dictionary<string, bool>();
+        internal readonly HashSet<string> Extensions = new HashSet<string>();
         internal string DriverVendor;
         internal Version DriverVersion;
         internal Version GlslVersion;
 
+        
         public GraphicsDevice(Game game, IGraphicsContext context)
         {
             _context = context;
@@ -44,12 +45,12 @@ namespace engenious.Graphics
             for (var i = 0; i < count; i++)
             {
                 var extension = GL.GetString(StringNameIndexed.Extensions, i);
-                Extensions.Add(extension, true);
+                Extensions.Add(extension);
             }
 
             ReadOpenGlVersion();
 #if DEBUG
-            if (Extensions.ContainsKey("GL_ARB_debug_output"))
+            if (Extensions.Contains("GL_ARB_debug_output"))
             {
                 _context.ErrorChecking = true;
                 //GL.Enable(EnableCap.DebugOutput);
@@ -58,6 +59,7 @@ namespace engenious.Graphics
             }
 #endif
 
+            Capabilities = new GraphicsCapabilities(this);
 
             Textures = new TextureCollection();
             CheckError();
@@ -85,7 +87,7 @@ namespace engenious.Graphics
             }
             catch (ArgumentException ex)
             {
-                if (!Extensions.ContainsKey("VERSION_1_2"))
+                if (!Extensions.Contains("VERSION_1_2"))
                 {
                     DriverVersion = new Version(1,0);
                     GlslVersion = new Version(1,0);//throw new Exception(string.Join("\r\n\t",Extensions.Keys)+$"\r\ncan't parse version: {versionString} fullversion{fullVersion}", ex);
@@ -168,6 +170,7 @@ namespace engenious.Graphics
             _context.SwapBuffers();
         }
 
+        public GraphicsCapabilities Capabilities { get; }
         public Viewport Viewport
         {
             get { return _viewport; }
@@ -327,19 +330,10 @@ namespace engenious.Graphics
             {
                 if (_blendState != value)
                 {
-                    _blendState = value == null ? BlendState.AlphaBlend : value;
-                    using (Execute.OnUiContext)
-                    {
-                        //TODO:apply more?
-                        GL.BlendFuncSeparate(
-                            (OpenTK.Graphics.OpenGL.BlendingFactorSrc) _blendState.ColorSourceBlend,
-                            (OpenTK.Graphics.OpenGL.BlendingFactorDest) _blendState.ColorDestinationBlend,
-                            (OpenTK.Graphics.OpenGL.BlendingFactorSrc) _blendState.AlphaSourceBlend,
-                            (OpenTK.Graphics.OpenGL.BlendingFactorDest) _blendState.AlphaDestinationBlend);
-                        GL.BlendEquationSeparate(
-                            (OpenTK.Graphics.OpenGL.BlendEquationMode) _blendState.ColorBlendFunction,
-                            (OpenTK.Graphics.OpenGL.BlendEquationMode) _blendState.AlphaBlendFunction);
-                    }
+                    _blendState?.Unbind();
+                    var blendState = value ?? BlendState.AlphaBlend;
+                    blendState.Bind(this);
+                    _blendState = blendState;
                 }
             }
         }
@@ -351,16 +345,10 @@ namespace engenious.Graphics
             {
                 if (_depthStencilState != value)
                 {
-                    _depthStencilState = value == null ? DepthStencilState.Default : value;
-                    using (Execute.OnUiContext)
-                    {
-                        if (_depthStencilState.DepthBufferEnable)
-                            GL.Enable(EnableCap.DepthTest);
-                        else
-                            GL.Disable(EnableCap.DepthTest);
-                    }
-
-                    //TODO:apply more
+                    _depthStencilState?.Unbind();
+                    var depthStencilState = value ?? DepthStencilState.Default;
+                    depthStencilState.Bind(this);
+                    _depthStencilState = depthStencilState;
                 }
             }
         }
@@ -372,34 +360,10 @@ namespace engenious.Graphics
             {
                 if (_rasterizerState != value)
                 {
-                    _rasterizerState = value ?? RasterizerState.CullClockwise;
-                    //TODO:apply more
-                    using (Execute.OnUiContext)
-                    {
-                        //GL.FrontFace(FrontFaceDirection.
-                        if (_rasterizerState.CullMode == CullMode.None)
-                        {
-                            GL.Disable(EnableCap.CullFace);
-                            GL.PolygonMode(MaterialFace.FrontAndBack,(OpenTK.Graphics.OpenGL.PolygonMode) _rasterizerState.FillMode);
-                        }
-                        else
-                        {
-                            GL.Enable(EnableCap.CullFace);
-                            GL.FrontFace((FrontFaceDirection) _rasterizerState.CullMode);
-                            GL.PolygonMode(_rasterizerState.CullMode == CullMode.CounterClockwise ? MaterialFace.Back : MaterialFace.Front,(OpenTK.Graphics.OpenGL.PolygonMode) _rasterizerState.FillMode);
-                        }
-
-
-                        if (_rasterizerState.MultiSampleAntiAlias)
-                            GL.Enable(EnableCap.Multisample);
-                        else
-                            GL.Disable(EnableCap.Multisample);
-
-                        if (_rasterizerState.ScissorTestEnable)
-                            GL.Enable(EnableCap.ScissorTest);
-                        else
-                            GL.Disable(EnableCap.ScissorTest);
-                    }
+                    _rasterizerState?.Unbind();
+                    var rasterizerState = value ?? RasterizerState.CullClockwise;
+                    rasterizerState.Bind(this);
+                    _rasterizerState = rasterizerState;
                 }
             }
         }

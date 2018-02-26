@@ -16,7 +16,7 @@ namespace engenious.Graphics
             {
                 _texture = GL.GenTexture();
                 
-                GL.BindTexture(TextureTarget.Texture2DArray, _texture);
+                GL.BindTexture(Target, _texture);
                 _internalFormat = PixelInternalFormat.Rgba8;//TODO dynamic format
                 GL.TexStorage3D(TextureTarget3d.Texture2DArray, levels, SizedInternalFormat.Rgba8, width, height, Math.Max(layers,1));
             }
@@ -46,15 +46,15 @@ namespace engenious.Graphics
                 if (createMipMaps){
                     GL.GenerateMipmap(GenerateMipmapTarget.Texture2DArray);
                 }
-                setDefaultTextureParameters();
+                SetDefaultTextureParameters();
             }
         }
-        private void setDefaultTextureParameters()
+        private void SetDefaultTextureParameters()
         {
-            GL.TexParameter(TextureTarget.Texture2DArray, TextureParameterName.TextureMinFilter, (int)All.Linear);
-            GL.TexParameter(TextureTarget.Texture2DArray, TextureParameterName.TextureMagFilter, (int)All.Linear);
-            GL.TexParameter(TextureTarget.Texture2DArray,TextureParameterName.TextureMagFilter,(int)All.Linear);
-            GL.TexParameter(TextureTarget.Texture2DArray,TextureParameterName.TextureMinFilter,(int)All.LinearMipmapLinear);
+            GL.TexParameter(Target, TextureParameterName.TextureMinFilter, (int)All.Linear);
+            GL.TexParameter(Target, TextureParameterName.TextureMagFilter, (int)All.Linear);
+            GL.TexParameter(Target,TextureParameterName.TextureMagFilter,(int)All.Linear);
+            GL.TexParameter(Target,TextureParameterName.TextureMinFilter,(int)All.LinearMipmapLinear);
         }
         public int Width { get; private set; }
         public int Height { get; private set; }
@@ -62,8 +62,9 @@ namespace engenious.Graphics
 
         internal override void Bind()
         {
-            GL.BindTexture(TextureTarget.Texture2DArray, _texture);
+            GL.BindTexture(Target, _texture);
         }
+        internal override TextureTarget Target => TextureTarget.Texture2DArray;
 
         public override void BindComputation(int unit = 0)
         {
@@ -71,17 +72,6 @@ namespace engenious.Graphics
                 (SizedInternalFormat) _internalFormat);
         }
 
-        internal override void SetSampler(SamplerState state)
-        {
-            using (Execute.OnUiContext)
-            {
-                state = state ?? SamplerState.LinearClamp;
-                GL.TexParameter(TextureTarget.Texture2DArray, TextureParameterName.TextureWrapS, (int) state.AddressU);
-                GL.TexParameter(TextureTarget.Texture2DArray, TextureParameterName.TextureWrapT, (int) state.AddressV);
-                GL.TexParameter(TextureTarget.Texture2DArray,TextureParameterName.TextureMagFilter,(int)state.TextureFilter);
-                GL.TexParameter(TextureTarget.Texture2DArray,TextureParameterName.TextureMinFilter,(int)state.TextureFilter);
-            }
-        }
         public void SetData<T>(T[] data,int layer,int level=0)where T : struct
         {
             var handle = GCHandle.Alloc(data, GCHandleType.Pinned);
@@ -92,7 +82,7 @@ namespace engenious.Graphics
                 if (typeof(T) == typeof(Color))
                     pxType = PixelType.Float;
 
-                    GL.TexSubImage3D(TextureTarget.Texture2DArray, level, 0, 0,layer, Width, Height,1, OpenTK.Graphics.OpenGL.PixelFormat.Bgra, pxType, handle.AddrOfPinnedObject());
+                    GL.TexSubImage3D(Target, level, 0, 0,layer, Width, Height,1, OpenTK.Graphics.OpenGL.PixelFormat.Bgra, pxType, handle.AddrOfPinnedObject());
             }
             handle.Free();
         }

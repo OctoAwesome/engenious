@@ -24,7 +24,7 @@ namespace engenious
                     _samplerStates[index] = value ?? SamplerState.LinearClamp;
                     GL.ActiveTexture(TextureUnit.Texture0 + index);
                     if (GraphicsDevice.Textures[index] != null)
-                        GraphicsDevice.Textures[index].SetSampler(value);
+                        _samplerStates[index].Bind(GraphicsDevice.Textures[index]);
                     
                 }
             }
