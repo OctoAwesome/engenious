@@ -11,11 +11,21 @@ namespace engenious.Content.Serialization
     {
         private static Dictionary<string, Type> _effectTypes;
 
+        private static HashSet<Assembly> _cachedAssemblies;
         static EffectTypeReader()
         {
             _effectTypes = new Dictionary<string, Type>();
+            _cachedAssemblies = new HashSet<Assembly>();
+            RecacheAssemblies();
+        }
+
+        private static void RecacheAssemblies()
+        {
             foreach (var asm in AppDomain.CurrentDomain.GetAssemblies())
             {
+                if (_cachedAssemblies.Contains(asm))
+                    continue;
+                _cachedAssemblies.Add(asm);
                 if (!asm.IsDynamic)
                 {
                     Type[] exportedTypes = null;
@@ -57,6 +67,7 @@ namespace engenious.Content.Serialization
             {
                 try
                 {
+                    RecacheAssemblies();
                     canUseCustomType = true;
                     var customTypeName = reader.ReadString();
                     effectType = _effectTypes[customTypeName];
