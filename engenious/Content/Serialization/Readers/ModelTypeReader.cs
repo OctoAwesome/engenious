@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using engenious.Graphics;
 using OpenTK.Graphics.OpenGL4;
@@ -20,7 +21,7 @@ namespace engenious.Content.Serialization
             return node;
         }
 
-        public override Model Read(ContentManager manager, ContentReader reader)
+        public override Model Read(ContentManager manager, ContentReader reader, Type customType = null)
         {
             var model = new Model(manager.GraphicsDevice);
             var meshCount = reader.ReadInt32();

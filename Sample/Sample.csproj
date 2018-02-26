@@ -42,6 +42,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestGame.cs" />
+    <Compile Include="TestShader.cs" />
   </ItemGroup>
   <ItemGroup>
     <EngeniousContentReference Include="Content\Content.ecp" />

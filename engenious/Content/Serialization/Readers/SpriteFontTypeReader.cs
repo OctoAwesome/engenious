@@ -1,11 +1,12 @@
-﻿using engenious.Graphics;
+﻿using System;
+using engenious.Graphics;
 
 namespace engenious.Content.Serialization
 {
     [ContentTypeReaderAttribute(typeof(SpriteFont))]
     public class SpriteFontTypeReader:ContentTypeReader<SpriteFont>
     {
-        public override SpriteFont Read(ContentManager manager, ContentReader reader)
+        public override SpriteFont Read(ContentManager manager, ContentReader reader, Type customType = null)
         {
             var texture = reader.Read<Texture2D>(manager);
             var font = new SpriteFont(texture);

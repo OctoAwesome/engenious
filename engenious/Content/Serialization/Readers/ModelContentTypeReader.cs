@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using engenious.Graphics;
 
 namespace engenious.Content.Serialization
@@ -18,7 +19,7 @@ namespace engenious.Content.Serialization
             return node;
         }
 
-        public override ModelContent Read(ContentManager manager, ContentReader reader)
+        public override ModelContent Read(ContentManager manager, ContentReader reader, Type customType = null)
         {
             var model = new ModelContent();
             var meshCount = reader.ReadInt32();

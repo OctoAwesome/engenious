@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using engenious.Graphics;
 
 namespace engenious.Content.Serialization
@@ -8,7 +9,7 @@ namespace engenious.Content.Serialization
     {
         #region implemented abstract members of ContentTypeReader
 
-        public override RasterizerState Read(ContentManager manager, ContentReader reader)
+        public override RasterizerState Read(ContentManager manager, ContentReader reader, Type customType = null)
         {
             if (reader.ReadBoolean())
                 return null;
@@ -31,7 +32,7 @@ namespace engenious.Content.Serialization
     {
         #region implemented abstract members of ContentTypeReader
 
-        public override DepthStencilState Read(ContentManager manager, ContentReader reader)
+        public override DepthStencilState Read(ContentManager manager, ContentReader reader, Type customType = null)
         {
             if (reader.ReadBoolean())
                 return null;
@@ -65,7 +66,7 @@ namespace engenious.Content.Serialization
     {
         #region implemented abstract members of ContentTypeReader
 
-        public override BlendState Read(ContentManager manager, ContentReader reader)
+        public override BlendState Read(ContentManager manager, ContentReader reader, Type customType = null)
         {
             if (reader.ReadBoolean())
                 return null;

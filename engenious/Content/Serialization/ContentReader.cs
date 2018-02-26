@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using engenious.Graphics;
 
 namespace engenious.Content.Serialization
@@ -19,7 +20,7 @@ namespace engenious.Content.Serialization
 
         public T Read<T>(ContentManager manager, IContentTypeReader typeReader)
         {
-            return (T)typeReader.Read(manager, this);
+            return (T)typeReader.Read(manager, this, typeof(T));
 
         }
 

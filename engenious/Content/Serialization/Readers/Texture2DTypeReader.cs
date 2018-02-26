@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 using System.IO;
 using engenious.Graphics;
 
@@ -7,7 +8,7 @@ namespace engenious.Content.Serialization
     [ContentTypeReader(typeof(Texture2D))]
     public class Texture2DTypeReader:ContentTypeReader<Texture2D>
     {
-        public override Texture2D Read(ContentManager manager, ContentReader reader)
+        public override Texture2D Read(ContentManager manager, ContentReader reader, Type customType = null)
         {
             var genMipMaps = reader.ReadBoolean();
             var mipCount = reader.ReadInt32();
