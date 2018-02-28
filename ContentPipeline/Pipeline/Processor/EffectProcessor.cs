@@ -1,5 +1,6 @@
 ﻿using System;
 using System.CodeDom.Compiler;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Text;
@@ -124,6 +125,16 @@ namespace engenious.Content.Pipeline
             }
         }
 
+        struct ParameterReference
+        {
+            public ParameterReference(EffectPass pass,ParameterInfo info)
+            {
+                Pass = pass;
+                ParameterInfo = info;
+            }
+            public EffectPass Pass;
+            public ParameterInfo ParameterInfo;
+        }
         private void GenerateEffectTechniqueSource(EffectTechnique technique,IndentedTextWriter src)
         {
             technique.UserTechniqueName = $"{technique.Name}Impl";
@@ -150,10 +161,61 @@ namespace engenious.Content.Pipeline
             {
                 src.WriteLine($"public {pass.Name}Impl {pass.Name} {{get; private set;}}");
             }
+            var parameters = new Dictionary<string, List<ParameterReference>>();
             foreach (var pass in technique.Passes)
             {
                 GenerateEffectPassSource(pass,src);
+                foreach (var param in pass.Parameters)
+                {
+                    List<ParameterReference> paramList;
+                    if (!parameters.TryGetValue(param.Name, out paramList))
+                    {
+                        paramList = new List<ParameterReference>();
+                    }
+
+                    if (paramList == null)
+                        continue;
+
+                    bool isCompatible = true;
+                    foreach (var otherParam in paramList)
+                    {
+                        if (otherParam.ParameterInfo.Type == param.Type)
+                            continue;
+                        
+                        isCompatible = false;
+                        break;
+                    }
+
+                    if (isCompatible)
+                        paramList.Add(new ParameterReference(pass,param));
+                    else
+                        paramList = null;
+
+                    parameters[param.Name] = paramList;
+                }
             }
+            foreach (var p in parameters)
+            {
+                if (p.Value == null || p.Value.Count == 0)
+                    continue;
+                var type = p.Value[0].ParameterInfo.Type;
+                src.WriteLine($"public {type} {p.Key}");
+                src.WriteLine("{");
+                src.Indent++;
+                src.WriteLine("set");
+                src.WriteLine("{");
+                src.Indent++;
+                foreach (var subP in p.Value)
+                {
+                    src.WriteLine($"{subP.Pass.Name}.{subP.ParameterInfo.Name} = value;");
+                }
+
+                src.Indent--;
+                src.WriteLine("}");
+                src.Indent--;
+                src.WriteLine("}");
+            }
+            
             src.Indent--;
             src.WriteLine("}");
         }

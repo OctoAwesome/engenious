@@ -23,7 +23,6 @@ namespace Sample
             _effect = Content.Load<TestShader>("simple");
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
-
         }
 
         public override void LoadContent()
