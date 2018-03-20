@@ -9,21 +9,21 @@ namespace engenious.Graphics
         public static readonly DepthStencilState Default;
         public static readonly DepthStencilState DepthRead;
         public static readonly DepthStencilState None;
-        private bool _depthBufferEnable;
-        private bool _depthBufferWriteEnable;
-        private DepthFunction _depthBufferFunction = DepthFunction.Less;
-        private bool _stencilEnable;
-        private StencilFunction _stencilFunction = StencilFunction.Never;
-        private bool _twoSidedStencilMode;
-        private StencilFunction _counterClockwiseStencilFunction;
-        private int _stencilMask;
-        private StencilOp _stencilDepthBufferFail;
-        private StencilOp _stencilFail;
-        private StencilOp _stencilPass;
-        private int _referenceStencil;
-        private StencilOp _counterClockwiseStencilFail;
-        private StencilOp _counterClockwiseStencilDepthBufferFail;
-        private StencilOp _counterClockwiseStencilPass;
+        private bool _depthBufferEnable = true;
+        private bool _depthBufferWriteEnable = true;
+        private DepthFunction _depthBufferFunction = DepthFunction.Lequal;
+        private bool _stencilEnable = false;
+        private StencilFunction _stencilFunction = StencilFunction.Always;
+        private bool _twoSidedStencilMode = false;
+        private StencilFunction _counterClockwiseStencilFunction = StencilFunction.Always;
+        private int _stencilMask = int.MaxValue;
+        private StencilOp _stencilDepthBufferFail = StencilOp.Keep;
+        private StencilOp _stencilFail = StencilOp.Keep;
+        private StencilOp _stencilPass = StencilOp.Keep;
+        private int _referenceStencil = 0;
+        private StencilOp _counterClockwiseStencilFail = StencilOp.Keep;
+        private StencilOp _counterClockwiseStencilDepthBufferFail = StencilOp.Keep;
+        private StencilOp _counterClockwiseStencilPass = StencilOp.Keep;
 
         static DepthStencilState()
         {

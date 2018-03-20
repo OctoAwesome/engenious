@@ -279,9 +279,9 @@ namespace engenious.Graphics
             GL.TexParameter(_boundTexture.Target, TextureParameterName.TextureLodBias, MipMapLevelOfDetailBias);
         }
 
-        private int _maxAnisotropy;
-        private int _maxMipLevel;
-        private float _mipMapLevelOfDetailBias;
+        private int _maxAnisotropy = 4;
+        private int _maxMipLevel = 0;
+        private float _mipMapLevelOfDetailBias = 0.0f;
 
         private GetIndexedPName GetPNameFromTarget(TextureTarget target)
         {
@@ -344,11 +344,11 @@ namespace engenious.Graphics
 
         private bool _bound;
         private int _previousText;
-        private MinFilter _minFilter;
-        private MagFilter _magFilter;
-        private TextureWrapMode _addressU;
-        private TextureWrapMode _addressV;
-        private TextureWrapMode _addressW;
+        private MinFilter _minFilter = MinFilter.Linear;
+        private MagFilter _magFilter = MagFilter.Linear;
+        private TextureWrapMode _addressU = TextureWrapMode.ClampToEdge;
+        private TextureWrapMode _addressV = TextureWrapMode.ClampToEdge;
+        private TextureWrapMode _addressW = TextureWrapMode.ClampToEdge;
 
         private void BeginApply()
         {

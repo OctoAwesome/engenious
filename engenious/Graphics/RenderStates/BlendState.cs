@@ -10,16 +10,16 @@ namespace engenious.Graphics
         public static readonly BlendState Additive;
         public static readonly BlendState NonPremultiplied;
         public static readonly BlendState Opaque;
-        private BlendingFactorSrc _colorSourceBlend;
-        private BlendingFactorSrc _alphaSourceBlend;
-        private BlendingFactorDest _colorDestinationBlend;
-        private BlendingFactorDest _alphaDestinationBlend;
-        private BlendEquationMode _alphaBlendFunction;
-        private BlendEquationMode _colorBlendFunction;
-        private ColorWriteChannels _colorWriteChannels;
-        private ColorWriteChannels _colorWriteChannels1;
-        private ColorWriteChannels _colorWriteChannels2;
-        private ColorWriteChannels _colorWriteChannels3;
+        private BlendingFactorSrc _colorSourceBlend = BlendingFactorSrc.One;
+        private BlendingFactorSrc _alphaSourceBlend = BlendingFactorSrc.One;
+        private BlendingFactorDest _colorDestinationBlend = BlendingFactorDest.One;
+        private BlendingFactorDest _alphaDestinationBlend = BlendingFactorDest.One;
+        private BlendEquationMode _alphaBlendFunction = BlendEquationMode.FuncAdd;
+        private BlendEquationMode _colorBlendFunction = BlendEquationMode.FuncAdd;
+        private ColorWriteChannels _colorWriteChannels = ColorWriteChannels.None;
+        private ColorWriteChannels _colorWriteChannels1 = ColorWriteChannels.None;
+        private ColorWriteChannels _colorWriteChannels2 = ColorWriteChannels.None;
+        private ColorWriteChannels _colorWriteChannels3 = ColorWriteChannels.None;
         private readonly ColorWriteChannels[] _colorWriteChannelList;
 
         static BlendState()

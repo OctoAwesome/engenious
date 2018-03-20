@@ -10,12 +10,12 @@ namespace engenious.Graphics
         public static readonly RasterizerState CullNone;
         public static readonly RasterizerState CullClockwise;
         public static readonly RasterizerState CullCounterClockwise;
-        private CullMode _cullMode;
-        private PolygonMode _fillMode;
-        private bool _scissorTestEnable;
-        private bool _multiSampleAntiAlias;
-        private float _slopeScaleDepthBias;
-        private float _depthBias;
+        private CullMode _cullMode = CullMode.CounterClockwise;
+        private PolygonMode _fillMode = PolygonMode.Fill;
+        private bool _scissorTestEnable = false;
+        private bool _multiSampleAntiAlias = false;
+        private float _slopeScaleDepthBias = 0.0f;
+        private float _depthBias = 0.0f;
 
         static RasterizerState()
         {
