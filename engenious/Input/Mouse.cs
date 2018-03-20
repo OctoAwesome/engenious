@@ -41,10 +41,15 @@ namespace engenious.Input
         {
             var state = OpenTK.Input.Mouse.GetState();
             var actual = *(MouseState*)(&state);
-            actual.Scroll = new MouseScroll(actual.Scroll.X,_deltaPrecise);//.Y = ;
-            //deltaPrecise = 0;
             return actual;
 
+        }
+
+        public static unsafe MouseState GetCursorState()
+        {
+            var state = OpenTK.Input.Mouse.GetCursorState();
+            var actual = *(MouseState*)(&state);
+            return actual;
         }
 
         public static void SetPosition(double x, double y)

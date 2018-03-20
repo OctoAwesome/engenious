@@ -128,7 +128,11 @@ namespace engenious.Input
             get { return (int)Math.Round(_position.Y); }
             internal set { _position.Y = value; }
         }
-
+        /// <summary>
+        /// Gets an integer representing the absolute x,y position of the pointer, in BaseWindow pixel coordinates.
+        /// </summary>
+        public Point Location => new Point(X, Y);
+        
         /// <summary>
         /// Gets a <see cref="System.Boolean"/> indicating whether the left mouse button is pressed.
         /// This property is intended for XNA compatibility.
