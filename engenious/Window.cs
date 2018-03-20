@@ -20,6 +20,16 @@ namespace engenious
             };
 
         }
+
+        public Point PointToScreen(Point pt)
+        {
+            return BaseWindow.PointToScreen(new System.Drawing.Point(pt.X,pt.Y));
+        }
+        public Point PointToClient(Point pt)
+        {
+            return BaseWindow.PointToClient(new System.Drawing.Point(pt.X,pt.Y));
+        }
+        
         public Rectangle ClientRectangle{
             get{
                 return new Rectangle(BaseWindow.ClientRectangle.X,BaseWindow.ClientRectangle.Y,BaseWindow.ClientRectangle.Width,BaseWindow.ClientRectangle.Height);
