@@ -77,8 +77,8 @@ namespace engenious
         {
             if (GraphicsDevice?.DriverVendor == null || GraphicsDevice.DriverVendor.IndexOf("intel", StringComparison.InvariantCultureIgnoreCase) == -1)
             {
-                //var secondwindow = new GameWindow();
-                ThreadingHelper.Initialize(_context,Window.BaseWindow.WindowInfo, 0,0, ContextFlags);
+                var secondwindow = new GameWindow();
+                ThreadingHelper.Initialize(_context,secondwindow.WindowInfo, 0,0, ContextFlags);
             }
             else
             {
