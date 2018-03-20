@@ -251,5 +251,6 @@
     <Copy SourceFiles="..\libs\Assimp64.dll" DestinationFolder="$(OutputPath)" Condition="Exists('..\libs\Assimp64.dll')" />
     <Copy SourceFiles="..\libs\Assimp32.dll" DestinationFolder="$(OutputPath)" Condition="Exists('..\libs\Assimp32.dll')" />
     <Copy SourceFiles="..\libs\Assimp64.so" DestinationFolder="$(OutputPath)" Condition="Exists('..\libs\Assimp64.so')" />
+    <Copy SourceFiles="..\libs\NativeLibraryLoader.dll" DestinationFolder="$(OutputPath)" Condition="Exists('..\libs\NativeLibraryLoader.dll')" />
   </Target>
 </Project>

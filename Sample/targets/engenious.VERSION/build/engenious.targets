@@ -59,6 +59,10 @@
     </RebuildDependsOn>
   </PropertyGroup>
 
+  <Target Name="CopyContent">
+    <Copy SourceFiles="$(MSBuildThisFileDirectory)..\lib\net40\OpenTK.dll.config" DestinationFolder="$(ProjectDir)\$(OutputPath)\OpenTK.dll.config" SkipUnchangedFiles="true" />
+  </Target>
+
   <Target Name="BuildContent"
         BeforeTargets="BeforeBuild;PreBuildEvent"
         DependsOnTargets="Prepare">
