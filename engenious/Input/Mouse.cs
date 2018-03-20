@@ -56,7 +56,7 @@ namespace engenious.Input
         {
             var pt = _window.PointToScreen(new System.Drawing.Point((int)x, (int)y));
             x = pt.X + (x - (int)x);
-            y = pt.Y + (x - (int)y);
+            y = pt.Y + (y - (int)y);
             OpenTK.Input.Mouse.SetPosition(x,y);
         }
     }
