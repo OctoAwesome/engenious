@@ -96,7 +96,7 @@ namespace ContentTool
             {
                 var attribute =
                     (ContentImporterAttribute)type.GetCustomAttributes(typeof(ContentImporterAttribute), true).First();
-                if (attribute.FileExtensions != null && attribute.FileExtensions.Contains(extension))
+                if (attribute.FileExtensions != null && attribute.FileExtensions.Contains(extension.ToUpperInvariant()))
                     fitting.Add(attribute.DisplayName);
             }
             return fitting;
@@ -188,7 +188,7 @@ namespace ContentTool
         public static Type GetImporterOutputType(string extension, string importerName)
         {
             var tp = GetImporterType(extension, importerName);
-            var field = tp.GetField("_exportType", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
+            var field = tp?.GetField("_exportType", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
             if (field == null)
                 return typeof(object);
             var lambda = Expression.Lambda<Func<Type>>(Expression.Field(null, field));
@@ -197,7 +197,7 @@ namespace ContentTool
         }
         public static Type GetProcessorInputType(Type tp)
         {
-            var field = tp.GetField("_importType", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
+            var field = tp?.GetField("_importType", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
             if (field == null)
                 return typeof(object);
             var lambda = Expression.Lambda<Func<Type>>(Expression.Field(null, field));
@@ -212,7 +212,7 @@ namespace ContentTool
             foreach (var type in _importers)
             {
                 var attribute = (ContentImporterAttribute)type.GetCustomAttributes(typeof(ContentImporterAttribute), true).First();
-                if (attribute.FileExtensions.Contains(extension) && (importerName == null || attribute.DisplayName == importerName))
+                if (attribute.FileExtensions.Contains(extension.ToUpperInvariant()) && (importerName == null || attribute.DisplayName == importerName))
                     return type;
             }
             return null;
@@ -226,7 +226,7 @@ namespace ContentTool
             foreach (var type in _importers)
             {
                 var attribute = (ContentImporterAttribute)type.GetCustomAttributes(typeof(ContentImporterAttribute), true).First();
-                if (attribute.FileExtensions != null && attribute.FileExtensions.Contains(extension) &&
+                if (attribute.FileExtensions != null && attribute.FileExtensions.Contains(extension.ToUpperInvariant()) &&
                     (string.IsNullOrEmpty(importerName) || attribute.DisplayName == importerName))
                 {
                     importerName = attribute.DisplayName;

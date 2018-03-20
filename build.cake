@@ -39,7 +39,7 @@ Task("build")
     .IsDependentOn("patch-version")
     .Does(() =>
     {
-        DotNetBuild(Solution, cfg =>
+        MSBuild(Solution, cfg =>
         {
             cfg.Configuration = Configuration;
             cfg.Verbosity = BuildVerbosity;

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Runtime.Remoting.Channels;
 using engenious.Helper;
 using OpenTK.Graphics;
@@ -18,15 +20,13 @@ namespace engenious.Graphics
         private readonly IGraphicsContext _context;
 
 
-        /*DebugProc DebugCallbackInstance = DebugCallback;
+        DebugProc DebugCallbackInstance;
+        
 
-        static void DebugCallback(DebugSource source, DebugType type, int id,
-                                  DebugSeverity severity, int length, IntPtr message, IntPtr userParam)
+        static void DebugCallback(DebugSource source, DebugType type, int id, DebugSeverity severity, int length, IntPtr message, IntPtr userParam)
         {
-            string msg = Marshal.PtrToStringAnsi(message);
-            Console.WriteLine("[GL] {0}; {1}; {2}; {3}; {4}",
-                source, type, id, severity, msg);
-        }*/
+            Console.WriteLine("[GL] {0}; {1}; {2}; ", id, severity, message);
+        }
 
         internal Game Game;
         internal readonly HashSet<string> Extensions = new HashSet<string>();
@@ -52,10 +52,18 @@ namespace engenious.Graphics
 #if DEBUG
             if (Extensions.Contains("GL_ARB_debug_output"))
             {
-                _context.ErrorChecking = true;
-                //GL.Enable(EnableCap.DebugOutput);
-                //GL.Enable(EnableCap.DebugOutputSynchronous);
-                //GL.DebugMessageCallback(DebugCallbackInstance, IntPtr.Zero);
+                //_context.ErrorChecking = true;
+                /*GL.Enable(EnableCap.DebugOutput);
+                GL.Enable(EnableCap.DebugOutputSynchronous);
+                CheckError();
+                DebugCallbackInstance = new DebugProc(DebugCallback);
+                //var ptr = Marshal.GetFunctionPointerForDelegate(DebugCallbackInstance);
+                //var c = Marshal.GetDelegateForFunctionPointer<DebugProc>(ptr);
+                
+                GL.DebugMessageCallback(DebugCallbackInstance, IntPtr.Zero);
+                GL.DebugMessageControl(DebugSourceControl.DontCare, DebugTypeControl.DontCare,
+                    DebugSeverityControl.DontCare, 0, new int[0], true);
+                GL.DebugMessageInsert(DebugSourceExternal.DebugSourceApplication, DebugType.DebugTypeMarker, 0, DebugSeverity.DebugSeverityNotification, -1, "Debug output enabled");*/
             }
 #endif
 
@@ -135,6 +143,17 @@ namespace engenious.Graphics
         {
             //return;
 #if DEBUG
+            using (Execute.OnUiContext)
+            {
+                var code = GL.GetError();
+                if (code == ErrorCode.NoError)
+                    return;
+                var frame = new System.Diagnostics.StackTrace(true).GetFrame(1);
+                string filename = frame.GetFileName();
+                int line = frame.GetFileLineNumber();
+                string method = frame.GetMethod().Name;
+                Debug.WriteLine("[GL] " + filename + ":" + method + " - " + line.ToString() + ":" + code.ToString());
+            }
             /*var frame = new System.Diagnostics.StackTrace(true).GetFrame(1);
             ErrorCode code = ErrorCode.InvalidValue;
             ThreadingHelper.BlockOnUIThread(() =>
@@ -297,8 +316,8 @@ namespace engenious.Graphics
         {
             VertexBuffer.EnsureVao();
             VertexBuffer.Vao.Bind();
-            GL.DrawArraysInstancedBaseInstance((OpenTK.Graphics.OpenGL.PrimitiveType) primitiveType, startIndex,
-                primitiveCount * 3, instanceCount, 0);
+            GL.DrawArraysInstanced((OpenTK.Graphics.OpenGL.PrimitiveType) primitiveType, startIndex,instanceCount,
+                primitiveCount * 3);
         }
 
         public void SetRenderTarget(RenderTarget2D target)
