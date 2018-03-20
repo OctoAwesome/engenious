@@ -47,8 +47,9 @@ namespace engenious.Graphics
                 {
                     int size;
                     var sb = new StringBuilder(512);
-                    GL.GetActiveUniformBlockName(Program, i, 512, out size, sb);
-                    var name = sb.ToString();
+                    string name;
+                    GL.GetActiveUniformBlockName(Program, i, 512, out size, out name);
+                    //var name = sb.ToString();
                     var location = GL.GetUniformBlockIndex(Program, name);
                     Parameters.Add(new EffectPassParameter(this, name, location,(ActiveUniformType)0x7FFFFFFF));//TODO: 
                 }

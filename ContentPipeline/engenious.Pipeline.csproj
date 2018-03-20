@@ -74,7 +74,7 @@
     <Compile Include="Serialization\Writer\BitmapTypeWriter.cs" />
     <Compile Include="Serialization\Writer\RenderStateWriters.cs" />
     <Compile Include="Serialization\Writer\EffectTypeWriter.cs" />
-    <Compile Include="Pipeline\Importers\FbxImporter.cs" />
+    <Compile Include="Pipeline\Importers\ModelImporter.cs" />
     <Compile Include="Pipeline\Processor\ModelProcessor.cs" />
     <Compile Include="Serialization\Writer\ModelContentTypeWriter.cs" />
     <Compile Include="Pipeline\CustomProperty\CustomProperty.cs" />
@@ -101,9 +101,6 @@
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <None Include="OpenTK.dll.config">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
@@ -116,11 +113,11 @@
     <Reference Include="Aspose.3D, Version=17.11.0.0, Culture=neutral, PublicKeyToken=f071c641d0b4582b, processorArchitecture=MSIL">
       <HintPath>..\packages\Aspose.3D.17.11\lib\net40\Aspose.3D.dll</HintPath>
     </Reference>
-    <Reference Include="AssimpNet, Version=3.3.2.0, Culture=neutral, PublicKeyToken=3edc10cb77b1bca2, processorArchitecture=MSIL">
-      <HintPath>..\packages\AssimpNet.3.3.2\lib\net45\AssimpNet.dll</HintPath>
+    <Reference Include="AssimpNet, Version=4.1.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\libs\AssimpNet.dll</HintPath>
     </Reference>
-    <Reference Include="OpenTK, Version=2.0.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
-      <HintPath>..\packages\OpenTK.2.0.0\lib\net20\OpenTK.dll</HintPath>
+    <Reference Include="OpenTK, Version=3.0.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4">
+      <HintPath>..\libs\OpenTK.dll</HintPath>
     </Reference>
     <Reference Include="System.Drawing" />
     <Reference Include="System.Xml" />

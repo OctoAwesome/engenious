@@ -11,9 +11,9 @@ namespace engenious.Graphics
         public static readonly DepthStencilState None;
         private bool _depthBufferEnable;
         private bool _depthBufferWriteEnable;
-        private DepthFunction _depthBufferFunction;
+        private DepthFunction _depthBufferFunction = DepthFunction.Less;
         private bool _stencilEnable;
-        private StencilFunction _stencilFunction;
+        private StencilFunction _stencilFunction = StencilFunction.Never;
         private bool _twoSidedStencilMode;
         private StencilFunction _counterClockwiseStencilFunction;
         private int _stencilMask;

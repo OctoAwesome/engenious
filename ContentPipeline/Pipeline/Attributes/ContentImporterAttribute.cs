@@ -13,7 +13,7 @@ namespace engenious.Content.Pipeline
         {
             _fileExtensions = new List<string>();
             foreach (string ext in fileExtensions)
-                _fileExtensions.Add(ext);
+                _fileExtensions.Add(ext.ToUpperInvariant());
         }
 
         public IEnumerable<string> FileExtensions => _fileExtensions;

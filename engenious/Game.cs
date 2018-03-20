@@ -77,20 +77,28 @@ namespace engenious
         {
             if (GraphicsDevice?.DriverVendor == null || GraphicsDevice.DriverVendor.IndexOf("intel", StringComparison.InvariantCultureIgnoreCase) == -1)
             {
-                var secondwindow = new GameWindow();
-                ThreadingHelper.Initialize(_context.GraphicsMode,secondwindow.WindowInfo, 0,0, ContextFlags);
+                //var secondwindow = new GameWindow();
+                ThreadingHelper.Initialize(_context,Window.BaseWindow.WindowInfo, 0,0, ContextFlags);
             }
             else
             {
-                ThreadingHelper.Initialize(_context.GraphicsMode,Window.BaseWindow.WindowInfo, 0,0, ContextFlags);
+                ThreadingHelper.Initialize(_context,Window.BaseWindow.WindowInfo, 0,0, ContextFlags);
             }
             _context.MakeCurrent(Window.BaseWindow.WindowInfo);
         }
         public Game()
         {
             _audio = new AudioDevice();
+
+            ContextFlags = GraphicsContextFlags.Default;
+            
+            #if DEBUG
+            ContextFlags |= GraphicsContextFlags.Debug;
+            #endif
+            
+            var window = new GameWindow(1280, 720,GraphicsMode.Default,"engenious Game Window",GameWindowFlags.Default,DisplayDevice.Default,0,0,ContextFlags);
+            
             GraphicsContext.ShareContexts = true;
-            var window = new GameWindow(1280, 720);
 
             Window = new Window(window);
             ConstructContext();
@@ -104,7 +112,8 @@ namespace engenious
             window.Context.LoadAll();
             GL.Viewport(window.ClientRectangle);
             //Window.Location = new System.Drawing.Point();
-            Mouse = new MouseDevice(window.Mouse);
+            
+            //Mouse = new MouseDevice();
             Input.Mouse.UpdateWindow(window);
             window.FocusedChanged += Window_FocusedChanged;
             window.Closing += delegate
@@ -202,7 +211,7 @@ namespace engenious
         
         public Window Window{ get; private set; }
 
-        public MouseDevice Mouse{ get; private set; }
+        //public MouseDevice Mouse{ get; private set; }
 
         public string Title{ get { return Window.Title; } set { Window.Title = value; } }
 

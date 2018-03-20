@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
+using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Platform;
@@ -81,12 +82,13 @@ namespace engenious.Helper
             //System.Threading.Thread.CurrentThread.Syn
         }
 
-        public static void Initialize(GraphicsMode mode,IWindowInfo windowInfo, int major, int minor, GraphicsContextFlags contextFlags)
+        public static void Initialize(IGraphicsContext shareContext,IWindowInfo windowInfo, int major, int minor, GraphicsContextFlags contextFlags)
         {
             //GraphicsContextFlags flags = GraphicsContextFlags.
             //Context = new GraphicsContext(null, null, major, minor, contextFlags);
-            Context = new GraphicsContext(mode, windowInfo, major, minor, contextFlags);
+            Context = new GraphicsContext(shareContext?.GraphicsMode, windowInfo, major, minor, contextFlags);
             Context.MakeCurrent(windowInfo);
+   
             //((IGraphicsContextInternal) Context).LoadAll();
             WindowInfo = windowInfo;
         }

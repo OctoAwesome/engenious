@@ -10,7 +10,7 @@ namespace engenious.Graphics
             float anisotropy = 0;
             if (SupportsTextureFilterAnisotropic)
             {
-                anisotropy = GL.GetFloat((GetPName)All.MaxTextureMaxAnisotropyExt);
+                GL.GetFloat((GetPName)All.MaxTextureMaxAnisotropyExt,out anisotropy);
             }
             MaxTextureAnisotropy = anisotropy;
 
