@@ -33,7 +33,7 @@
       <ContentRootDirectory>Content</ContentRootDirectory>
 
 
-      <EngeniousContentBuilderExe Condition="'$(EngeniousContentBuilderExe)' == ''">$(MSBuildThisFileDirectory)..\..\..\..\ContentTool\bin\$(Configuration)\ContentTool.exe</EngeniousContentBuilderExe>
+      <EngeniousContentBuilderExe Condition="'$(EngeniousContentBuilderExe)' == ''">$(MSBuildThisFileDirectory)..\tools\net40\ContentTool.exe</EngeniousContentBuilderExe>
 
       <Header>/configuration:$(Configuration) /outputDir:&quot;$(ParentOutputDir)&quot; /intermediateDir:&quot;$(ParentIntermediateDir)&quot; /projectDir:&quot;$(ProjectDir)/&quot; /hidden:true</Header>
 

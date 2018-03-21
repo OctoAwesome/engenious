@@ -24,8 +24,8 @@ namespace ContentTool
             {
                 try
                 {
-                    var project = ContentProject.Load(string.IsNullOrEmpty(arguments.ContentProject) ? @"D:\Projects\engenious\Sample\Content\Content.ecp" : arguments.ContentProject);
-
+                    var project = ContentProject.Load(string.IsNullOrEmpty(arguments.ContentProject) ? @"D:\Projects\engenious\Sample\Content\Content.ecp" : arguments.ContentProject,true);
+                    
                     project.OutputDirectory = arguments.OutputDirectory ?? project.OutputDirectory;
                     project.Configuration = arguments.Configuration ?? project.Configuration;
                     

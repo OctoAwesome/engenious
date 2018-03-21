@@ -91,8 +91,8 @@ namespace ContentTool.Models
         public HistoryUnion History { get; }
 
         private readonly History.History _internalHistory;
-        
-        
+
+        private readonly bool _readOnly;
 
         /// <summary>
         /// Constructor
@@ -100,11 +100,12 @@ namespace ContentTool.Models
         /// <param name="name">Name of the project</param>
         /// <param name="contentProjectPath">Path of the actual project file</param>
         /// <param name="folderPath">Path of the project directory</param>
-        public ContentProject(string name, string contentProjectPath, string folderPath) : base(name, null)
+        public ContentProject(string name, string contentProjectPath, string folderPath,bool readOnly = false) : base(name, null)
         {
             ContentProjectPath = contentProjectPath;
             FilePath = folderPath;
 
+            _readOnly = readOnly;
             _internalHistory = new History.History();
             History = new HistoryUnion();
             History.Add(_internalHistory);
@@ -192,16 +193,16 @@ namespace ContentTool.Models
             return element;
         }
 
-        public static ContentProject Load(string path)
+        public static ContentProject Load(string path,bool readOnly = false)
         {
-            return Load(path, Path.GetDirectoryName(path));
+            return Load(path, Path.GetDirectoryName(path),readOnly);
         }
 
-        public static ContentProject Load(string path, string contentFolderPath)
+        public static ContentProject Load(string path, string contentFolderPath,bool readOnly = false)
         {
             var element = XElement.Load(path);
 
-            var project = new ContentProject(string.Empty, path, contentFolderPath);
+            var project = new ContentProject(string.Empty, path, contentFolderPath,readOnly);
 
             project.Deserialize(element);
 
@@ -215,6 +216,8 @@ namespace ContentTool.Models
 
         public void Save(string path)
         {
+            if (_readOnly)
+                return;
             var xelement = Serialize();
             xelement.Save(path);
             ContentProjectPath = path;
