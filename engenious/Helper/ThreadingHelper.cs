@@ -86,7 +86,10 @@ namespace engenious.Helper
         {
             //GraphicsContextFlags flags = GraphicsContextFlags.
             //Context = new GraphicsContext(null, null, major, minor, contextFlags);
-            Context = new GraphicsContext(shareContext?.GraphicsMode, windowInfo, major, minor, contextFlags);
+            Context = shareContext == null ? 
+                new GraphicsContext(null, windowInfo, major, minor, contextFlags) : 
+                new GraphicsContext(shareContext?.GraphicsMode, windowInfo,shareContext, major, minor, contextFlags);
+            
             Context.MakeCurrent(windowInfo);
    
             //((IGraphicsContextInternal) Context).LoadAll();
