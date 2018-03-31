@@ -12,8 +12,12 @@
 
     <files>
         <!-- Lib -->
-        <file src="engenious\bin\Release\*" exclude="**\*.pdb;**\*.mdb" target="lib\net40" />
-        <file src="engenious/bin/Release/*" exclude="**/*.pdb;**/*.mdb" target="lib/net40" />
+        <file src="engenious\bin\Release\engenious.dll" exclude="**\*.pdb;**\*.mdb" target="lib\net40" />
+        <file src="engenious/bin/Release/engenious.dll" exclude="**/*.pdb;**/*.mdb" target="lib/net40" />
+
+        <!-- Additional files -->
+        <file src="engenious\bin\Release\*" exclude="**\*.pdb;**\*.mdb;**\engenious.dll" target="additional\net40" />
+        <file src="engenious/bin/Release/*" exclude="**/*.pdb;**/*.mdb;**/engenious.dll" target="additional/net40" />
 
         <!-- ContentTool -->
         <file src="ContentTool\bin\Release\*" exclude="**\*.pdb;**\*.mdb"  target="tools\net40" />
