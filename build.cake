@@ -10,7 +10,6 @@
 // *********************
 var Target = Argument("target", "default");
 var Configuration = Argument("configuration", "Release");
-var IsPrerelease = HasArgument("pre");
 
 // *********************
 //      VARIABLES
@@ -19,6 +18,17 @@ var Solution = File("engenious.sln");
 var BuildVerbosity = Verbosity.Minimal;
 CreateDirectory(Directory("./logs"));
 var Version = GitVersion(new GitVersionSettings {LogFilePath = new FilePath("./logs/gitver.log")});
+
+var IsPrerelease = !(Version.BranchName.ToLower() == "master");
+
+
+string GetNugetVersion()
+{
+    var version = IsPrerelease ? Version.NuGetVersion : Version.MajorMinorPatch;
+    if (IsPrerelease && !(version.EndsWith("rc") || version.EndsWith("alpha") || version.EndsWith("beta")))
+        return version + "-alpha";//TODO: perhaps not everything is Alpha?
+    return version;
+}
 
 // *********************
 //      SETUP
@@ -77,7 +87,7 @@ Task("pack")
         CreateDirectory(artifacts);
         NuGetPack("./engenious.ci.nuspec", new NuGetPackSettings
         {
-            Version                 = IsPrerelease ? Version.NuGetVersion : Version.MajorMinorPatch,
+            Version                 = GetNugetVersion(),
             OutputDirectory         = artifacts
         });
     });
