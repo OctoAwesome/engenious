@@ -75,7 +75,7 @@ namespace engenious
 
         private void CreateSharedContext()
         {
-            if (GraphicsDevice?.DriverVendor == null || GraphicsDevice.DriverVendor.IndexOf("intel", StringComparison.InvariantCultureIgnoreCase) == -1)
+            if (GraphicsDevice?.DriverVendor == null || GraphicsDevice.DriverVendor.IndexOf("amd", StringComparison.InvariantCultureIgnoreCase) != -1)
             {
                 var secondwindow = new GameWindow();
                 ThreadingHelper.Initialize(_context,secondwindow.WindowInfo, 0,0, ContextFlags);
