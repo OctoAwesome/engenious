@@ -15,11 +15,11 @@ namespace engenious.Graphics
             : base(graphicsDevice)
         {
             _elementSize = Marshal.SizeOf(indexType);
-            if (_elementSize <= 8)
+            if (_elementSize <= 1)
                 IndexElementSize = DrawElementsType.UnsignedByte;
-            else if (_elementSize <= 16)
+            else if (_elementSize <= 2)
                 IndexElementSize = DrawElementsType.UnsignedShort;
-            else if (_elementSize <= 32)
+            else if (_elementSize <= 4)
                 IndexElementSize = DrawElementsType.UnsignedInt;
             else
                 throw new ArgumentException("Invalid Type(bigger than 32 bits)");
