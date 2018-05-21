@@ -54,6 +54,7 @@
     <Compile Include="..\SolutionInfo.cs" />
     <Compile Include="Audio\SoundEffectInstancePool.cs" />
     <Compile Include="Content\Serialization\Readers\SoundEffectTypeReader.cs" />
+    <Compile Include="Graphics\Debug\Debug.cs" />
     <Compile Include="Graphics\Effect\IEffect.cs" />
     <Compile Include="Graphics\GraphicsCapabilities.cs" />
     <Compile Include="Graphics\Model\BaseMesh.cs" />

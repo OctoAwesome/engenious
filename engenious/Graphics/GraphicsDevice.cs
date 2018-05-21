@@ -2,8 +2,11 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
+using System.Reflection.Emit;
 using System.Runtime.InteropServices;
 using System.Runtime.Remoting.Channels;
+using System.Threading;
 using engenious.Helper;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
@@ -21,20 +24,74 @@ namespace engenious.Graphics
 
 
         DebugProc DebugCallbackInstance;
-        
 
-        static void DebugCallback(DebugSource source, DebugType type, int id, DebugSeverity severity, int length, IntPtr message, IntPtr userParam)
+        static void StartTracing(Thread thread)
         {
-            Console.WriteLine("[GL] {0}; {1}; {2}; ", id, severity, message);
+            while (true)
+            {
+                var stackTrace = new StackTrace(thread, true);
+                if (stackTrace.FrameCount <= 1)
+                    continue;
+                
+                Console.WriteLine(stackTrace);
+                return;
+            }
         }
 
+        [DebuggerStepThrough]
+        static void DebugCallback(DebugSource source, DebugType type, int id, DebugSeverity severity, int length, IntPtr message, IntPtr userParam)
+        {
+            Console.WriteLine("[GL] {0}; {1}; {2}; ", id, severity, Marshal.PtrToStringAnsi(message));
+            var stackTrace = getTheStackTrace();
+            Console.WriteLine(stackTrace);
+        }
+
+        private static void InitStackTraceHelper()
+        {
+            var stackFrameHelperType = typeof(object).Assembly.GetType("System.Diagnostics.StackFrame");
+
+            var GetStackFramesInternal = Type.GetType("System.Diagnostics.StackTrace, mscorlib").GetMethod("GetStackFramesInternal",BindingFlags.Static|BindingFlags.NonPublic);
+
+     
+
+            var method = new DynamicMethod("GetStackTraceFast",typeof(object),new Type[0],typeof(StackTrace),true);
+            StackTrace frame;
+
+            var generator = method.GetILGenerator();
+
+            generator.DeclareLocal(stackFrameHelperType);
+
+            generator.Emit(OpCodes.Ldc_I4_0);
+
+            generator.Emit(OpCodes.Newobj, stackFrameHelperType.GetConstructor(new[] { typeof(bool) }));
+
+            generator.Emit(OpCodes.Stloc_0);
+
+            generator.Emit(OpCodes.Ldloc_0);
+
+            generator.Emit(OpCodes.Ldc_I4_0);
+
+            generator.Emit(OpCodes.Ldnull);
+
+            generator.Emit(OpCodes.Call, GetStackFramesInternal);
+
+            generator.Emit(OpCodes.Ldloc_0);
+
+            generator.Emit(OpCodes.Ret);
+
+            getTheStackTrace = (Func<object>)method.CreateDelegate(typeof(Func<object>));
+
+
+        }
+
+        private static Func<object> getTheStackTrace;
         internal Game Game;
         internal readonly HashSet<string> Extensions = new HashSet<string>();
         internal string DriverVendor;
         internal Version DriverVersion;
         internal Version GlslVersion;
 
-        
+        delegate void GLTest(IntPtr x,IntPtr y);
         public GraphicsDevice(Game game, IGraphicsContext context)
         {
             _context = context;
@@ -50,24 +107,32 @@ namespace engenious.Graphics
 
             ReadOpenGlVersion();
 #if DEBUG
+            InitStackTraceHelper();
             if (Extensions.Contains("GL_ARB_debug_output"))
             {
                 //_context.ErrorChecking = true;
-                /*GL.Enable(EnableCap.DebugOutput);
+                GL.Enable(EnableCap.DebugOutput);
                 GL.Enable(EnableCap.DebugOutputSynchronous);
                 CheckError();
                 DebugCallbackInstance = new DebugProc(DebugCallback);
-                //var ptr = Marshal.GetFunctionPointerForDelegate(DebugCallbackInstance);
+                var ptr = Marshal.GetFunctionPointerForDelegate(DebugCallbackInstance);
                 //var c = Marshal.GetDelegateForFunctionPointer<DebugProc>(ptr);
-                
-                GL.DebugMessageCallback(DebugCallbackInstance, IntPtr.Zero);
+                var fieldInfo = typeof(GL).GetField("EntryPoints",BindingFlags.NonPublic|BindingFlags.Static);
+                var entryPoints = (IntPtr[])fieldInfo.GetValue(null);
+                var funcAddr2 = entryPoints[389];
+                var glDebugMessageCallback2 = Marshal.GetDelegateForFunctionPointer<GLTest>(funcAddr2);
+
+                glDebugMessageCallback2(Marshal.GetFunctionPointerForDelegate(DebugCallbackInstance),IntPtr.Zero);
+                //GL.DebugMessageCallback(DebugCallbackInstance, IntPtr.Zero);
                 GL.DebugMessageControl(DebugSourceControl.DontCare, DebugTypeControl.DontCare,
                     DebugSeverityControl.DontCare, 0, new int[0], true);
-                GL.DebugMessageInsert(DebugSourceExternal.DebugSourceApplication, DebugType.DebugTypeMarker, 0, DebugSeverity.DebugSeverityNotification, -1, "Debug output enabled");*/
+                GL.DebugMessageInsert(DebugSourceExternal.DebugSourceApplication, DebugType.DebugTypeMarker, 0, DebugSeverity.DebugSeverityNotification, -1, "Debug output enabled");
             }
 #endif
 
             Capabilities = new GraphicsCapabilities(this);
+
+            GL.Enable((EnableCap)13);
 
             Textures = new TextureCollection();
             CheckError();
@@ -147,12 +212,12 @@ namespace engenious.Graphics
             {
                 var code = GL.GetError();
                 if (code == ErrorCode.NoError)
-                    return;
+                    return;;
                 var frame = new System.Diagnostics.StackTrace(true).GetFrame(1);
                 string filename = frame.GetFileName();
                 int line = frame.GetFileLineNumber();
                 string method = frame.GetMethod().Name;
-                Debug.WriteLine("[GL] " + filename + ":" + method + " - " + line.ToString() + ":" + code.ToString());
+                //Debug.WriteLine("[GL] " + filename + ":" + method + " - " + line.ToString() + ":" + code.ToString());
             }
             /*var frame = new System.Diagnostics.StackTrace(true).GetFrame(1);
             ErrorCode code = ErrorCode.InvalidValue;
