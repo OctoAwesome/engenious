@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Runtime.CompilerServices;
-using OpenTK.Audio.OpenAL;
+using OpenTK.OpenAL.Native;
 
 namespace engenious.Audio
 {

@@ -6,9 +6,6 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "engenious", "engenious\engenious.csproj", "{E1FF7BDB-D631-4D4D-B5A1-988778AD15B6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sample", "Sample\Sample.csproj", "{9C6821E8-5880-4CD7-99D1-47ED811A99C2}"
-	ProjectSection(ProjectDependencies) = postProject
-		{E264C8BD-25AF-4A27-8396-DD8DA8414931} = {E264C8BD-25AF-4A27-8396-DD8DA8414931}
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "engenious.Pipeline", "ContentPipeline\engenious.Pipeline.csproj", "{9771E0FC-D752-4D7A-89E4-4F6FA2EC3C1D}"
 EndProject
@@ -18,7 +15,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		libs\Assimp64.dll = libs\Assimp64.dll
 		libs\Assimp64.so = libs\Assimp64.so
 		cake.config = cake.config
-		SolutionInfo.cs = SolutionInfo.cs
 		libs\NativeLibraryLoader.dll = libs\NativeLibraryLoader.dll
 	EndProjectSection
 EndProject

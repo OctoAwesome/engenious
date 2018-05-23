@@ -1,5 +1,4 @@
-﻿using OpenTK.Audio;
-
+﻿using OpenTK.OpenAL;
 namespace engenious.Audio
 {
     public class AudioDevice : AudioResource
