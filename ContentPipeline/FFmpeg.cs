@@ -21,18 +21,28 @@ namespace engenious.Pipeline
         private static string LocateFFmpegExe()
         {
             string completePath;
-            
-            try
-            {
-                completePath = File.ReadAllText(".ffmpeg");
-                if (File.Exists(completePath))
-                    return completePath;
-            }
-            catch
-            {
-                // ignored
-            }
 
+            //Attempt to fing ffmpeg path in .ffmpeg file (first in local dir then in ContentTool dir)
+            string dotFFMpegPath = ".ffmpeg";
+            if (!File.Exists(dotFFMpegPath))
+                dotFFMpegPath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), ".ffmpeg");
+            if(File.Exists(dotFFMpegPath))
+            {
+                try
+                {
+                    completePath = File.ReadAllText(".ffmpeg");
+                    if (File.Exists(completePath))
+                        return completePath;
+                    else
+                        Console.WriteLine($"Invalid path {completePath} in .ffmpeg file");
+                }
+                catch
+                {
+                    Console.WriteLine($"Could not read .ffmpeg at path {dotFFMpegPath}");
+                }
+            }
+            
+            //Attempt to find ffmpeg in local directory
             string path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             string ext =string.Empty;
             var platform = PlatformHelper.RunningPlatform();
@@ -46,6 +56,8 @@ namespace engenious.Pipeline
             completePath = Path.Combine(path, "ffmpeg" + ext);
             if (File.Exists(completePath))
                 return completePath;
+
+            //Attempt to find FFMPEG at OS-specific location
             switch (platform)
             {
                 case Platform.Linux:
@@ -64,6 +76,8 @@ namespace engenious.Pipeline
                         return completePath;
                     break;
             }
+
+            //Return default ffmpeg path
             return "ffmpeg" + ext;
         }
         public FFmpeg(SynchronizationContext syncContext,string exePath)
